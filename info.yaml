@@ -8,10 +8,10 @@
 # Project metadata (used for documentation / review)
 # ======================================================
 project:
-  title: ""        # Project title (e.g. "Simple CPU", "PLL", "ADC")
-  author: ""       # Your name
+  title: "Async I2C Slave + RING_OSC"        # Project title (e.g. "Simple CPU", "PLL", "ADC")
+  author: "jun1okamura"       # Your name
   discord: ""      # Optional: Discord username (for support / communication)
-  description: ""  # Short one-line description
+  description: "Clockless (SCL/SDA edge-driven) I2C slave core, with an on-die ring-oscillator test structure"  # Short one-line description
 
 # ======================================================
 # Layout (GDS) configuration
@@ -21,7 +21,7 @@ gds:
   # - start with "tr_1um_"
   # - include your GitHub username (for uniqueness)
   # Example: tr_1um_jun1okamura
-  top_cell: "tr_1um_username"
+  top_cell: "tr_1um_i2c_slave_async"
 
   # File extension of layout
   extension: "gds"
