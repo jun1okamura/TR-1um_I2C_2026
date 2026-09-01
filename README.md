@@ -12,6 +12,12 @@ Design source, full history and design notes:
 (see that repo's `design_notes.md` and this repo's [`PROVENANCE.md`](PROVENANCE.md)
 for exactly what was exported here and how).
 
+Also see below series of desgin note in Japanese.
+- [Completing a new design with Claude (1)](https://qiita.com/jun1okamura/items/898248762a03492cdc33)
+- [Completing a new design with Claude (2)](https://qiita.com/jun1okamura/items/ca2fed5c46a105ac371c)
+- [Completing a new design with Claude (3)](https://qiita.com/jun1okamura/items/928e6e1464e75a68b394)
+- [Completing a new design with Claude (4)](https://qiita.com/jun1okamura/items/cb8f252360014d35043a)
+
 ---
 
 ## 1. チップ概要（ピン説明）
@@ -19,7 +25,7 @@ for exactly what was exported here and how).
 チップ本体は非同期（クロックレス）I2Cスレーブコア
 （`i2c_slave_async_nrow_fm`）と、テスト用リング発振器
 （`RING_OSC`）を1チップに統合したもの。14本の実ボンドパッド
-（P1〜P7、P9〜P15、P8は本フレームに存在しない）＋VDD/VSSで構成。
+（P1〜P7、VSS, P9〜P15、VDD）で構成。
 
 | ピン | 信号 | 方向 | 説明 |
 |---|---|---|---|
@@ -30,6 +36,7 @@ for exactly what was exported here and how).
 | P5 | `tx_data[5]` / `rx_data[5]` | 双方向 | 汎用データピン、ビット5 |
 | P6 | `tx_data[4]` / `rx_data[4]` | 双方向 | 汎用データピン、ビット4 |
 | P7 | `DIS` | 入力 | P3/P4/P5/P6/P11/P12/P13/P14の8本共有の方向制御。High=Hi-Z（各ピンは`tx_data`入力として動作）、Low=出力ドライバ有効（各ピンは`rx_data`を出力）。通常動作はHigh固定。 |
+| P8 | `VSS` | 接地 |  0V |
 | P9 | `RING_OSC.OUTD` | 出力（常時駆動） | RING_OSC 低速リング出力（INV3Dベース、実測約1.558MHz） |
 | P10 | `RING_OSC.OUT` | 出力（常時駆動） | RING_OSC 高速リング出力（INV_X1ベース、実測約6.508MHz） |
 | P11 | `tx_data[0]` / `rx_data[0]` | 双方向 | 汎用データピン、ビット0 |
@@ -37,7 +44,7 @@ for exactly what was exported here and how).
 | P13 | `tx_data[2]` / `rx_data[2]` | 双方向 | 汎用データピン、ビット2 |
 | P14 | `tx_data[3]` / `rx_data[3]` | 双方向 | 汎用データピン、ビット3 |
 | P15 | `RSTN` | 入力（負論理） | チップリセット。`RING_OSC.ENB`と共有——リセット解除でコア動作開始と同時にRING_OSCも発振開始する。 |
-| VDD / VSS | 電源 | — | 5.0V系 |
+| P16 | `VDD` | 電源 |  5.0V系 |
 
 P3/P4/P5/P6/P11/P12/P13/P14の8本は、各ビットのtx（コアへの書き込み）と
 rx（コアからの読み出し）が同一物理パッドを共有し、`DIS`（P7）で方向を
@@ -50,8 +57,7 @@ rx（コアからの読み出し）が同一物理パッドを共有し、`DIS`�
 - プロセス: OpenSUSI TR-1um
 - チップサイズ: 2.5mm × 2.5mm
 - 構成: 非同期I2Cスレーブコア＋RING_OSCテスト構造＋OpenSUSIロゴ
-  （コアとRING_OSCの間の空きスペースに、M2の3um角ドットでデジタイズ
-  配置。DRC適合を構造的に満たす設計）
+  （コアとRING_OSCの間の空きスペースに、M2の3um角ドットでデジタイズ配置）
 - 実機KLayoutでチップ全体の**DRC/LVSクリーン**を確認済み
 
 ## 3. 回路設計
