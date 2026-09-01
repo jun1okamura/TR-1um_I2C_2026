@@ -13,10 +13,10 @@ Design source, full history and design notes:
 for exactly what was exported here and how).
 
 Also see below series of design note in Japanese.
-- [Completing a new design with Claude (1)](https://qiita.com/jun1okamura/items/898248762a03492cdc33)
-- [Completing a new design with Claude (2)](https://qiita.com/jun1okamura/items/ca2fed5c46a105ac371c)
-- [Completing a new design with Claude (3)](https://qiita.com/jun1okamura/items/928e6e1464e75a68b394)
-- [Completing a new design with Claude (4)](https://qiita.com/jun1okamura/items/cb8f252360014d35043a)
+- [Completing a new chip design with Claude (1)](https://qiita.com/jun1okamura/items/898248762a03492cdc33)
+- [Completing a new chip design with Claude (2)](https://qiita.com/jun1okamura/items/ca2fed5c46a105ac371c)
+- [Completing a new chip design with Claude (3)](https://qiita.com/jun1okamura/items/928e6e1464e75a68b394)
+- [Completing a new chip design with Claude (4)](https://qiita.com/jun1okamura/items/cb8f252360014d35043a)
 
 ---
 
