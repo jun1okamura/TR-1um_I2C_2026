@@ -1,70 +1,178 @@
-# TR-1um MPW Template
+# TR-1um I2C Asynchronous Slave
 
-[![check](https://github.com/OpenSUSI/TR-1um_MPW_template/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/OpenSUSI/TR-1um_MPW_template/actions/workflows/check.yml)
+[![check](https://github.com/OpenSUSI/TR-1um_MPW_template/actions/workflows/check.yml/badge.svg?branch=main)](../../actions)
 
+Clockless (no `clk` port — every state transition is driven purely by
+SCL/SDA bus edges) I2C slave core implemented on the OpenSUSI TR-1um
+process, together with an on-die ring-oscillator (`RING_OSC`) test
+structure sharing the chip's reset pin.
 
-- [Full documentation](docs/info.md)
-
----
-
-## Quick Start
-
-1. Fork this repository
-2. Edit `info.yaml` (set your top cell name)
-3. Place your files in `src/`
-   - `<top_cell>.gds`
-   - `<top_cell>.cir`
-4. Push to GitHub
-
-→ CI will automatically run **Pre-check / DRC / LVS / MDP**
+Design source, full history and design notes:
+[jun1okamura/TR-1um_Async_I2C](https://github.com/jun1okamura/TR-1um_Async_I2C)
+(see that repo's `design_notes.md` and this repo's [`PROVENANCE.md`](PROVENANCE.md)
+for exactly what was exported here and how).
 
 ---
 
-## Source Files
+## 1. チップ概要（ピン説明）
 
-Place your design files in the `src/` directory:
+チップ本体は非同期（クロックレス）I2Cスレーブコア
+（`i2c_slave_async_nrow_fm`）と、テスト用リング発振器
+（`RING_OSC`）を1チップに統合したもの。14本の実ボンドパッド
+（P1〜P7、P9〜P15、P8は本フレームに存在しない）＋VDD/VSSで構成。
 
-- `<top_cell>.gds` : layout file
-- `<top_cell>.cir` : circuit netlist
+| ピン | 信号 | 方向 | 説明 |
+|---|---|---|---|
+| P1 | `SCL` | 入力 | I2Cクロック |
+| P2 | `SDA` | 双方向（オープンドレイン） | I2Cデータ。ドライバは常にLowにしか駆動しない（`sda_oe`でゲート、Highはチップ外部プルアップ任せ）。入力パスは`sda_in`。 |
+| P3 | `tx_data[7]` / `rx_data[7]` | 双方向 | 汎用データピン、ビット7 |
+| P4 | `tx_data[6]` / `rx_data[6]` | 双方向 | 汎用データピン、ビット6 |
+| P5 | `tx_data[5]` / `rx_data[5]` | 双方向 | 汎用データピン、ビット5 |
+| P6 | `tx_data[4]` / `rx_data[4]` | 双方向 | 汎用データピン、ビット4 |
+| P7 | `DIS` | 入力 | P3/P4/P5/P6/P11/P12/P13/P14の8本共有の方向制御。High=Hi-Z（各ピンは`tx_data`入力として動作）、Low=出力ドライバ有効（各ピンは`rx_data`を出力）。通常動作はHigh固定。 |
+| P9 | `RING_OSC.OUTD` | 出力（常時駆動） | RING_OSC 低速リング出力（INV3Dベース、実測約1.558MHz） |
+| P10 | `RING_OSC.OUT` | 出力（常時駆動） | RING_OSC 高速リング出力（INV_X1ベース、実測約6.508MHz） |
+| P11 | `tx_data[0]` / `rx_data[0]` | 双方向 | 汎用データピン、ビット0 |
+| P12 | `tx_data[1]` / `rx_data[1]` | 双方向 | 汎用データピン、ビット1 |
+| P13 | `tx_data[2]` / `rx_data[2]` | 双方向 | 汎用データピン、ビット2 |
+| P14 | `tx_data[3]` / `rx_data[3]` | 双方向 | 汎用データピン、ビット3 |
+| P15 | `RSTN` | 入力（負論理） | チップリセット。`RING_OSC.ENB`と共有——リセット解除でコア動作開始と同時にRING_OSCも発振開始する。 |
+| VDD / VSS | 電源 | — | 5.0V系 |
 
-⚠️ The file name must match `gds.top_cell` in `info.yaml`.
+P3/P4/P5/P6/P11/P12/P13/P14の8本は、各ビットのtx（コアへの書き込み）と
+rx（コアからの読み出し）が同一物理パッドを共有し、`DIS`（P7）で方向を
+一括制御する構成。P1/P2（SCL/SDA）は隣接パッドにまとめて配置。
 
-![Frame](docs/OpenSUSI-MPW.png)
+## 2. チップ概要
 
----
+![Chip Image](docs/Chip_Image.png)
 
-## Configuration (info.yaml)
+- プロセス: OpenSUSI TR-1um
+- チップサイズ: 2.5mm × 2.5mm
+- 構成: 非同期I2Cスレーブコア＋RING_OSCテスト構造＋OpenSUSIロゴ
+  （コアとRING_OSCの間の空きスペースに、M2の3um角ドットでデジタイズ
+  配置。DRC適合を構造的に満たす設計）
+- 実機KLayoutでチップ全体の**DRC/LVSクリーン**を確認済み
 
-The project is configured via `info.yaml`.
+## 3. 回路設計
 
-Key fields:
+以下3〜7節は、設計元リポジトリ
+[`TR-1um_Async_I2C`](https://github.com/jun1okamura/TR-1um_Async_I2C)
+（RTL設計から配置配線・DRC/LVS・IRSIM検証・RING_OSC統合までの全設計
+データ・スクリプト・`design_notes.md`による詳細記録一式）の内容を
+要約した概要であり、詳細な経緯・実装・検証結果はすべて元リポジトリを
+参照。
 
-- `gds.top_cell` : top cell name (must match GDS)
-- `gds.extension` : layout file extension
-- `lvs.extension` : netlist file extension
-- `lvs.netlist_only` : enable/disable LVS comparison
-- `mdp.file` : output MDP GDS file name
-- `pdk.repo` : PDK repository
-- `pdk.ref` : PDK version
-- `pdk.dir` : ruleset directory
+仕様書（NXP `UM10204` *I2C-bus specification and user manual* Rev. 5.0J）
+準拠でRTLを設計し、機能検証→論理合成→ゲートレベルNETでの再検証、
+という2段階の検証フローを踏んでいる。
 
-See [docs/info.md](docs/info.md) for full details.
+- **RTL**: `i2c_slave_async.v`。`clk`ポートを持たない非同期設計——
+  SCL立上りでビットサンプル、SCL立下りで出力更新、SDAエッジ
+  （SCL=High中）でSTART/STOP検出する、バス信号のエッジのみで駆動される
+  ステートマシン。
+- **RTL検証（1段目）**: (a) MyHDLによるイベント駆動シミュレーションで
+  バス機能モデル（マスタ）を使いwrite/read/誤アドレスNACKの3シナリオを
+  検証。(b) iverilog/vvpによるVerilogテストベンチ（同3シナリオ）でも
+  独立に検証。
+- **論理合成**: Yosysで`TR1um_5_stdcell.lib`（プレースホルダLiberty）
+  へのゲートマッピングを実施し、ゲートレベルネットリスト（NET）を生成。
+  現行最終NETは`i2c_slave_async_net_v9_rowbuf.v`（137インスタンス）。
+- **NET検証（2段目）**: 合成後のゲートレベルNETに対して、RTLと**同一の
+  Verilogテストベンチ**を再実行し、RTLシミュレーション結果と一致する
+  ことを確認（ゲートレベル等価性検証）。開発過程でこの段階を通じて
+  実バグ2件（READアドレスバイト取り込み時の`bit_cnt`自己リセットと
+  `rw`/`addr_match`取り込みの同一エッジレース、`sda_oe`⇔SDAパッド間の
+  極性不一致）を発見し、RTLレベルで根本修正済み。
 
----
+## 4. AP&R
 
-## CI Workflow
+`TR-1um_5_stdcell`（AND/OR/NAND/NOR/MUX/INV/BUF等）＋本プロジェクト
+専用セル（`DFFR`: 非同期リセット付きDFF、`BUFTH`: しきい値バッファ、
+SCL/SDA_INの行またぎ分配用）によるスタンダードセルベースの配置配線。
 
-The GitHub Actions pipeline automatically validates your design.
+- **配置**: nrow（複数行）構成、行間に配線チャネルを設ける方式。
+  行内セルのクロス行ネット数を最小化するFiduccia-Mattheysesハイパー
+  グラフ分割で行割り当てを最適化。
+- **配線**: 独自Pythonルータ（4パス方式: TAP電源メッシュ→行内ローカル
+  配線→高FO/隣接ペア配線→複数行またぎ配線→強制ジョグ処理）＋汎用
+  リップアップ&リルート後処理。**DRC違反0・短絡0件**を達成。
+- **後処理**: 配線済みレイアウトを再配線せず、真に未使用な配線
+  トラックのみを幾何学的に除去してチャネル高さを圧縮（コア高さを
+  最大45.5%削減）。全トップレベルポートをコアBBOX端までM1/M2で
+  引き出し、GIOフレーム側との結線に備える。
+- **トップレベル統合**: GIO（I/Oパッドリング）⇔コアの結線・電源メッシュ
+  構築も同じ独自ルータ体系で実施。パッド割り当ての変更（SCL/SDAの
+  隣接パッド化等）にも同じ枠組みで対応済み。
 
-![Floow](docs/OpenSUSI-MPW_SUBMIT.png)
+## 5. DRC/LVS
 
----
+- **DRC**: M1/M2の幅・スペース、V1（ビア）関連ルールを独自DRCチェッカー
+  で検証（Union-Findによる短絡・未接続検出も別途）。実機KLayoutの実DRC
+  デックでも独立に確認し、チップ全体で**DRC 0違反**を達成。
+- **LVS**: LVSの「スキーマティック側」参照ネットリスト（SPICE）は、
+  手書きではなく**検証済みのゲートレベルNET**（3節の`i2c_slave_async_
+  net_v9_rowbuf.v`）とGIO⇔コア結線マップから直接・機械的に生成——
+  つまりLVSが参照する回路は、3節で機能的に検証されたのと**同一の
+  NET**であることが構造的に保証されている。RING_OSC統合後は
+  RING_OSC自身のSPICEサブサーキットも合成。実機KLayoutで、レイアウト
+  抽出ネットリストとのLVS比較を実行し、コアセル単体・チップ全体
+  （RING_OSC・パッド再割り当て後の構成含む）とも**LVSクリーン**を確認。
 
-### Pre-check
+## 6. IRSIM
 
-Validates:
+DRC/LVSクリーン確認済みのチップ全体netlistを、`OSS_ESD_5V_DIO`等の
+ESDダイオードを除きトランジスタレベルまで再帰的にフラット化し
+（BUFTHのみ、IRSIMのternaryスイッチレベルソルバでは正しく解けない
+恒久的制限があるため、シミュレーション用にピン互換の`BUF_X1`へ機械的
+置換）、スイッチレベルシミュレータ**IRSIM**上で実チップ相当の動作
+検証を実施。
 
-- Top cell name matches `info.yaml (gds.top_cell)`
-- Exactly one top-level cell exists
-- Database unit (dbu) is `0.001 µm`
-- Layout bounding box is within:
+RTL/ゲートレベルのVerilogテストベンチ（`i2c_slave_async_tb.v`）と
+1対1対応する自己検証型テストベンチを構築し、同じ3シナリオ・14項目の
+チェックを実行:
+
+1. アドレス`0x50`へのWRITEトランザクション（START〜ADDR+W〜ACK〜
+   データ`0xA5`書き込み〜ACK〜STOP、書き込んだ`rx_data`が0xA5になる
+   ことを含む）
+2. 同アドレスからのREADトランザクション（START〜ADDR+R〜ACK〜
+   `tx_data`=0x3Cとして読み出し〜マスタNACK〜STOP）
+3. 誤アドレス（0x11）へのアクセスがNACKし、正しくidleへ戻ること
+
+実機IRSIM（実キャリブレーション済み`TR-1um.prm`下）で実行した結果、
+Verilog版と完全一致する**`All 14 checks PASSED`**を確認済み。DFFRB
+（本設計の全フリップフロップセル）の内部記憶ノード（マスタ/スレーブ
+両ラッチ）を非同期リセット時にクロックHIGH側で強制する実行時手法を
+確立し、READトランザクション側で当初見つかった不具合も解消済み。
+
+## 7. RING_OSCの説明
+
+チップ上のテスト構造として、コア横に独立したリング発振器
+`RING_OSC`を1個統合。95段のインバータチェーンによる2本のリング
+（共通のENB/VDD/VSSを共有）で構成:
+
+- `OUT`（→P10）: `INV_X1`（無装飾の素のインバータ）95段によるリング
+- `OUTD`（→P9）: `INV3D`（出力ノード側にアンテナダイオード拡散を
+  追加したインバータ）95段によるリング
+
+`ENB`はチップの`RSTN`（P15）と共有——リセット解除（RSTN=High）と
+同時にRING_OSCのループが閉じ発振を開始する。
+
+**ngspice実測結果**（LVSクリーン確認済みのレイアウト抽出netlist、
+`.tran`3us、VDD=5.0V、RSTNは0Vから10ns保持後5Vへ立ち上がり）:
+
+| リング | 周期 | 周波数 |
+|---|---|---|
+| `OUT`（P10） | 153.661 ns | 6.50783 MHz |
+| `OUTD`（P9） | 641.844 ns | 1.55801 MHz |
+
+`OUTD`が`OUT`よりおよそ4.2倍遅いのは、`INV3D`のアンテナダイオード
+拡散が出力（スイッチング）ノード側に直接ロードとして乗るため
+（電源レール側ではなく出力ノード側の寄生容量が段遅延に効くため、
+無装飾の`INV_X1`との差が段遅延に直接反映される）。両リングとも
+RISE1→2とRISE3→4の周期がそれぞれ完全一致しており、定常発振である
+ことを確認済み。
+
+テストベンチ: `ring_osc/TB/tb_ring_osc.spice`（自己検証用ngspice
+テストベンチ、OUT/OUTD波形・周期・電源電流の測定とASCII raw波形出力
+を含む、設計元リポジトリの`ring_osc/TB/`配下）。
