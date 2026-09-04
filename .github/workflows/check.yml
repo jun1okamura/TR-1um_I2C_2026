@@ -162,11 +162,23 @@ jobs:
             -rd top_cell="${{ needs.Precheck.outputs.top_cell }}" \
             -rd circuit="${{ needs.Precheck.outputs.circuit }}" \
             -rd extracted="${{ needs.Precheck.outputs.extracted }}" \
+            -rd report="${{ needs.Precheck.outputs.top_cell }}.lvsdb" \
             ${NETLIST_FLAG} 2>&1 | tee lvs_output.log
           if grep -q "ERROR : Netlists don't match" lvs_output.log; then
             echo "LVS FAILED -> Netlists don't match"
             exit 1
           fi
+
+      - name: Upload LVS cross-reference database
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: LVS_report
+          if-no-files-found: warn
+          path: |
+            ${{ needs.Precheck.outputs.top_cell }}.lvsdb
+            src/${{ needs.Precheck.outputs.top_cell }}.lvsdb
+            lvs_output.log
 
       - name: Upload extracted netlist
         uses: actions/upload-artifact@v4
