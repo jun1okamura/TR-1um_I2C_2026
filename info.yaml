@@ -8,10 +8,10 @@
 # Project metadata (used for documentation / review)
 # ======================================================
 project:
-  title: "Async I2C Slave + RING_OSC"        # Project title (e.g. "Simple CPU", "PLL", "ADC")
+  title: "Async I2C Slave + RING_OSC (V10)"        # Project title (e.g. "Simple CPU", "PLL", "ADC")
   author: "jun1okamura"       # Your name
   discord: ""      # Optional: Discord username (for support / communication)
-  description: "Clockless (SCL/SDA edge-driven) I2C slave core, with an on-die ring-oscillator test structure"  # Short one-line description
+  description: "Clockless (SCL/SDA edge-driven) I2C slave core (V10: MUXDFFRB/RSLATCH synthesized-cell integration + full re-placement/re-routing), with an on-die ring-oscillator test structure. Chip-level DRC/LVS clean and SPICE transistor-level 14/14 PASS (WRITE/READ/NACK regression)"  # Short one-line description
 
 # ======================================================
 # Layout (GDS) configuration
