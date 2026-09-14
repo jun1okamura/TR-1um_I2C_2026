@@ -1,0 +1,52 @@
+* tb_ringosc.spice -- scripts/pnr/gen_chip_tb_ringosc.py が生成。
+* 手で編集しないこと。
+*
+* RING_OSC の発振を見る。ENB = P15 = rst_n、OUT -> P10、OUTD -> P9。
+* ネットリストは**レイアウト抽出**なので、AS/AD/PS/PD は実測。
+
+.include '/home/claude/work/TR-1um_I2C_2026/TR-1um/libs.tech/spice/models/ip62_models'
+.include 'tr_1um_jun1okamura_i2c_sim.spice'
+
+.param vdd=5.0
+vvdd VDD 0 DC 5.0
+vvss VSS 0 DC 0
+
+* リセット解除 = 発振開始
+vrstn P15 0 PWL(0 0 5e-07 0 6e-07 5.0)
+* DIS=H でデータパッドは全部 Hi-Z、I2C はアイドル
+vdis P7 0 DC 5.0
+vscl P1 0 DC 5.0
+rpu  P2 VDD 10k
+rp3 P3 VSS 1G
+rp4 P4 VSS 1G
+rp5 P5 VSS 1G
+rp6 P6 VSS 1G
+rp11 P11 VSS 1G
+rp12 P12 VSS 1G
+rp13 P13 VSS 1G
+rp14 P14 VSS 1G
+
+* ボンドワイヤ + プローブ相当の負荷
+cp10 P10 0 10p
+cp9 P9 0 10p
+
+xdut P1 P10 P11 P12 P13 P14 P15 P2 P3 P4 P5 P6 P7 P9 VDD VSS tr_1um_jun1okamura_i2c
+
+.options gmin=1e-11 reltol=1e-3 method=gear
+.tran 100p 12u 0 500p uic
+
+* ---- 発振周期 ----
+.measure tran t_OUT_a WHEN v(P10)='vdd/2' RISE=5  $ OUT: 5 周目の立ち上がり
+.measure tran t_OUT_b WHEN v(P10)='vdd/2' RISE=15  $ OUT: 15 周目の立ち上がり
+.measure tran period_OUT PARAM='(t_OUT_b-t_OUT_a)/10'  $ OUT の 1 周期
+.measure tran freq_OUT PARAM='10/(t_OUT_b-t_OUT_a)'  $ OUT の周波数 [Hz]
+.measure tran vmax_OUT MAX v(P10) FROM=4u TO=10u
+.measure tran vmin_OUT MIN v(P10) FROM=4u TO=10u
+.measure tran t_OUTD_a WHEN v(P9)='vdd/2' RISE=5  $ OUTD: 5 周目の立ち上がり
+.measure tran t_OUTD_b WHEN v(P9)='vdd/2' RISE=15  $ OUTD: 15 周目の立ち上がり
+.measure tran period_OUTD PARAM='(t_OUTD_b-t_OUTD_a)/10'  $ OUTD の 1 周期
+.measure tran freq_OUTD PARAM='10/(t_OUTD_b-t_OUTD_a)'  $ OUTD の周波数 [Hz]
+.measure tran vmax_OUTD MAX v(P9) FROM=4u TO=10u
+.measure tran vmin_OUTD MIN v(P9) FROM=4u TO=10u
+
+.end

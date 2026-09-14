@@ -1,0 +1,98 @@
+* tb_batch14.spice -- scripts/pnr/gen_chip_tb_batch14.py が生成。
+* 手で編集しないこと。
+*
+* V10 の 14 項目回帰（reference/v10/）の刺激をそのまま、
+* **レイアウト抽出から作ったネットリスト**に当てる。
+*   WRITE : S, ADDR+W(0xA0), ACK, DATA=0xA5, ACK, P
+*   READ  : S, ADDR+R(0xA1), ACK, DATA=0x3C（スレーブが出す）, NACK, P
+*   NEG   : S, ADDR+W(0x22 = 別アドレス 0x11), NACK, P
+* SCL = 100 kHz。RING_OSC は外してある（P9 / P10 は 1G で落とす）。
+
+.include '/home/claude/work/TR-1um_I2C_2026/TR-1um/libs.tech/spice/models/ip62_models'
+.include 'tr_1um_jun1okamura_i2c_noosc_sim.spice'
+
+.param vdd=5.0
+
+vvdd VDD 0 DC 5.0
+vvss VSS 0 DC 0
+
+vrstn P15 0 PWL(0 0 5e-07 0 6e-07 5.0)
+* DIS: dynamic (108.72) -- LOW during WRITE, HIGH during READ. TXGATE
+* mirrors it and gates the tx_data sources (see TX_SOURCES) so only
+* one side ever drives a given PADn at a time.
+vdis P7 0 PWL(0 5.000 1.9e-06 5.000 2e-06 0.000 0.0002069 0.000 0.000207 5.000 0.000417 5.000 0.000537 5.000)
+vtxgate TXGATE 0 PWL(0 5.000 1.9e-06 5.000 2e-06 0.000 0.0002069 0.000 0.000207 5.000 0.000417 5.000 0.000537 5.000)
+.model TXSW SW(RON=10 ROFF=1T VT=2.5 VH=0.3)
+
+rp9 P9 VSS 1G
+rp10 P10 VSS 1G
+
+* tx_data (bit0..7 = ['P3', 'P4', 'P5', 'P6', 'P11', 'P12', 'P13', 'P14']), held at 0x3C for the whole run.
+vtx0 vtx0n 0 DC 0.0  $ 108.72: TXGATE-switched, 100k series
+stx0 vtx0n vtx0n2 TXGATE 0 TXSW
+rtx0 vtx0n2 P3 100k
+vtx1 vtx1n 0 DC 0.0  $ 108.72: TXGATE-switched, 100k series
+stx1 vtx1n vtx1n2 TXGATE 0 TXSW
+rtx1 vtx1n2 P4 100k
+vtx2 vtx2n 0 DC 5.0  $ 108.72: TXGATE-switched, 100k series
+stx2 vtx2n vtx2n2 TXGATE 0 TXSW
+rtx2 vtx2n2 P5 100k
+vtx3 vtx3n 0 DC 5.0  $ 108.72: TXGATE-switched, 100k series
+stx3 vtx3n vtx3n2 TXGATE 0 TXSW
+rtx3 vtx3n2 P6 100k
+vtx4 vtx4n 0 DC 5.0  $ 108.72: TXGATE-switched, 100k series
+stx4 vtx4n vtx4n2 TXGATE 0 TXSW
+rtx4 vtx4n2 P11 100k
+vtx5 vtx5n 0 DC 5.0  $ 108.72: TXGATE-switched, 100k series
+stx5 vtx5n vtx5n2 TXGATE 0 TXSW
+rtx5 vtx5n2 P12 100k
+vtx6 vtx6n 0 DC 0.0  $ 108.72: TXGATE-switched, 100k series
+stx6 vtx6n vtx6n2 TXGATE 0 TXSW
+rtx6 vtx6n2 P13 100k
+vtx7 vtx7n 0 DC 0.0  $ 108.72: TXGATE-switched, 100k series
+stx7 vtx7n vtx7n2 TXGATE 0 TXSW
+rtx7 vtx7n2 P14 100k
+
+vscl P1 0 PWL(0 5.000 2e-06 5.000 1.19e-05 5.000 1.2e-05 0.000 1.69e-05 0.000 1.7e-05 5.000 2.19e-05 5.000 2.2e-05 0.000 2.69e-05 0.000 2.7e-05 5.000 3.19e-05 5.000 3.2e-05 0.000 3.69e-05 0.000 3.7e-05 5.000 4.19e-05 5.000 4.2e-05 0.000 4.69e-05 0.000 4.7e-05 5.000 5.19e-05 5.000 5.2e-05 0.000 5.69e-05 0.000 5.7e-05 5.000 6.19e-05 5.000 6.2e-05 0.000 6.69e-05 0.000 6.7e-05 5.000 7.19e-05 5.000 7.2e-05 0.000 7.69e-05 0.000 7.7e-05 5.000 8.19e-05 5.000 8.2e-05 0.000 8.69e-05 0.000 8.7e-05 5.000 9.19e-05 5.000 9.2e-05 0.000 9.69e-05 0.000 9.7e-05 5.000 0.0001019 5.000 0.000102 0.000 0.0001069 0.000 0.000107 5.000 0.0001119 5.000 0.000112 0.000 0.0001169 0.000 0.000117 5.000 0.0001219 5.000 0.000122 0.000 0.0001269 0.000 0.000127 5.000 0.0001319 5.000 0.000132 0.000 0.0001369 0.000 0.000137 5.000 0.0001419 5.000 0.000142 0.000 0.0001469 0.000 0.000147 5.000 0.0001519 5.000 0.000152 0.000 0.0001569 0.000 0.000157 5.000 0.0001619 5.000 0.000162 0.000 0.0001669 0.000 0.000167 5.000 0.0001719 5.000 0.000172 0.000 0.0001769 0.000 0.000177 5.000 0.0001819 5.000 0.000182 0.000 0.0001869 0.000 0.000187 5.000 0.0001919 5.000 0.000192 0.000 0.0001969 0.000 0.000197 5.000 0.000207 5.000 0.000212 5.000 0.0002219 5.000 0.000222 0.000 0.0002269 0.000 0.000227 5.000 0.0002319 5.000 0.000232 0.000 0.0002369 0.000 0.000237 5.000 0.0002419 5.000 0.000242 0.000 0.0002469 0.000 0.000247 5.000 0.0002519 5.000 0.000252 0.000 0.0002569 0.000 0.000257 5.000 0.0002619 5.000 0.000262 0.000 0.0002669 0.000 0.000267 5.000 0.0002719 5.000 0.000272 0.000 0.0002769 0.000 0.000277 5.000 0.0002819 5.000 0.000282 0.000 0.0002869 0.000 0.000287 5.000 0.0002919 5.000 0.000292 0.000 0.0002969 0.000 0.000297 5.000 0.0003019 5.000 0.000302 0.000 0.0003069 0.000 0.000307 5.000 0.0003119 5.000 0.000312 0.000 0.0003169 0.000 0.000317 5.000 0.0003219 5.000 0.000322 0.000 0.0003269 0.000 0.000327 5.000 0.0003319 5.000 0.000332 0.000 0.0003369 0.000 0.000337 5.000 0.0003419 5.000 0.000342 0.000 0.0003469 0.000 0.000347 5.000 0.0003519 5.000 0.000352 0.000 0.0003569 0.000 0.000357 5.000 0.0003619 5.000 0.000362 0.000 0.0003669 0.000 0.000367 5.000 0.0003719 5.000 0.000372 0.000 0.0003769 0.000 0.000377 5.000 0.0003819 5.000 0.000382 0.000 0.0003869 0.000 0.000387 5.000 0.0003919 5.000 0.000392 0.000 0.0003969 0.000 0.000397 5.000 0.0004019 5.000 0.000402 0.000 0.0004069 0.000 0.000407 5.000 0.000417 5.000 0.000422 5.000 0.0004319 5.000 0.000432 0.000 0.0004369 0.000 0.000437 5.000 0.0004419 5.000 0.000442 0.000 0.0004469 0.000 0.000447 5.000 0.0004519 5.000 0.000452 0.000 0.0004569 0.000 0.000457 5.000 0.0004619 5.000 0.000462 0.000 0.0004669 0.000 0.000467 5.000 0.0004719 5.000 0.000472 0.000 0.0004769 0.000 0.000477 5.000 0.0004819 5.000 0.000482 0.000 0.0004869 0.000 0.000487 5.000 0.0004919 5.000 0.000492 0.000 0.0004969 0.000 0.000497 5.000 0.0005019 5.000 0.000502 0.000 0.0005069 0.000 0.000507 5.000 0.0005119 5.000 0.000512 0.000 0.0005169 0.000 0.000517 5.000 0.0005219 5.000 0.000522 0.000 0.0005269 0.000 0.000527 5.000 0.000537 5.000 0.000542 5.000)
+
+vsda_ctrl SDA_CTRL 0 PWL(0 0.000 2e-06 0.000 6.9e-06 0.000 7e-06 5.000 1.22e-05 5.000 1.23e-05 0.000 2.22e-05 0.000 2.23e-05 5.000 3.22e-05 5.000 3.23e-05 0.000 4.22e-05 0.000 4.23e-05 5.000 5.23e-05 5.000 6.23e-05 5.000 7.23e-05 5.000 8.23e-05 5.000 9.22e-05 5.000 9.23e-05 0.000 0.0001023 0.000 0.0001122 0.000 0.0001123 5.000 0.0001222 5.000 0.0001223 0.000 0.0001322 0.000 0.0001323 5.000 0.0001423 5.000 0.0001522 5.000 0.0001523 0.000 0.0001622 0.000 0.0001623 5.000 0.0001722 5.000 0.0001723 0.000 0.0001823 0.000 0.0001922 0.000 0.0001923 5.000 0.0002019 5.000 0.000202 0.000 0.000207 0.000 0.000212 0.000 0.0002169 0.000 0.000217 5.000 0.0002222 5.000 0.0002223 0.000 0.0002322 0.000 0.0002323 5.000 0.0002422 5.000 0.0002423 0.000 0.0002522 0.000 0.0002523 5.000 0.0002623 5.000 0.0002723 5.000 0.0002823 5.000 0.0002922 5.000 0.0002923 0.000 0.0003023 0.000 0.0003123 0.000 0.0003223 0.000 0.0003323 0.000 0.0003423 0.000 0.0003523 0.000 0.0003623 0.000 0.0003723 0.000 0.0003823 0.000 0.0003923 0.000 0.0004022 0.000 0.0004023 5.000 0.0004119 5.000 0.000412 0.000 0.000417 0.000 0.000422 0.000 0.0004269 0.000 0.000427 5.000 0.0004323 5.000 0.0004423 5.000 0.0004522 5.000 0.0004523 0.000 0.0004622 0.000 0.0004623 5.000 0.0004723 5.000 0.0004823 5.000 0.0004922 5.000 0.0004923 0.000 0.0005022 0.000 0.0005023 5.000 0.0005122 5.000 0.0005123 0.000 0.0005222 0.000 0.0005223 5.000 0.0005319 5.000 0.000532 0.000 0.000537 0.000 0.000542 0.000)
+.model SDASW SW(RON=10 ROFF=1MEG VT=2.5 VH=0.3)
+ssda P2 0 SDA_CTRL 0 SDASW
+rpu P2 VDD 10k
+
+
+xdut P1 P10 P11 P12 P13 P14 P15 P2 P3 P4 P5 P6 P7 P9 VDD VSS tr_1um_jun1okamura_i2c
+
+.tran 50n 544u 0 10n
+
+* ---- 14 項目 ----
+.measure tran busy_after_start FIND v(xdut.x_1.busy) AT=9.5e-06  $ busy asserted after START
+.measure tran ack_addr_write FIND v(P2) AT=9.95e-05  $ slave ACKed matching address (write)
+.measure tran addr_match_write FIND v(xdut.x_1.addr_match) AT=0.0001018  $ addr_match asserted
+.measure tran rw_write FIND v(xdut.x_1.rw) AT=0.0001018  $ rw indicates WRITE
+.measure tran ack_data FIND v(P2) AT=0.0001895  $ slave ACKed data byte
+.measure tran rx_data_bit0 FIND v(xdut.n117) AT=0.000194  $ rx_data == 0xA5 bit0
+.measure tran rx_data_bit1 FIND v(xdut.n66) AT=0.000194  $ rx_data == 0xA5 bit1
+.measure tran rx_data_bit2 FIND v(xdut.n70) AT=0.000194  $ rx_data == 0xA5 bit2
+.measure tran rx_data_bit3 FIND v(xdut.n26) AT=0.000194  $ rx_data == 0xA5 bit3
+.measure tran rx_data_bit4 FIND v(xdut.n9) AT=0.000194  $ rx_data == 0xA5 bit4
+.measure tran rx_data_bit5 FIND v(xdut.n6) AT=0.000194  $ rx_data == 0xA5 bit5
+.measure tran rx_data_bit6 FIND v(xdut.n15) AT=0.000194  $ rx_data == 0xA5 bit6
+.measure tran rx_data_bit7 FIND v(xdut.n76) AT=0.000194  $ rx_data == 0xA5 bit7
+.measure tran busy_after_stop1 FIND v(xdut.x_1.busy) AT=0.000209  $ busy cleared after STOP
+.measure tran ack_addr_read FIND v(P2) AT=0.0003095  $ slave ACKed matching address (read)
+.measure tran rw_read FIND v(xdut.x_1.rw) AT=0.0003118  $ rw indicates READ
+.measure tran read_byte_bit0 FIND v(P2) AT=0.0003195  $ read byte == 0x3C bit0
+.measure tran read_byte_bit1 FIND v(P2) AT=0.0003295  $ read byte == 0x3C bit1
+.measure tran read_byte_bit2 FIND v(P2) AT=0.0003395  $ read byte == 0x3C bit2
+.measure tran read_byte_bit3 FIND v(P2) AT=0.0003495  $ read byte == 0x3C bit3
+.measure tran read_byte_bit4 FIND v(P2) AT=0.0003595  $ read byte == 0x3C bit4
+.measure tran read_byte_bit5 FIND v(P2) AT=0.0003695  $ read byte == 0x3C bit5
+.measure tran read_byte_bit6 FIND v(P2) AT=0.0003795  $ read byte == 0x3C bit6
+.measure tran read_byte_bit7 FIND v(P2) AT=0.0003895  $ read byte == 0x3C bit7
+.measure tran busy_after_stop2 FIND v(xdut.x_1.busy) AT=0.000419  $ busy cleared after final STOP
+.measure tran nack_wrong_addr FIND v(P2) AT=0.0005195  $ unmatched address -> NACK (no slave ack)
+.measure tran addr_match_wrong FIND v(xdut.x_1.addr_match) AT=0.0005218  $ addr_match not asserted for foreign address
+.measure tran busy_after_stop3 FIND v(xdut.x_1.busy) AT=0.000539  $ busy cleared after STOP following NACK
+
+.end
