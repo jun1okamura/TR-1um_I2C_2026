@@ -27,18 +27,72 @@ Homebrew のものを PATH の先に置くのが要点。
 ```sh
 git clone https://github.com/parallaxsw/OpenSTA.git
 cd OpenSTA
+```
 
-# 依存。上流の Brewfile がそのまま使える。
-# 中身は bison / cmake / eigen / flex / swig / tcl-tk@8 / mht208/formal/cudd。
-# **CUDD は Homebrew 本体に無く、mht208/formal というタップから入る。**
-# 自前ビルドしなくてよいのはこれのおかげ。
+#### 依存を入れる
+
+上流の `Brewfile` の中身は bison / cmake / eigen / flex / swig / tcl-tk@8 と
+**`mht208/formal/cudd`**。最後だけ Homebrew 本体ではなく 3rd party タップにある。
+
+**Homebrew 6.0（2026-06）から、3rd party タップは明示的に信頼しないと読み込まれない。**
+`brew bundle install` はここで
+
+```
+Error: Invalid formula (...): .../mht208/homebrew-formal/abc.rb
+Refusing to load formula mht208/formal/abc from untrusted tap mht208/formal.
+```
+
+と止まる（タップ内の**全**formula について出るので行数が多いが、原因は 1 つ）。
+どちらかを選ぶ:
+
+**(a) タップを信頼する** — 上流が想定している道。CUDD をビルドしなくて済む。
+タップの Ruby コードが自分の機械で走ることを許すので、範囲は狭い方で。
+
+```sh
+brew trust --formula mht208/formal/cudd    # この formula だけ
+# brew trust mht208/formal                 # タップ丸ごと（abc/boolector 等も使うなら）
 brew bundle install
+```
 
-# Apple 版を押しのける。**これを忘れると Apple の bison 2.3 が使われ、parser 生成で落ちる。**
+**(b) タップを使わず CUDD を自前で建てる** — 本体だけで済ませたいとき。
+
+```sh
+brew install bison cmake eigen flex swig tcl-tk@8
+
+git clone https://github.com/cuddorg/cudd.git
+cd cudd && git checkout cudd-3.0.0
+
+# (1) clone 直後にそのまま make すると autotools を再生成しようとして
+#     `Makefile:983: aclocal.m4  Error 127` で止まる。git は
+#     configure より aclocal.m4 を新しい時刻で展開しうるため。
+#     生成物の時刻を「上流→下流」の順に付け直しておく。
+for f in configure.ac aclocal.m4 configure config.h.in Makefile.in */Makefile.in; do
+  touch "$f"; sleep 0.05
+done
+
+# (2) **--build を明示する。** CUDD 3.0.0 同梱の config.sub は 2014 年版で、
+#     Apple Silicon の `arm64-apple-darwin` を知らない（実測: "machine
+#     `arm64-apple` not recognized"）。同じ機械を指す `aarch64-apple-darwin`
+#     なら通る。これを渡さないと configure が "cannot guess build type" で死ぬ。
+./configure --prefix="$HOME/.local/cudd" --enable-shared --enable-obj \
+            --build=aarch64-apple-darwin
+make -j"$(sysctl -n hw.physicalcpu)" && make install
+cd ..
+```
+
+(1)(2) とも aarch64 の Linux で実際に踏んで直したもの。`-fcommon` の類は
+要らなかった（`-fno-common` が既定の新しいコンパイラでも警告なしに通る）。
+
+#### ビルド
+
+```sh
+# Apple 版を押しのける。**これを忘れると Apple の bison 2.3 が使われ、
+# parser 生成で落ちる。**
 export PATH="$(brew --prefix bison)/bin:$(brew --prefix flex)/bin:$PATH"
 export CMAKE_INCLUDE_PATH="$(brew --prefix flex)/include"
 export CMAKE_LIBRARY_PATH="$(brew --prefix flex)/lib;$(brew --prefix bison)/lib"
 
+# (a) なら $(brew --prefix cudd)、(b) なら $HOME/.local/cudd
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DCUDD_DIR="$(brew --prefix cudd)"
 cmake --build build -j"$(sysctl -n hw.physicalcpu)"
 build/sta -version
@@ -48,10 +102,10 @@ build/sta -version
 
 | 症状 | 原因と手当て |
 |---|---|
-| `bison: ... version 2.3` / `syntax error` が parser 生成で出る | export が効いていない。`which bison` が `/opt/homebrew/...` を指しているか確認 |
+| `Refusing to load formula ... untrusted tap` | Homebrew 6.0 のタップ信頼。上の (a) か (b) |
+| `bison: ... version 2.3` / parser 生成で syntax error | export が効いていない。`which bison` が `/opt/homebrew/...` を指しているか |
 | Tcl が見つからない | `tcl-tk@8` は keg-only。`-DCMAKE_PREFIX_PATH="$(brew --prefix tcl-tk@8)"` を足す |
-| `CUDD not found` | `brew --prefix cudd` が空。`brew install mht208/formal/cudd` を単体で叩く |
-| タップが使えない | CUDD を自前で建てる: `git clone https://github.com/cuddorg/cudd.git && cd cudd && git checkout 3.0.0 && ./configure --prefix=/usr/local --enable-shared --enable-obj && make -j && make install`、その `--prefix` を `-DCUDD_DIR` に渡す |
+| `CUDD not found` | `-DCUDD_DIR` が (a)/(b) のどちらの場所を指すべきか取り違えている |
 
 `tclreadline` は Homebrew に無い（上流 README）。対話シェルの補完が無いだけで、
 `sta.sh` のように `-exit` で流す使い方には関係しない。
