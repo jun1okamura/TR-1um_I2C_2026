@@ -107,11 +107,16 @@ LANE_PITCH = 5.4         # M2 3.4 + 最小間隔 2.0。コア内のトラック�
 # どこで周を切っても 14 レーン要る（2 µm 刻みで全周を探した）。
 # フレームの金属は四辺とも**きっかり 920.0** までしか来ていない（実測、
 # M1 / M2 とも）。リング幅 10 の外縁 + M2 間隔 2.0 で R <= 913.0 まで置ける。
-#   VDD 912.0 -> 907…917、壁 920 まで 3.0（M2 2.0 / M1 1.4 とも可）
-#   GND 895.0 -> 890…900、VDD との間 7.0
-#   レーン上限 895 - 5 - 2.0 - 1.7 = 886.3、最上レーン 885.6
-GND_RING_R = 895.0
-VDD_RING_R = 912.0
+#   VDD 902.0 -> 897…907、壁 920 まで 13.0
+#   GND 884.0 -> 879…889、VDD との間 8.0
+#   レーン上限 884 - 5 - 2.0 - 1.7 = 875.3、最上レーン 864.0（移植 (21) の後）
+#
+# 追記: 移植 (21) で DIS を 1 本の幹にまとめたらレーンが 14 -> 10 に減り、
+# リングを外へ寄せる必要が無くなった。TD4 と同じ 884 / 902 に戻してある。
+# フレームの金属は四辺とも実測きっかり 920.0 までなので、ここから
+# さらに R <= 913.0 までは動かせる（混んだときの逃げ）。
+GND_RING_R = 884.0
+VDD_RING_R = 902.0
 RING_W = 10.0
 RING_VIA = 6.8           # 10 µm 同士の重なりに収まる 2x2 カット
 WALL = 920.0             # 開口の内壁（実測。四隅まで同じ）
@@ -134,24 +139,35 @@ BUS_W = 10.0
 TAP_STUB_W = 3.4         # コア側の M2 ポート幅そのまま。段差を作らない
 VDD_BUS_Y = 804.0        # M1 799.0…809.0。レーン 0 の M1 縁 814.5 と 5.5 空く
 GND_BUS_Y = 790.0        # M1 785.0…795.0。コア上端 780.2 と 4.8 空く
-# フレームの M1 VDD ピン (50,920)-(350,934) へ。M2 は 916 で止めて M1 に
-# 跳ねる（920 から上はフレームの VSS が M2 で寝ている）。
+# --- I2C 移植 (22): バー <-> フレームの電源ピンは V10 と同じ形 ------------
+# V10（`from_async_i2c/route_gio_core_v10.py` 108.64）はユーザ指示で
+# 「VSS/VDD の M1 バーと電源 PAD を繋いでいる 10 µm の配線を、左右 2 本ずつ
+# 計 5 本になるように 2 µm スペースをおいて追加」した。つまり
+#
+#   * 幅 **10 µm**（TAP のスタブの 3.4 ではない）
+#   * **5 本並列**、ピッチ 12 = 幅 10 + スペース 2
+#   * ピンの x を中心に (-24, -12, 0, +12, +24)
+#   * 層が変わるところは 1 個ではなく**複数カットの via**
+#
+# TD4 版は 3.4 幅を 60 µm ピッチで 5 本ばらまいていた（電流容量が V10 の
+# 1/3）。ここを V10 に合わせる。
+STRIP_W = 10.0
+STRIP_OFFSETS = (-24.0, -12.0, 0.0, 12.0, 24.0)
+STRIP_VIA = 6.8          # 10 µm どうしの重なりに収まる 2x2 カット
+
+# フレームの M1 VDD ピン (50,920)-(350,934)。M2 は VDD_CROSS_Y で止めて
+# M1 に跳ねる（920 から上はフレームの VSS が M2 で寝ている）。
+VDD_PIN_X = 200.0
 VDD_PIN_Y = 927.0
-# リングが 912 まで来たので、リングの M1 にそのまま乗り換えてピンへ上がる
-# （TD4 は 902 のリングと 916 の乗り換えが別だった）。
-VDD_CROSS_Y = 912.0
-VDD_RISER_W = 3.4
-VDD_RISER_X = (80.0, 140.0, 200.0, 260.0, 320.0)
-# GND バス -> GND リング（上辺 M1 y=884）の M2 ライザ。上辺に立っている
-# ほかの M2（コアのピン / パッド端子 / HIZ タイ / VDD ライザ）から 30 µm 以上
-# 離れた x を選んである（実測の空き: -450 / -350 / -50 / 50 / 450）。
-GND_RISER_W = 3.4
-GND_RISER_X = (-450.0, -350.0, -50.0, 50.0, 450.0)
+VDD_CROSS_Y = 914.5      # V10 と同じ。M2 の上端が壁 920 から 5.5 µm
+# GND バス -> GND リングの M2 ストリップ。上辺で空いているのは
+# x -94.5（rx_data[0]）と 116.1（sda_in）の間だけなので、そのまん中の
+# x=0 を中心に 5 本（-29…29 を占める。両隣まで 63.8 / 85.4 µm）。
+GND_STRIP_X = 0.0
 # 下辺中央の VSS 壁ピン (-450,-934)-(50,-920) へ。10 µm 内側に着地する。
 # I2C では**コアからではなく GND リングから**降ろす（上の (17) を参照）。
+VSS_PIN_X = -200.0
 VSS_LAND_Y = -926.0
-VSS_STRIP_W = 10.0
-VSS_STRIP_X = (-400.0, -300.0, -200.0, -100.0, 0.0)
 # 残り三辺の VSS 壁ピンへの短いストラップ（GND リング -> 壁）。
 # x=400 の上辺は VDD ライザ（80..320）から 80 µm 離してある。
 VSS_STRAP = (("LEFT", -400.0), ("LEFT", 0.0), ("LEFT", 400.0),
@@ -175,6 +191,9 @@ STRAP_W = 6.0
 # 通る。実測でこの 2 列は M2 も V1 も空で、横切るのは別ネットの M1 だけ
 # （左列で 23 本）。M2 x M1 なので via を打たなければ何も起きない。
 MACRO_RISER_W = 3.4      # マクロのポート幅ちょうど。段差を作らない
+# via を 2 カット縦積みするぶん、スタブをバーの中心より先まで伸ばす
+# （V10 の VIA_STACK_MARGIN と同じ）。
+VIA_STACK_MARGIN = 3.5
 
 R_NOM = 866.0            # 区間計算用の名目半径（レーン帯のまん中あたり）
 PERI = 8 * R_NOM
@@ -254,6 +273,93 @@ def edge_layer(edge):
     return "M1" if edge in ("LEFT", "RIGHT") else "M2"
 
 
+def group_signals(signals):
+    """--- I2C 移植 (21): 同じネット / 同じ端子は 1 本の幹にまとめる ---------
+
+    TD4 は「1 ネット = 端点 2 個 = 1 本のルート」だった。I2C は違う:
+
+      * `DIS` は P7 から 8 個のデータパッドの HIZ 入力へ配る。端点は 9 個。
+      * `rst_n` と `RING_OSC.ENB` は名前は別だが同じパッド P15 に着く。
+
+    これを 1 本ずつ別のルートとして引くと、P7 から 9 本の M2 が同じ端子を
+    出発して同心円状にレーンを 9 本食う（最初の版が実際そうなっていた）。
+    電気的に同じ島になるものは**幹 1 本 + 端点ごとの足**にまとめる。
+
+    ネット名か端子名を共有するものを union-find で 1 群にして、群ごとに
+    端点を (x, y, 辺) で重複を落として返す。
+    """
+    parent = {}
+
+    def find(a):
+        parent.setdefault(a, a)
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    def union(a, b):
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[ra] = rb
+
+    for s in signals:
+        find(("net", s["net"]))
+        for k in ("from", "to"):
+            t = s[k].get("terminal")
+            if t:
+                union(("net", s["net"]), ("term", t))
+
+    eps, nets = defaultdict(dict), defaultdict(set)
+    for s in signals:
+        r = find(("net", s["net"]))
+        nets[r].add(s["net"])
+        for k in ("from", "to"):
+            d = s[k]
+            eps[r][(round(d["x"], 3), round(d["y"], 3), d["edge"])] = d
+    return {"+".join(sorted(nets[r])): list(m.values()) for r, m in eps.items()}
+
+
+# 辺に沿ってこれより近い 2 本の「足」は、半径方向に重なった瞬間に間隔違反。
+# 足の層は向きで決まるので、要る間隔も辺で変わる:
+#   上下 = 垂直 = M2  3.4 + 2.0 = 5.4
+#   左右 = 水平 = M1  1.8 + 1.4 = 3.2
+STUB_SEP = {"TOP": M2_WIRE_W + 2.0, "BOTTOM": M2_WIRE_W + 2.0,
+            "LEFT": M1_WIRE_W + 1.4, "RIGHT": M1_WIRE_W + 1.4}
+EPS = 1e-6
+
+
+def stub_order(routes):
+    """[(内側にいるべき群, 外側にいるべき群)] と、レーンでは解けない組。
+
+    端点からの足は辺に対して**垂直**にレーンまで出る。足が占める半径は、
+    コア / RING_OSC 側が「縁 .. レーン半径」、パッド側が「レーン半径 ..
+    921.7」。同じ辺で STUB_SEP 以内に並んだこの 2 本は、**パッド側のレーンが
+    コア側より外**でないと必ず重なる。同じ側どうしが近すぎるとレーンでは
+    解けない。
+
+    2026-09-14 に実際に出た: `RING_OSC.OUT` の帯ピン（右辺 y=-620.3）と
+    `rx_data[4]` のパッド端子 P11（右辺 y=-620.0）が 0.3 µm 違い。"""
+    def tang(e):
+        return e[0] if e[2] in ("TOP", "BOTTOM") else e[1]
+
+    items = [(k, e) for k, eps in routes.items() for e in eps]
+    pairs, unfixable = [], []
+    for i, (ka, a) in enumerate(items):
+        for kb, b in items[i + 1:]:
+            if ka == kb or a[2] != b[2]:
+                continue
+            if abs(tang(a) - tang(b)) >= STUB_SEP[a[2]] - EPS:
+                continue
+            oa, ob = a[4] == "pad", b[4] == "pad"
+            if oa == ob:
+                unfixable.append((ka, kb, a[2]))
+            elif oa:
+                pairs.append((kb, ka))
+            else:
+                pairs.append((ka, kb))
+    return pairs, unfixable
+
+
 def pack(intervals, margin=5.0, min_lane=None):
     """貪欲な区間スケジューリング: {key: lane}。I2C 版に下限を足したもの。
 
@@ -277,103 +383,34 @@ def pack(intervals, margin=5.0, min_lane=None):
     return lane_of, len(lane_last)
 
 
-# 辺に沿ってこれより近い 2 本の「足」は、半径方向に重なった瞬間に間隔違反。
-# 足の層は向きで決まるので、要る間隔も辺で変わる:
-#   上下 = 垂直 = M2  3.4 + 2.0 = 5.4
-#   左右 = 水平 = M1  1.8 + 1.4 = 3.2
-STUB_SEP = {"TOP": M2_WIRE_W + 2.0, "BOTTOM": M2_WIRE_W + 2.0,
-            "LEFT": M1_WIRE_W + 1.4, "RIGHT": M1_WIRE_W + 1.4}
-EPS = 1e-6
-
-
-def skey(s):
-    """--- I2C 移植 (16): 1 本ずつの識別子 ---------------------------------
-
-    TD4 はネット名がそのままルート 1 本だった。I2C は **1 ネットが何本にも
-    分かれる**: `DIS` は P7 から 8 個のデータパッドの HIZ 入力へ 10 本、
-    `rst_n` と `RING_OSC.ENB` は同じパッド P15 から出る別ネット。
-    `{s["net"]: ...}` で持つと `DIS` が 1 本に潰れて 9 本消える。"""
-    return s.get("_key") or s["net"]
-
-
-def same_node(a, ka, b, kb):
-    """同じネット、または同じパッド端子に着く端点どうしか。
-
-    同じ端子に着く 2 本（P15 の `rst_n` と `RING_OSC.ENB`）や同じネットの
-    複数本（`DIS`）は、辺の上で重なって当たり前なので間隔の対象外。"""
-    if a["net"] == b["net"]:
-        return True
-    ta, tb = a[ka].get("terminal"), b[kb].get("terminal")
-    return ta is not None and ta == tb
-
-
-def stub_order(signals):
-    """[(内側にいるべきルート, 外側にいるべきルート)]。
-
-    端子からもコアピンからも、配線は辺に対して**垂直な足**でレーンまで出る。
-    足が占める半径は、コア側が「コアの縁 .. レーン半径」、パッド側が
-    「レーン半径 .. 921.7」。同じ辺で 5.4 µm 以内に並んだこの 2 本は、
-    **パッド側のレーンがコア側より外**でないと必ず重なる。
-
-    2026-09-14 に実際に出た: `cflag_o` のコアピン（上辺 x=-534.1）と
-    `wr` のパッド端子 P2（上辺 x=-530）が 4.1 µm 違いで、レーンが
-    wr=815.4 < cflag_o=826.2 だったため M2 が 0.7 µm まで寄った。"""
-    def tang(d):
-        return d["x"] if d["edge"] in ("TOP", "BOTTOM") else d["y"]
-
-    pairs, unfixable = [], []
-    for a in signals:
-        for b in signals:
-            if same_node(a, "from", b, "to"):
-                continue
-            if a["from"]["edge"] != b["to"]["edge"]:
-                continue
-            if (abs(tang(a["from"]) - tang(b["to"]))
-                    < STUB_SEP[a["from"]["edge"]] - EPS):
-                pairs.append((skey(a), skey(b)))
-    for i, a in enumerate(signals):
-        for b in signals[i + 1:]:
-            for ka, kb in (("from", "from"), ("to", "to")):
-                if same_node(a, ka, b, kb):
-                    continue
-                if (a[ka]["edge"] == b[kb]["edge"]
-                        and abs(tang(a[ka]) - tang(b[kb]))
-                        < STUB_SEP[a[ka]["edge"]] - EPS):
-                    unfixable.append((skey(a), skey(b), ka))
-    return pairs, unfixable
-
-
 # --------------------------------------------------------------------------
-def build_plan(signals, cut):
-    """{name: (a, b)} と区間・向き・レーン。`cut` は周を開く位置。
+def ep_tuple(d):
+    """端点の辞書 -> (x, y, 辺, 層, 何)。層は**向き**で決まる。
 
-    パッカーは**巻き戻さない素の区間**で重なりを見るので、配線はその区間の
-    内側に収まる向きでなければならない（短い方の弧を勝手に選ぶと、継ぎ目を
-    跨いだ配線に対してパッカーが見当違いの区間を見ることになる。移植元で
-    物理的に重なる 2 本が同じレーンに入った原因がこれ）。"""
-    def ep(d):
-        # 端子側もコア側も「辺から垂直に出る」ので、層は向きで決まる。
-        # コアのピンもちょうどそうなっている（左辺は M1、上下は M2）ので、
-        # 食い違っていたら黙って直さずに落とす。
-        want = edge_layer(d["edge"])
-        # I2C 移植 (14) の続き: RING_OSC のピンも層と向きが合っていること。
-        # `gen_top_routing_plan.ringosc_pins()` が層で辺を決めているので
-        # ここは必ず通る。通らなければ帯のレールに足を引いている。
-        if d["what"] in ("core", "ringosc") and d["layer"] != want:
-            raise SystemExit(f"{d.get('port')} のピン層 {d['layer']} が "
-                             f"{d['edge']} 辺の向き（{want}）と合わない")
-        return (d["x"], d["y"], d["edge"], want)
+    コアのピンも RING_OSC のピンもちょうどそうなっている（左右辺は M1、
+    上下辺は M2）ので、食い違っていたら黙って直さずに落とす -- 食い違う
+    ということは帯や行のレールの上に足を引いているということ。"""
+    want = edge_layer(d["edge"])
+    if d["what"] in ("core", "ringosc") and d["layer"] != want:
+        raise SystemExit(f"{d.get('port')} のピン層 {d['layer']} が "
+                         f"{d['edge']} 辺の向き（{want}）と合わない")
+    return (d["x"], d["y"], d["edge"], want, d["what"])
 
-    routes = {skey(s): (ep(s["from"]), ep(s["to"])) for s in signals}
-    interval, direction = {}, {}
-    for name, (a, b) in routes.items():
-        u1 = (perimeter_s(a[0], a[1], a[2], R_NOM) - cut) % PERI
-        u2 = (perimeter_s(b[0], b[1], b[2], R_NOM) - cut) % PERI
-        interval[name] = (min(u1, u2), max(u1, u2))
-        direction[name] = "CW" if u1 < u2 else "CCW"
-    pairs, _ = stub_order(signals)
+
+def build_plan(groups, cut):
+    """{群: [端点…]}（周に沿って並べ替え済み）と区間・レーン。
+
+    `cut` は周を開く位置。パッカーは**巻き戻さない素の区間**で重なりを見る
+    ので、幹はその区間の内側に収まる向き（u が増える向き = CW）で引く。"""
+    routes = {k: [ep_tuple(d) for d in eps] for k, eps in groups.items()}
+    interval, order = {}, {}
+    for k, eps in routes.items():
+        us = [(perimeter_s(e[0], e[1], e[2], R_NOM) - cut) % PERI for e in eps]
+        interval[k] = (min(us), max(us))
+        order[k] = [e for _, e in sorted(zip(us, eps), key=lambda z: z[0])]
+    pairs, _ = stub_order(routes)
     min_lane = {}
-    for _ in range(len(signals) + 2):
+    for _ in range(len(routes) + 2):
         lane_of, n_lanes = pack(interval, min_lane=min_lane)
         bad = [(i, o) for i, o in pairs if lane_of[o] <= lane_of[i]]
         if not bad:
@@ -382,15 +419,15 @@ def build_plan(signals, cut):
             min_lane[o] = max(min_lane.get(o, 0), lane_of[i] + 1)
     else:
         raise SystemExit(f"足の重なりが解けない: {bad}")
-    return routes, interval, direction, lane_of, n_lanes
+    return routes, interval, order, lane_of, n_lanes
 
 
-def choose_cut(signals, step=20.0):
+def choose_cut(groups, step=20.0):
     """レーン数、次いで総配線長がいちばん小さくなる継ぎ目を選ぶ。"""
     best = None
     c = 0.0
     while c < PERI:
-        _, interval, _, _, n = build_plan(signals, c)
+        _, interval, _, _, n = build_plan(groups, c)
         cost = (n, sum(hi - lo for lo, hi in interval.values()))
         if best is None or cost < best[0]:
             best = (cost, c)
@@ -398,7 +435,7 @@ def choose_cut(signals, step=20.0):
     return best[1], best[0]
 
 
-# --------------------------------------------------------------------------
+
 class Drawer:
     def __init__(self, layout, top):
         self.layout, self.top = layout, top
@@ -462,23 +499,38 @@ class Drawer:
 
 
 # --------------------------------------------------------------------------
-def draw_route(d, name, a, b, R, force_dir):
-    """1 本の信号を、端点からリングを回って端点まで**ひと続きの折れ線**で。
+def draw_trunk(d, name, eps, R, lane_r=None):
+    """--- I2C 移植 (21): 幹 1 本 + 端点ごとの足 -------------------------
 
-    リングと端子への寄り道を別々の path で描くと、リングが垂直（M2）で
-    到着して寄り道が水平（M1）で出ていく角の via をどちらも打たず、
-    ネットが開いたままになる（移植元の最初の版がそれで全滅した）。"""
-    pa = [(a[0], a[1]), project_to_R(a[0], a[1], a[2], R)]
-    pb = [(b[0], b[1]), project_to_R(b[0], b[1], b[2], R)]
-    s1 = perimeter_s(pa[-1][0], pa[-1][1], a[2], R)
-    s2 = perimeter_s(pb[-1][0], pb[-1][1], b[2], R)
-    pts = pa + ring_waypoints(s1, s2, R, force_dir) + list(reversed(pb))
+    `eps` は周の順（u が増える順）に並んだ端点。半径 R のレーンの上を
+    最初の端点から最後の端点まで CW に 1 本だけ引き、各端点からは
+    辺に垂直な足でその幹へ降ろす。端点が 2 個なら TD4 の `draw_route` と
+    まったく同じ折れ線になる。
+
+    幹とリングと足を別々の path で描くと、幹が垂直（M2）で到着して足が
+    水平（M1）で出ていく角の via をどちらも打たず、ネットが開いたままに
+    なる（移植元の最初の版がそれで全滅した）。ここでは幹をひと続きの
+    path で描いてから、**足の付け根に必ず via を打つ**。幹の層は辺で
+    決まり（上下 M1 / 左右 M2）、足の層はその逆なので、付け根は例外なく
+    層が変わる。"""
+    lands = [project_to_R(e[0], e[1], e[2], R) for e in eps]
+    pts = [lands[0]]
+    for k in range(len(lands) - 1):
+        s1 = perimeter_s(lands[k][0], lands[k][1], eps[k][2], R)
+        s2 = perimeter_s(lands[k + 1][0], lands[k + 1][1], eps[k + 1][2], R)
+        pts += ring_waypoints(s1, s2, R, "CW")
+        pts.append(lands[k + 1])
     clean = [pts[0]]
     for p in pts[1:]:
         if abs(p[0] - clean[-1][0]) > 1e-6 or abs(p[1] - clean[-1][1]) > 1e-6:
             clean.append(p)
     d.net = name
-    d.path(clean, start_layer=a[3], end_layer=b[3])
+    if len(clean) > 1:
+        d.path(clean)
+    for e, land in zip(eps, lands):
+        if abs(land[0] - e[0]) > 1e-6 or abs(land[1] - e[1]) > 1e-6:
+            d.wire(e[3], e[0], e[1], land[0], land[1])
+        d.via(land[0], land[1])
     d.net = None
     return len(clean)
 
@@ -576,28 +628,28 @@ def main():
 
     # ---- 信号 -------------------------------------------------------------
     # I2C 移植 (16): 1 ネットが何本にも分かれるので、まず 1 本ずつに名前を振る。
-    seen = defaultdict(int)
-    for s in plan["signals"]:
-        seen[s["net"]] += 1
-        s["_key"] = s["net"] if seen[s["net"]] == 1 else f'{s["net"]}#{seen[s["net"]]}'
-    dup = {n: c for n, c in seen.items() if c > 1}
-    if dup:
-        print("枝分かれするネット: "
-              + ", ".join(f"{n} x{c}" for n, c in sorted(dup.items())))
+    # I2C 移植 (21): 同じネット / 同じ端子の端点は 1 群 = 幹 1 本にまとめる。
+    groups = group_signals(plan["signals"])
+    multi = {k: len(v) for k, v in groups.items() if len(v) > 2}
+    print(f"{len(plan['signals'])} 本の結線 -> {len(groups)} 群")
+    if multi:
+        print("  多端点の群: "
+              + ", ".join(f"{k}（端点 {n}）" for k, n in sorted(multi.items())))
 
-    pairs, unfixable = stub_order(plan["signals"])
+    pairs, unfixable = stub_order(
+        {k: [ep_tuple(d) for d in v] for k, v in groups.items()})
     if unfixable:
-        raise SystemExit("同じ辺で 5.4 µm 以内に同種の足が並んでいる"
+        raise SystemExit("同じ辺で近すぎる同種の足がある"
                          f"（レーンでは解けない）: {unfixable}")
     if pairs:
         print("足の順番の制約（内側 -> 外側）: "
               + ", ".join(f"{i}<{o}" for i, o in pairs))
-    cut, cost = choose_cut(plan["signals"])
-    routes, interval, direction, lane_of, n_lanes = build_plan(plan["signals"], cut)
+    cut, cost = choose_cut(groups)
+    routes, interval, order, lane_of, n_lanes = build_plan(groups, cut)
     top_lane_r = LANE_R0 + (n_lanes - 1) * LANE_PITCH
     room = GND_RING_R - RING_W / 2 - 2.0 - (M2_WIRE_W / 2)
     print(f"継ぎ目 s={cut:.0f}（総長 {cost[1]:.0f} µm）、"
-          f"{len(routes)} 本を {n_lanes} レーン "
+          f"{len(routes)} 群を {n_lanes} レーン "
           f"R {LANE_R0:.1f}..{top_lane_r:.1f}（上限 {room:.1f}）")
     if top_lane_r > room:
         raise SystemExit(f"レーン帯が GND リング（R={GND_RING_R}）に当たる: "
@@ -606,11 +658,10 @@ def main():
         raise SystemExit(f"レーン 0（R={LANE_R0}）がコアに近すぎる")
 
     for name in sorted(routes):
-        ep_a, ep_b = routes[name]
         R = LANE_R0 + lane_of[name] * LANE_PITCH
-        n = draw_route(d, name.split("#")[0], ep_a, ep_b, R, direction[name])
-        print(f"  {name:<16} lane={lane_of[name]:<3} R={R:6.1f} "
-              f"{direction[name]} {n} 点")
+        n = draw_trunk(d, name, order[name], R)
+        print(f"  {name:<26} lane={lane_of[name]:<3} R={R:6.1f} "
+              f"端点 {len(order[name])}  幹 {n} 点")
 
     # ---- 電源リング -------------------------------------------------------
     draw_ring(d, "GND", GND_RING_R)
@@ -637,21 +688,28 @@ def main():
     risers, macro_at = macro_risers(core_gds, dx, dy)
     # I2C 移植 (17): VDD も GND も**上辺のタップ**から、上のチャネルの M1 バスへ。
     # 下辺のタップは開放（TAP 柱で上辺と繋がっているので電気的には届く）。
-    for net, bus_y, risers_x in (("GND", GND_BUS_Y, GND_RISER_X),
-                                 ("VDD", VDD_BUS_Y, VDD_RISER_X)):
+    for net, bus_y, strip_x in (("GND", GND_BUS_Y, GND_STRIP_X),
+                                ("VDD", VDD_BUS_Y, VDD_PIN_X)):
         xs = taps[net]["TOP"]
         if len(xs) != 4:
             raise SystemExit(f"{net} の TOP タップが 4 本でない: {xs}")
         d.net = net
-        lo = min(min(xs), min(risers_x)) - 8.0
-        hi = max(max(xs), max(risers_x)) + 8.0
+        strips = [strip_x + o for o in STRIP_OFFSETS]
+        lo = min(min(xs), min(strips)) - 8.0
+        hi = max(max(xs), max(strips)) + 8.0
         # マクロのライザもこのバーで受けるので、バーを伸ばす（I2C では空）
         for rx, _ in risers[net]:
             lo, hi = min(lo, rx - 8.0), max(hi, rx + 8.0)
         d.wire("M1", lo, bus_y, hi, bus_y, BUS_W)
+        # --- I2C 移植 (22) の一部: スタブはコアの純正ストラップの端から ----
+        # V10 の `NATIVE_TOP_Y` と同じ理由。コアの TAP 柱は上辺に幅 **3.4**
+        # の M2 ストラップを y=780.2（= コア上端）まで出している。そこより
+        # 内側から描き始めると、同じ金属をわずかに違う幅で二重に描いて
+        # KLayout で輪郭が二重に見える（V10 でユーザが指摘した「M2が2重」）。
+        # 幅も 3.4 ちょうどに合わせて、段差のない継ぎ目にする。
         for tx in xs:
-            d.wire("M2", tx, ct - 1.5, tx, bus_y + 3.5, TAP_STUB_W)
-            d.via(tx, bus_y, TAP_STUB_W, 6.8)
+            d.wire("M2", tx, ct, tx, bus_y + VIA_STACK_MARGIN, TAP_STUB_W)
+            d.via(tx, bus_y, TAP_STUB_W, 6.8)     # 縦に 2 カット
         d.net = None
         print(f"{net} バス M1 y={bus_y} x [{lo:.1f}, {hi:.1f}]、"
               f"上辺タップ {len(xs)} 本 {xs}")
@@ -671,27 +729,33 @@ def main():
               + "  ".join(f"{k} " + ", ".join(f"x={x} y={y}" for x, y in v)
                           for k, v in risers.items() if v))
 
-    # VDD: バス -> リング -> M1 でフレームのピンへ
+    # --- I2C 移植 (22): V10 と同じ 10 µm x 5 本のストリップ ---------------
+    # VDD: バス(804) -> [リング 902 に via] -> M2 で 914.5 -> M1 でピン 927
     d.net = "VDD"
-    for rx in VDD_RISER_X:
-        d.via(rx, VDD_BUS_Y, VDD_RISER_W, 6.8)
-        d.wire("M2", rx, VDD_BUS_Y, rx, VDD_CROSS_Y, VDD_RISER_W)
-        d.via(rx, VDD_RING_R, VDD_RISER_W, 6.8)          # リングへ
-        d.via(rx, VDD_CROSS_Y, VDD_RISER_W, VDD_RISER_W)  # M1 へ跳ねる
-        d.wire("M1", rx, VDD_CROSS_Y, rx, VDD_PIN_Y, VDD_RISER_W)
+    for o in STRIP_OFFSETS:
+        sx = VDD_PIN_X + o
+        d.via(sx, VDD_BUS_Y, STRIP_VIA, STRIP_VIA)        # M1 バス -> M2
+        d.wire("M2", sx, VDD_BUS_Y, sx, VDD_CROSS_Y, STRIP_W)
+        d.via(sx, VDD_RING_R, STRIP_VIA, STRIP_VIA)       # VDD リングへ
+        d.via(sx, VDD_CROSS_Y, STRIP_VIA, STRIP_VIA)      # M1 へ跳ねる
+        d.wire("M1", sx, VDD_CROSS_Y, sx, VDD_PIN_Y, STRIP_W)
     d.net = None
-    print(f"VDD ライザ {len(VDD_RISER_X)} 本 x={list(VDD_RISER_X)} -> "
-          f"M1 ピン y={VDD_PIN_Y}（M2 は y={VDD_CROSS_Y} で止める）")
+    print(f"VDD ストリップ {len(STRIP_OFFSETS)} 本 幅 {STRIP_W} "
+          f"x={[VDD_PIN_X + o for o in STRIP_OFFSETS]} -> M1 ピン y={VDD_PIN_Y}"
+          f"（M2 は y={VDD_CROSS_Y} で止める）")
 
-    # GND: バス -> リング（上辺のライザ）。下辺の VSS 壁ピンへはリングから降ろす
+    # GND: バス(790) -> M2 5 本 -> GND リング(884)。下辺の VSS 壁ピンへは
+    # リングの下辺から同じ 10 µm x 5 本で降ろす。
     d.net = "GND"
-    for gx in GND_RISER_X:
-        d.via(gx, GND_BUS_Y, GND_RISER_W, 6.8)
-        d.wire("M2", gx, GND_BUS_Y, gx, GND_RING_R, GND_RISER_W)
-        d.via(gx, GND_RING_R, GND_RISER_W, 6.8)
-    for sx in VSS_STRIP_X:
-        d.wire("M2", sx, -GND_RING_R, sx, VSS_LAND_Y, VSS_STRIP_W)
-        d.via(sx, -GND_RING_R, VSS_STRIP_W, 6.8)
+    for o in STRIP_OFFSETS:
+        sx = GND_STRIP_X + o
+        d.via(sx, GND_BUS_Y, STRIP_VIA, STRIP_VIA)        # M1 バス -> M2
+        d.wire("M2", sx, GND_BUS_Y, sx, GND_RING_R, STRIP_W)
+        d.via(sx, GND_RING_R, STRIP_VIA, STRIP_VIA)       # GND リングへ
+    for o in STRIP_OFFSETS:
+        sx = VSS_PIN_X + o
+        d.wire("M2", sx, -GND_RING_R, sx, VSS_LAND_Y, STRIP_W)
+        d.via(sx, -GND_RING_R, STRIP_VIA, STRIP_VIA)
     # 残り三辺の VSS 壁ピンへ
     for edge, v in VSS_STRAP:
         p = (v, 0.0) if edge in ("TOP", "BOTTOM") else (0.0, v)
@@ -700,9 +764,10 @@ def main():
         d.path([inner, outer], start_layer=ring_layer(edge),
                end_layer="M2", w=STRAP_W)
     d.net = None
-    print(f"GND ライザ {len(GND_RISER_X)} 本 x={list(GND_RISER_X)} -> リング、"
-          f"ストリップ {len(VSS_STRIP_X)} 本 -> 下辺の VSS 壁ピン y={VSS_LAND_Y}、"
-          f"ほか {len(VSS_STRAP)} 本のストラップ")
+    print(f"GND ストリップ {len(STRIP_OFFSETS)} 本 幅 {STRIP_W} "
+          f"x={[GND_STRIP_X + o for o in STRIP_OFFSETS]} -> リング、"
+          f"下辺も {len(STRIP_OFFSETS)} 本 x={[VSS_PIN_X + o for o in STRIP_OFFSETS]}"
+          f" -> VSS 壁ピン y={VSS_LAND_Y}、ほか {len(VSS_STRAP)} 本のストラップ")
 
     with open(a.out.replace(".gds", "_net_shapes.json"), "w") as f:
         json.dump(dict(d.shapes), f, indent=1)
