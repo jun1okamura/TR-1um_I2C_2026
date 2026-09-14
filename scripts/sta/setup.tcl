@@ -13,25 +13,18 @@ read_liberty lef/tr1um_typ_5v0_25c.lib
 read_verilog $NET
 link_design $TOP
 
-# I2C の SCL。既定は Fast-mode の 400 kHz = 2500 ns（sta.sh の第 3 引数）。
-create_clock -name scl -period $PER [get_ports scl]
-
-# デューティ 50% で見ている。scl_gated 段 -> scl_n 段は半周期のパスになるが、
-# それは波形から自動で出る。**実際の I2C は Low 期間の方が長い**（規格の
-# 最小 tLOW > tHIGH）ので、半周期パスはここでの見積りより緩い。
-set_ideal_network [get_ports scl]
-
 # 入力の駆動元。外部入力は BUFTH（シュミット）を通してから配るので、
 # BUFTH 挿入後のネットリストでは BUFTH がドライバになる。挿入前の版に当てる
-# ときのために BUF_X2 を仮置きする。
+# ときのために BUF_X2 を仮置きする。周期に依らないのでここで 1 回だけ。
 # VDD / GND は RTL のポートだが、構造インスタンスの電源ピンを繋ぐためだけの
 # ものでタイミングには関係しないので外す。
 foreach p [all_inputs] {
   set n [get_full_name $p]
   if {$n eq "scl" || $n eq "VDD" || $n eq "GND"} continue
   set_driving_cell -lib_cell BUF_X2 -pin Y $p
-  set_input_delay -clock scl [expr {$PER * 0.2}] $p
 }
+# 出力は OSS_ESD_5V_DIO の OUT ピン容量 36.2 fF を負荷にする
+foreach p [all_outputs] { set_load 36.2 $p }
 
 # rst_n は非同期リセット。DFFRB の RSTB に組合せ回路経由で入る。
 # **recovery / removal は特性化していない**（scripts/char/ が測っていない）ので、
@@ -39,11 +32,22 @@ foreach p [all_inputs] {
 # ngspice のチップレベル TB（reference/v10/tb_chip_i2c_batch14_v10.spice 相当）で見る。
 set_false_path -from [get_ports rst_n]
 
-# 出力は OSS_ESD_5V_DIO の OUT ピン容量 36.2 fF を負荷にする
-foreach p [all_outputs] {
-  set_load 36.2 $p
-  set_output_delay -clock scl [expr {$PER * 0.2}] $p
+# --- 周期に依存する制約は proc にまとめる --------------------------------
+# report.tcl が**周期を変えて 2 回測る**ため（最小周期の求め方は report.tcl の
+# 冒頭を参照）。set_input_delay / set_output_delay は -add_delay を付けなければ
+# 同じポート・同じクロックの指定を上書きするので、何度呼んでも重ならない。
+proc apply_period {per} {
+  create_clock -name scl -period $per [get_ports scl]
+  # クロックツリーはまだ無い（P&R 前）。ideal / skew 0 で見る。
+  set_ideal_network [get_ports scl]
+  foreach p [all_inputs] {
+    set n [get_full_name $p]
+    if {$n eq "scl" || $n eq "VDD" || $n eq "GND"} continue
+    set_input_delay -clock scl [expr {$per * 0.2}] $p
+  }
+  foreach p [all_outputs] { set_output_delay -clock scl [expr {$per * 0.2}] $p }
 }
+apply_period $PER
 
 # 配線容量はまだ入れていない（P&R 前）。TR-1um の M2 は幅 3.4 um と太いので
 # 実配線が乗ると悪化する。P&R 後にネットごとの容量を set_load で入れ直すこと。
@@ -51,5 +55,5 @@ foreach p [all_outputs] {
 # **SR ラッチについて。** merge_muxdffrb_rslatch.py を通す前のネットリストには
 # NOR2 のクロス結合が生のループとして残っていて、OpenSTA が
 # 「combinational loop」を報告してアークを 1 本切る。切る場所は OpenSTA 任せなので、
-# **STA は必ず merge 後（RSLATCH に畳んだ後）のネットリストに当てること。**
+# **STA は必ず RSLATCH に畳んだ後のネットリストに当てること。**
 # RSLATCH はセルの中にループが閉じていて、外から見れば preset / clear のアークになる。

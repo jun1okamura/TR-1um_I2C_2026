@@ -21,3 +21,6 @@ layout/chip/simulation/*.raw.csv
 
 # mklib.py が .lib を作り直すときに取る退避
 lef/*.lib.bak
+
+# TB が吐く波形（iverilog の $dumpfile がリポジトリ直下に落とす）
+*.vcd

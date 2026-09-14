@@ -1,0 +1,40 @@
+
+9. Printing statistics.
+
+=== i2c_slave_async ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+      214        - wires
+      263        - wire bits
+       56        - public wires
+      105        - public wire bits
+       12        - ports
+       26        - port bits
+      176   294778 cells
+        6        -   $scopeinfo
+       12    15396   AND2_X1
+        3   4811.4   AND3_X1
+        1    962.3   BUF_X1
+        7   6736.1   BUF_X2
+       34 1.31E+05   DFFRB
+        1   3849.1   DFFS
+       20    12830   INV_X1
+       19  36567.4   MUX2
+       14  13472.2   NAND2
+       11    14113   NAND3
+        3   4811.4   NAND4
+       31  29831.3   NOR2
+        2     2566   NOR3
+        2   3207.6   NOR4
+        4     5132   OR2
+        2   3207.6   OR3
+        3   4811.4   RSLATCH
+        1   1603.8   XNOR2
+
+   Area for cell type $scopeinfo is unknown!
+
+   Chip area for module '\i2c_slave_async': 294778.000000
+     of which used for sequential elements: 134718.500000 (45.70%)
+

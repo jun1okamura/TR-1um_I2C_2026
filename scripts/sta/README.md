@@ -66,8 +66,9 @@ cd cudd && git checkout cudd-3.0.0
 #     `Makefile:983: aclocal.m4  Error 127` で止まる。git は
 #     configure より aclocal.m4 を新しい時刻で展開しうるため。
 #     生成物の時刻を「上流→下流」の順に付け直しておく。
+#     （`*/Makefile.in` は cudd には無いので、無い名前は飛ばす）
 for f in configure.ac aclocal.m4 configure config.h.in Makefile.in */Makefile.in; do
-  touch "$f"; sleep 0.05
+  [ -e "$f" ] || continue; touch "$f"; sleep 0.05
 done
 
 # (2) **--build を明示する。** CUDD 3.0.0 同梱の config.sub は 2014 年版で、

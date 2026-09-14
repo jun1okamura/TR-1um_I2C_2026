@@ -1,0 +1,1043 @@
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.68+post (git sha1 c12172fbae8af5e20f6fb52e3d4e92d56ed587b6, Release, AppleClang clang++ 21.0.0.21000101)
+
+-- Running command `read_verilog hdl/rtl/tr1um_cells.v hdl/rtl/i2c_slave_async.v; blackbox RSLATCH; hierarchy -check -top i2c_slave_async;         synth -top i2c_slave_async -flatten;         dfflibmap -liberty lef/tr1um_typ_5v0_25c.lib; abc -liberty lef/tr1um_typ_5v0_25c.lib -constr scripts/abc.constr; opt_clean;         write_verilog -noattr out/i2c_slave_async.v; tee -o out/i2c_slave_async.stat stat -liberty lef/tr1um_typ_5v0_25c.lib' --
+
+1. Executing Verilog-2005 frontend: hdl/rtl/tr1um_cells.v
+Parsing Verilog input from `hdl/rtl/tr1um_cells.v' to AST representation.
+Generating RTLIL representation for module `\AND2_X1'.
+Generating RTLIL representation for module `\AND3_X1'.
+Generating RTLIL representation for module `\AND4_X1'.
+Generating RTLIL representation for module `\BUFTH'.
+Generating RTLIL representation for module `\BUF_X1'.
+Generating RTLIL representation for module `\BUF_X2'.
+Generating RTLIL representation for module `\DEL1'.
+Generating RTLIL representation for module `\INV_X1'.
+Generating RTLIL representation for module `\INV_X2'.
+Generating RTLIL representation for module `\MUX2'.
+Generating RTLIL representation for module `\NAND2'.
+Generating RTLIL representation for module `\NAND3'.
+Generating RTLIL representation for module `\NAND4'.
+Generating RTLIL representation for module `\NOR2'.
+Generating RTLIL representation for module `\NOR3'.
+Generating RTLIL representation for module `\NOR4'.
+Generating RTLIL representation for module `\OR2'.
+Generating RTLIL representation for module `\OR3'.
+Generating RTLIL representation for module `\OR4'.
+Generating RTLIL representation for module `\XNOR2'.
+Generating RTLIL representation for module `\XOR2'.
+Generating RTLIL representation for module `\DFF'.
+Generating RTLIL representation for module `\DFFRB'.
+Generating RTLIL representation for module `\DFFS'.
+Generating RTLIL representation for module `\MUXDFFRB'.
+Generating RTLIL representation for module `\RSLATCH'.
+Successfully finished Verilog frontend.
+
+2. Executing Verilog-2005 frontend: hdl/rtl/i2c_slave_async.v
+Parsing Verilog input from `hdl/rtl/i2c_slave_async.v' to AST representation.
+Generating RTLIL representation for module `\i2c_slave_async'.
+Successfully finished Verilog frontend.
+
+3. Executing HIERARCHY pass (managing design hierarchy).
+
+3.1. Analyzing design hierarchy..
+Top module:  \i2c_slave_async
+Used module:     \INV_X1
+Used module:     \AND2_X1
+Used module:     \NAND2
+Used module:     \MUX2
+
+3.2. Analyzing design hierarchy..
+Top module:  \i2c_slave_async
+Used module:     \INV_X1
+Used module:     \AND2_X1
+Used module:     \NAND2
+Used module:     \MUX2
+Removing unused module `\MUXDFFRB'.
+Removing unused module `\DFFS'.
+Removing unused module `\DFFRB'.
+Removing unused module `\DFF'.
+Removing unused module `\XOR2'.
+Removing unused module `\XNOR2'.
+Removing unused module `\OR4'.
+Removing unused module `\OR3'.
+Removing unused module `\OR2'.
+Removing unused module `\NOR4'.
+Removing unused module `\NOR3'.
+Removing unused module `\NOR2'.
+Removing unused module `\NAND4'.
+Removing unused module `\NAND3'.
+Removing unused module `\INV_X2'.
+Removing unused module `\DEL1'.
+Removing unused module `\BUF_X2'.
+Removing unused module `\BUF_X1'.
+Removing unused module `\BUFTH'.
+Removing unused module `\AND4_X1'.
+Removing unused module `\AND3_X1'.
+Removed 21 unused modules.
+
+4. Executing SYNTH pass.
+
+4.1. Executing HIERARCHY pass (managing design hierarchy).
+
+4.1.1. Analyzing design hierarchy..
+Top module:  \i2c_slave_async
+Used module:     \INV_X1
+Used module:     \AND2_X1
+Used module:     \NAND2
+Used module:     \MUX2
+
+4.1.2. Analyzing design hierarchy..
+Top module:  \i2c_slave_async
+Used module:     \INV_X1
+Used module:     \AND2_X1
+Used module:     \NAND2
+Used module:     \MUX2
+Removed 0 unused modules.
+
+4.2. Executing PROC pass (convert processes to netlists).
+
+4.2.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+4.2.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 3 switch rules as full_case in process $proc$hdl/rtl/i2c_slave_async.v:535$88 in module i2c_slave_async.
+Marked 4 switch rules as full_case in process $proc$hdl/rtl/i2c_slave_async.v:452$74 in module i2c_slave_async.
+Removed a total of 0 dead cases.
+
+4.2.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 3 redundant assignments.
+Promoted 0 assignments to connections.
+
+4.2.4. Executing PROC_INIT pass (extract init attributes).
+
+4.2.5. Executing PROC_ARST pass (detect async resets in processes).
+Found async reset \rst_sdaoe_domain in `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:535$88'.
+Found async reset \rst_scl_domain in `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:452$74'.
+
+4.2.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+<suppressed ~6 debug messages>
+
+4.2.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:535$88'.
+     1/2: $0\sda_oe_r[0:0]
+     2/2: $0\txreg[7:0]
+Creating decoders for process `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:452$74'.
+     1/7: $0\last_bit_pending[0:0]
+     2/7: $0\shreg[7:0]
+     3/7: $0\rx_data_r[7:0]
+     4/7: $0\rw_bit[0:0]
+     5/7: $0\addr_ok[0:0]
+     6/7: $0\bit_cnt[2:0]
+     7/7: $0\phase[2:0]
+
+4.2.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+
+4.2.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\i2c_slave_async.\sda_oe_r' using process `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:535$88'.
+  created $adff cell `$procdff$172' with positive edge clock and positive level reset.
+Creating register for signal `\i2c_slave_async.\txreg' using process `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:535$88'.
+  created $adff cell `$procdff$175' with positive edge clock and positive level reset.
+Creating register for signal `\i2c_slave_async.\phase' using process `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:452$74'.
+  created $adff cell `$procdff$178' with positive edge clock and positive level reset.
+Creating register for signal `\i2c_slave_async.\bit_cnt' using process `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:452$74'.
+  created $adff cell `$procdff$181' with positive edge clock and positive level reset.
+Creating register for signal `\i2c_slave_async.\last_bit_pending' using process `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:452$74'.
+  created $adff cell `$procdff$184' with positive edge clock and positive level reset.
+Creating register for signal `\i2c_slave_async.\shreg' using process `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:452$74'.
+  created $adff cell `$procdff$187' with positive edge clock and positive level reset.
+Creating register for signal `\i2c_slave_async.\addr_ok' using process `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:452$74'.
+  created $adff cell `$procdff$190' with positive edge clock and positive level reset.
+Creating register for signal `\i2c_slave_async.\rw_bit' using process `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:452$74'.
+  created $adff cell `$procdff$193' with positive edge clock and positive level reset.
+Creating register for signal `\i2c_slave_async.\rx_data_r' using process `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:452$74'.
+  created $adff cell `$procdff$196' with positive edge clock and positive level reset.
+
+4.2.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+4.2.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Found and cleaned up 2 empty switches in `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:535$88'.
+Removing empty process `i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:535$88'.
+Found and cleaned up 4 empty switches in `\i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:452$74'.
+Removing empty process `i2c_slave_async.$proc$hdl/rtl/i2c_slave_async.v:452$74'.
+Cleaned up 6 empty switches.
+
+4.2.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module NAND2.
+Optimizing module MUX2.
+Optimizing module i2c_slave_async.
+<suppressed ~16 debug messages>
+Optimizing module INV_X1.
+Optimizing module AND2_X1.
+
+4.3. Executing CHECK pass (checking for obvious problems).
+Checking module NAND2...
+Checking module MUX2...
+Checking module i2c_slave_async...
+Checking module INV_X1...
+Checking module AND2_X1...
+Found and reported 0 problems.
+
+4.4. Executing FLATTEN pass (flatten design).
+Deleting now unused module NAND2.
+Deleting now unused module MUX2.
+Deleting now unused module INV_X1.
+Deleting now unused module AND2_X1.
+<suppressed ~6 debug messages>
+
+4.5. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+<suppressed ~3 debug messages>
+
+4.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+Removed 2 unused cells and 48 unused wires.
+<suppressed ~5 debug messages>
+
+4.7. Executing CHECK pass (checking for obvious problems).
+Checking module i2c_slave_async...
+Found and reported 0 problems.
+
+4.8. Executing OPT pass (performing simple optimizations).
+
+4.8.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+
+4.8.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 96 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Computing hashes of 77 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+<suppressed ~57 debug messages>
+Removed a total of 19 cells.
+
+4.8.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \i2c_slave_async..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~27 debug messages>
+
+4.8.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \i2c_slave_async.
+    New ctrl vector for $pmux cell $procmux$141: { $auto$opt_reduce.cc:137:opt_pmux$204 $procmux$159_CMP $procmux$164_CMP $procmux$169_CMP }
+  Optimizing cells in module \i2c_slave_async.
+Performed a total of 1 changes.
+
+4.8.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 78 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Computing hashes of 77 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+<suppressed ~3 debug messages>
+Removed a total of 1 cells.
+
+4.8.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+4.8.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+Removed 0 unused cells and 20 unused wires.
+<suppressed ~1 debug messages>
+
+4.8.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+
+4.8.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+4.8.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \i2c_slave_async..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~29 debug messages>
+
+4.8.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \i2c_slave_async.
+    New ctrl vector for $pmux cell $procmux$141: { $auto$opt_reduce.cc:137:opt_pmux$206 $procmux$100_CMP $auto$opt_reduce.cc:137:opt_pmux$204 }
+  Optimizing cells in module \i2c_slave_async.
+Performed a total of 1 changes.
+
+4.8.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 78 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Removed a total of 0 cells.
+
+4.8.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+4.8.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+
+4.8.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+
+4.8.16. Rerunning OPT passes. (Maybe there is more to do..)
+
+4.8.17. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \i2c_slave_async..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~26 debug messages>
+
+4.8.18. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \i2c_slave_async.
+Performed a total of 0 changes.
+
+4.8.19. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 78 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Removed a total of 0 cells.
+
+4.8.20. Executing OPT_DFF pass (perform DFF optimizations).
+
+4.8.21. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+
+4.8.22. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+
+4.8.23. Finished fast OPT passes. (There is nothing left to do.)
+
+4.9. Executing FSM pass (extract and optimize FSM).
+
+4.9.1. Executing FSM_DETECT pass (finding FSMs in design).
+Found FSM state register i2c_slave_async.phase.
+
+4.9.2. Executing FSM_EXTRACT pass (extracting FSM from design).
+Extracting FSM `\phase' from module `\i2c_slave_async'.
+  found $adff cell for state register: $procdff$178
+  root of input selection tree: $0\phase[2:0]
+  found reset state: 3'000 (from async reset)
+  found ctrl input: $procmux$142_CMP
+  found ctrl input: $procmux$100_CMP
+  found ctrl input: \rx_valid
+  found ctrl input: $procmux$117_CMP
+  found ctrl input: $procmux$102_CMP
+  found ctrl input: $procmux$128_CMP
+  found state code: 3'110
+  found ctrl input: \sda_in
+  found state code: 3'100
+  found ctrl input: \last_bit_pending
+  found state code: 3'101
+  found state code: 3'010
+  found state code: 3'011
+  found ctrl input: \addr_ok
+  found ctrl input: \rw_bit
+  found state code: 3'001
+  found ctrl output: $procmux$142_CMP
+  found ctrl output: $procmux$100_CMP
+  found ctrl output: \rx_valid
+  found ctrl output: $procmux$117_CMP
+  found ctrl output: $procmux$102_CMP
+  found ctrl output: $procmux$128_CMP
+  ctrl inputs: { \rw_bit \addr_ok \last_bit_pending \sda_in }
+  ctrl outputs: { $procmux$142_CMP $procmux$128_CMP $procmux$117_CMP $procmux$102_CMP $procmux$100_CMP $0\phase[2:0] \rx_valid }
+  transition:      3'000 4'--0- ->      3'000 9'010000000
+  transition:      3'000 4'--1- ->      3'001 9'010000010
+  transition:      3'100 4'--0- ->      3'100 9'000011000
+  transition:      3'100 4'--1- ->      3'101 9'000011010
+  transition:      3'010 4'--0- ->      3'010 9'001000100
+  transition:      3'010 4'--1- ->      3'011 9'001000110
+  transition:      3'110 4'---- ->      3'110 9'000001100
+  transition:      3'001 4'-0-- ->      3'110 9'000101100
+  transition:      3'001 4'01-- ->      3'010 9'000100100
+  transition:      3'001 4'11-- ->      3'100 9'000101000
+  transition:      3'101 4'---0 ->      3'100 9'100001000
+  transition:      3'101 4'---1 ->      3'110 9'100001100
+  transition:      3'011 4'---- ->      3'010 9'000000101
+
+4.9.3. Executing FSM_OPT pass (simple optimizations of FSMs).
+Optimizing FSM `$fsm$\phase$207' from module `\i2c_slave_async'.
+
+4.9.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+Removed 14 unused cells and 14 unused wires.
+<suppressed ~15 debug messages>
+
+4.9.5. Executing FSM_OPT pass (simple optimizations of FSMs).
+Optimizing FSM `$fsm$\phase$207' from module `\i2c_slave_async'.
+  Removing unused output signal $0\phase[2:0] [0].
+  Removing unused output signal $0\phase[2:0] [1].
+  Removing unused output signal $0\phase[2:0] [2].
+
+4.9.6. Executing FSM_RECODE pass (re-assigning FSM state encoding).
+Recoding FSM `$fsm$\phase$207' from module `\i2c_slave_async' using `auto' encoding:
+  mapping auto encoding to `one-hot` for this FSM.
+  000 -> ------1
+  100 -> -----1-
+  010 -> ----1--
+  110 -> ---1---
+  001 -> --1----
+  101 -> -1-----
+  011 -> 1------
+
+4.9.7. Executing FSM_INFO pass (dumping all available information on FSM cells).
+
+FSM `$fsm$\phase$207' from module `i2c_slave_async':
+-------------------------------------
+
+  Information on FSM $fsm$\phase$207 (\phase):
+
+  Number of input signals:    4
+  Number of output signals:   6
+  Number of state bits:       7
+
+  Input signals:
+    0: \sda_in
+    1: \last_bit_pending
+    2: \addr_ok
+    3: \rw_bit
+
+  Output signals:
+    0: \rx_valid
+    1: $procmux$100_CMP
+    2: $procmux$102_CMP
+    3: $procmux$117_CMP
+    4: $procmux$128_CMP
+    5: $procmux$142_CMP
+
+  State encoding:
+    0:  7'------1  <RESET STATE>
+    1:  7'-----1-
+    2:  7'----1--
+    3:  7'---1---
+    4:  7'--1----
+    5:  7'-1-----
+    6:  7'1------
+
+  Transition Table (state_in, ctrl_in, state_out, ctrl_out):
+      0:     0 4'--0-   ->     0 6'010000
+      1:     0 4'--1-   ->     4 6'010000
+      2:     1 4'--0-   ->     1 6'000010
+      3:     1 4'--1-   ->     5 6'000010
+      4:     2 4'--0-   ->     2 6'001000
+      5:     2 4'--1-   ->     6 6'001000
+      6:     3 4'----   ->     3 6'000000
+      7:     4 4'11--   ->     1 6'000100
+      8:     4 4'01--   ->     2 6'000100
+      9:     4 4'-0--   ->     3 6'000100
+     10:     5 4'---0   ->     1 6'100000
+     11:     5 4'---1   ->     3 6'100000
+     12:     6 4'----   ->     2 6'000001
+
+-------------------------------------
+
+4.9.8. Executing FSM_MAP pass (mapping FSMs to basic logic).
+Mapping FSM `$fsm$\phase$207' from module `\i2c_slave_async'.
+
+4.10. Executing OPT pass (performing simple optimizations).
+
+4.10.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+<suppressed ~9 debug messages>
+
+4.10.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 86 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Computing hashes of 83 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+<suppressed ~9 debug messages>
+Removed a total of 3 cells.
+
+4.10.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \i2c_slave_async..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~18 debug messages>
+
+4.10.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \i2c_slave_async.
+Performed a total of 0 changes.
+
+4.10.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 83 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Removed a total of 0 cells.
+
+4.10.6. Executing OPT_DFF pass (perform DFF optimizations).
+Adding EN signal on $procdff$196 ($adff) from module i2c_slave_async (D = { \shreg [6:0] \sda_in }, Q = \rx_data_r).
+Adding EN signal on $procdff$175 ($adff) from module i2c_slave_async (D = \tx_data, Q = \txreg).
+Adding EN signal on $procdff$193 ($adff) from module i2c_slave_async (D = \sda_in, Q = \rw_bit).
+Adding EN signal on $procdff$181 ($adff) from module i2c_slave_async (D = $0\bit_cnt[2:0], Q = \bit_cnt).
+Adding EN signal on $procdff$190 ($adff) from module i2c_slave_async (D = $eq$hdl/rtl/i2c_slave_async.v:474$76_Y, Q = \addr_ok).
+
+4.10.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+Removed 8 unused cells and 23 unused wires.
+<suppressed ~9 debug messages>
+
+4.10.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+<suppressed ~1 debug messages>
+
+4.10.9. Rerunning OPT passes. (Maybe there is more to do..)
+
+4.10.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \i2c_slave_async..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~6 debug messages>
+
+4.10.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \i2c_slave_async.
+Performed a total of 0 changes.
+
+4.10.12. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 80 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Computing hashes of 79 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+<suppressed ~3 debug messages>
+Removed a total of 1 cells.
+
+4.10.13. Executing OPT_DFF pass (perform DFF optimizations).
+
+4.10.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+Removed 0 unused cells and 1 unused wires.
+<suppressed ~1 debug messages>
+
+4.10.15. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+
+4.10.16. Rerunning OPT passes. (Maybe there is more to do..)
+
+4.10.17. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \i2c_slave_async..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~6 debug messages>
+
+4.10.18. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \i2c_slave_async.
+Performed a total of 0 changes.
+
+4.10.19. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 79 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Removed a total of 0 cells.
+
+4.10.20. Executing OPT_DFF pass (perform DFF optimizations).
+
+4.10.21. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+
+4.10.22. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+
+4.10.23. Finished fast OPT passes. (There is nothing left to do.)
+
+4.11. Executing WREDUCE pass (reducing word size of cells).
+Removed top 1 bits (of 2) from port B of cell i2c_slave_async.$auto$fsm_map.cc:77:implement_pattern_cache$241 ($eq).
+Removed top 2 bits (of 3) from port B of cell i2c_slave_async.$add$hdl/rtl/i2c_slave_async.v:497$81 ($add).
+Removed top 29 bits (of 32) from port A of cell i2c_slave_async.$sub$hdl/rtl/i2c_slave_async.v:548$91 ($sub).
+Removed top 28 bits (of 32) from port Y of cell i2c_slave_async.$sub$hdl/rtl/i2c_slave_async.v:548$91 ($sub).
+Removed top 28 bits (of 32) from port B of cell i2c_slave_async.$shiftx$hdl/rtl/i2c_slave_async.v:548$92 ($shiftx).
+Removed top 1 bits (of 8) from FF cell i2c_slave_async.$procdff$187 ($adff).
+Removed top 1 bits (of 8) from wire i2c_slave_async.shreg.
+
+4.12. Executing PEEPOPT pass (run peephole optimizers).
+
+4.13. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+Removed 0 unused cells and 1 unused wires.
+<suppressed ~1 debug messages>
+
+4.14. Executing ALUMACC pass (create $alu and $macc cells).
+Extracting $alu and $macc cells in module i2c_slave_async:
+  creating $macc model for $sub$hdl/rtl/i2c_slave_async.v:548$91 ($sub).
+  creating $macc model for $add$hdl/rtl/i2c_slave_async.v:497$81 ($add).
+  creating $alu model for $macc $add$hdl/rtl/i2c_slave_async.v:497$81.
+  creating $alu model for $macc $sub$hdl/rtl/i2c_slave_async.v:548$91.
+  creating $alu cell for $sub$hdl/rtl/i2c_slave_async.v:548$91: $auto$alumacc.cc:548:replace_alu$282
+  creating $alu cell for $add$hdl/rtl/i2c_slave_async.v:497$81: $auto$alumacc.cc:548:replace_alu$285
+  created 2 $alu and 0 $macc cells.
+
+4.15. Executing SHARE pass (SAT-based resource sharing).
+
+4.16. Executing OPT pass (performing simple optimizations).
+
+4.16.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+
+4.16.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 79 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Removed a total of 0 cells.
+
+4.16.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \i2c_slave_async..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~6 debug messages>
+
+4.16.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \i2c_slave_async.
+Performed a total of 0 changes.
+
+4.16.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 79 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Removed a total of 0 cells.
+
+4.16.6. Executing OPT_DFF pass (perform DFF optimizations).
+
+4.16.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+
+4.16.8. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+
+4.16.9. Finished fast OPT passes. (There is nothing left to do.)
+
+4.17. Executing MEMORY pass.
+
+4.17.1. Executing OPT_MEM pass (optimize memories).
+Performed a total of 0 transformations.
+
+4.17.2. Executing OPT_MEM_PRIORITY pass (removing unnecessary memory write priority relations).
+Performed a total of 0 transformations.
+
+4.17.3. Executing OPT_MEM_FEEDBACK pass (finding memory read-to-write feedback paths).
+
+4.17.4. Executing MEMORY_BMUX2ROM pass (converting muxes to ROMs).
+
+4.17.5. Executing MEMORY_DFF pass (merging $dff cells to $memrd).
+
+4.17.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+
+4.17.7. Executing MEMORY_SHARE pass (consolidating $memrd/$memwr cells).
+
+4.17.8. Executing OPT_MEM_WIDEN pass (optimize memories where all ports are wide).
+Performed a total of 0 transformations.
+
+4.17.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+
+4.17.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+4.18. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+
+4.19. Executing OPT pass (performing simple optimizations).
+
+4.19.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+<suppressed ~5 debug messages>
+
+4.19.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 81 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Removed a total of 0 cells.
+
+4.19.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+4.19.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+Removed 0 unused cells and 4 unused wires.
+<suppressed ~1 debug messages>
+
+4.19.5. Finished fast OPT passes.
+
+4.20. Executing MEMORY_MAP pass (converting memories to logic and flip-flops).
+
+4.21. Executing OPT pass (performing simple optimizations).
+
+4.21.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+
+4.21.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 81 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Removed a total of 0 cells.
+
+4.21.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \i2c_slave_async..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~6 debug messages>
+
+4.21.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \i2c_slave_async.
+Performed a total of 0 changes.
+
+4.21.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 81 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Removed a total of 0 cells.
+
+4.21.6. Executing OPT_SHARE pass.
+
+4.21.7. Executing OPT_DFF pass (perform DFF optimizations).
+
+4.21.8. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+
+4.21.9. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+
+4.21.10. Finished fast OPT passes. (There is nothing left to do.)
+
+4.22. Executing TECHMAP pass (map to technology primitives).
+
+4.22.1. Executing Verilog-2005 frontend: /opt/homebrew/bin/../share/yosys/techmap.v
+Parsing Verilog input from `/opt/homebrew/bin/../share/yosys/techmap.v' to AST representation.
+Generating RTLIL representation for module `\_90_simplemap_bool_ops'.
+Generating RTLIL representation for module `\_90_simplemap_reduce_ops'.
+Generating RTLIL representation for module `\_90_simplemap_logic_ops'.
+Generating RTLIL representation for module `\_90_simplemap_compare_ops'.
+Generating RTLIL representation for module `\_90_simplemap_various'.
+Generating RTLIL representation for module `\_90_simplemap_registers'.
+Generating RTLIL representation for module `\_90_shift_ops_shr_shl_sshl_sshr'.
+Generating RTLIL representation for module `\_90_shift_shiftx'.
+Generating RTLIL representation for module `\_90_fa'.
+Generating RTLIL representation for module `\_90_lcu_brent_kung'.
+Generating RTLIL representation for module `\_90_alu'.
+Generating RTLIL representation for module `\_90_macc'.
+Generating RTLIL representation for module `\_90_alumacc'.
+Generating RTLIL representation for module `$__div_mod_u'.
+Generating RTLIL representation for module `$__div_mod_trunc'.
+Generating RTLIL representation for module `\_90_div'.
+Generating RTLIL representation for module `\_90_mod'.
+Generating RTLIL representation for module `$__div_mod_floor'.
+Generating RTLIL representation for module `\_90_divfloor'.
+Generating RTLIL representation for module `\_90_modfloor'.
+Generating RTLIL representation for module `\_90_pow'.
+Generating RTLIL representation for module `\_90_demux'.
+Generating RTLIL representation for module `\_90_lut'.
+Generating RTLIL representation for module `$connect'.
+Generating RTLIL representation for module `$input_port'.
+Successfully finished Verilog frontend.
+
+4.22.2. Continuing TECHMAP pass.
+Using extmapper simplemap for cells of type $not.
+Using template $paramod$3ef7d3dd227da7627a99c5e5a6a4deb817573e39\_90_alu for cells of type $alu.
+Using extmapper simplemap for cells of type $adffe.
+Using extmapper simplemap for cells of type $reduce_bool.
+Using extmapper simplemap for cells of type $reduce_and.
+Using extmapper simplemap for cells of type $and.
+Using extmapper simplemap for cells of type $reduce_or.
+Using extmapper simplemap for cells of type $eq.
+Using extmapper simplemap for cells of type $adff.
+Using extmapper simplemap for cells of type $or.
+Using extmapper simplemap for cells of type $logic_not.
+Using template $paramod$constmap:495c8dc1812f09f0b6f9ecda08e517e7538e08fd$paramod$2cd5a0fc12c713b111b124c014c3805512a5d620\_90_shift_shiftx for cells of type $shiftx.
+Using extmapper simplemap for cells of type $mux.
+Using extmapper simplemap for cells of type $pmux.
+Using extmapper simplemap for cells of type $pos.
+Using template $paramod\_90_fa\WIDTH=32'00000000000000000000000000000011 for cells of type $fa.
+Using template $paramod\_90_lcu_brent_kung\WIDTH=32'00000000000000000000000000000011 for cells of type $lcu.
+Using extmapper simplemap for cells of type $xor.
+No more expansions possible.
+<suppressed ~479 debug messages>
+
+4.23. Executing OPT pass (performing simple optimizations).
+
+4.23.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+<suppressed ~118 debug messages>
+
+4.23.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 177 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Computing hashes of 167 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+<suppressed ~30 debug messages>
+Removed a total of 10 cells.
+
+4.23.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+4.23.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+Removed 23 unused cells and 84 unused wires.
+<suppressed ~24 debug messages>
+
+4.23.5. Finished fast OPT passes.
+
+4.24. Executing ABC pass (technology mapping using ABC).
+
+4.24.1. Extracting gate netlist of module `\i2c_slave_async' to `<abc-temp-dir>/input.blif'..
+
+4.24.1.1. Executed ABC.
+Extracted 99 gates and 135 wires to a netlist network with 35 inputs and 24 outputs.
+Running ABC script: <abc-temp-dir>/abc.script
+ABC: ======== ABC command line "source <abc-temp-dir>/abc.script"
+ABC: + read_blif <abc-temp-dir>/input.blif 
+ABC: + read_library <abc-temp-dir>/stdcells.genlib 
+ABC: + strash 
+ABC: + &get -n 
+ABC: + &fraig -x 
+ABC: + &put 
+ABC: + scorr 
+ABC: Warning: The network is combinational (run "fraig" or "fraig_sweep").
+ABC: + dc2 
+ABC: + dretime 
+ABC: + strash 
+ABC: + &get -n 
+ABC: + &dch -f 
+ABC: + &nf 
+ABC: + &put 
+ABC: + write_blif <abc-temp-dir>/output.blif 
+
+4.24.1.2. Re-integrating ABC results.
+ABC RESULTS:               AND cells:       19
+ABC RESULTS:            ANDNOT cells:       16
+ABC RESULTS:              NAND cells:       20
+ABC RESULTS:               NOR cells:       10
+ABC RESULTS:               NOT cells:        2
+ABC RESULTS:                OR cells:        3
+ABC RESULTS:             ORNOT cells:        5
+ABC RESULTS:               XOR cells:        1
+ABC RESULTS:        internal signals:       76
+ABC RESULTS:           input signals:       35
+ABC RESULTS:          output signals:       24
+Removing temp directory.
+Removing global temp directory.
+
+4.25. Executing OPT pass (performing simple optimizations).
+
+4.25.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module i2c_slave_async.
+
+4.25.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\i2c_slave_async'.
+Computing hashes of 121 cells of `\i2c_slave_async'.
+Finding duplicate cells in `\i2c_slave_async'.
+Removed a total of 0 cells.
+
+4.25.3. Executing OPT_DFF pass (perform DFF optimizations).
+
+4.25.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+Removed 1 unused cells and 130 unused wires.
+<suppressed ~14 debug messages>
+
+4.25.5. Finished fast OPT passes.
+
+4.26. Executing HIERARCHY pass (managing design hierarchy).
+Attribute `top' found on module `i2c_slave_async'. Setting top module to i2c_slave_async.
+
+4.26.1. Analyzing design hierarchy..
+Top module:  \i2c_slave_async
+
+4.26.2. Analyzing design hierarchy..
+Top module:  \i2c_slave_async
+Removed 0 unused modules.
+
+4.27. Printing statistics.
+
+=== i2c_slave_async ===
+
+        +----------Local Count, excluding submodules.
+        | 
+      121 wires
+      172 wire bits
+       57 public wires
+      106 public wire bits
+       12 ports
+       26 port bits
+      120 cells
+       16   $_ANDNOT_
+       19   $_AND_
+        7   $_DFFE_NP0P_
+       13   $_DFFE_PP0P_
+        1   $_DFF_NP0_
+       13   $_DFF_PP0_
+        1   $_DFF_PP1_
+       20   $_NAND_
+       10   $_NOR_
+        2   $_NOT_
+        5   $_ORNOT_
+        3   $_OR_
+        1   $_XOR_
+        6   $scopeinfo
+        3   RSLATCH
+
+4.28. Executing CHECK pass (checking for obvious problems).
+Checking module i2c_slave_async...
+Found and reported 0 problems.
+
+5. Executing DFFLIBMAP pass (mapping DFF cells to sequential cells from liberty file).
+  cell DFF (noninv, pins=4, area=3849.10) is a direct match for cell type $_DFF_P_.
+  cell DFFRB (noninv, pins=5, area=3849.10) is a direct match for cell type $_DFF_PN0_.
+  cell DFFS (noninv, pins=5, area=3849.10) is a direct match for cell type $_DFF_PP1_.
+  final dff cell mappings:
+    unmapped dff cell: $_DFF_N_
+    \DFF _DFF_P_ (.CK( C), .D( D), .Q( Q), .QB(~Q));
+    unmapped dff cell: $_DFF_NN0_
+    unmapped dff cell: $_DFF_NN1_
+    unmapped dff cell: $_DFF_NP0_
+    unmapped dff cell: $_DFF_NP1_
+    \DFFRB _DFF_PN0_ (.CK( C), .D( D), .Q( Q), .QB(~Q), .RSTB( R));
+    unmapped dff cell: $_DFF_PN1_
+    unmapped dff cell: $_DFF_PP0_
+    \DFFS _DFF_PP1_ (.CK( C), .D( D), .Q( Q), .QB(~Q), .SET( R));
+    unmapped dff cell: $_DFFE_NN_
+    unmapped dff cell: $_DFFE_NP_
+    unmapped dff cell: $_DFFE_PN_
+    unmapped dff cell: $_DFFE_PP_
+    unmapped dff cell: $_DFFSR_NNN_
+    unmapped dff cell: $_DFFSR_NNP_
+    unmapped dff cell: $_DFFSR_NPN_
+    unmapped dff cell: $_DFFSR_NPP_
+    unmapped dff cell: $_DFFSR_PNN_
+    unmapped dff cell: $_DFFSR_PNP_
+    unmapped dff cell: $_DFFSR_PPN_
+    unmapped dff cell: $_DFFSR_PPP_
+
+5.1. Executing DFFLEGALIZE pass (convert FFs to types supported by the target).
+<suppressed ~1 debug messages>
+Mapping DFF cells in module `\i2c_slave_async':
+  mapped 34 $_DFF_PN0_ cells to \DFFRB cells.
+  mapped 1 $_DFF_PP1_ cells to \DFFS cells.
+
+6. Executing ABC pass (technology mapping using ABC).
+
+6.1. Extracting gate netlist of module `\i2c_slave_async' to `<abc-temp-dir>/input.blif'..
+
+6.1.1. Executed ABC.
+Extracted 138 gates and 188 wires to a netlist network with 50 inputs and 78 outputs.
+Running ABC script: <abc-temp-dir>/abc.script
+ABC: ======== ABC command line "source <abc-temp-dir>/abc.script"
+ABC: + read_blif <abc-temp-dir>/input.blif 
+ABC: + read_scl /var/folders/gf/nw84jb093fzd316tjgncxvrh0000gn/T/yosys-liberty-scl-cache/yosys_merged_74614239.scl 
+ABC: + read_constr -v /Users/okamura/Dropbox/98_LSI_Design/TR-1um_I2C_2026/scripts/abc.constr 
+ABC: Setting driving cell to be "BUF_X2".
+ABC: Setting output load to be 36.200001.
+ABC: + strash 
+ABC: + &get -n 
+ABC: + &fraig -x 
+ABC: + &put 
+ABC: + scorr 
+ABC: Warning: The network is combinational (run "fraig" or "fraig_sweep").
+ABC: + dc2 
+ABC: + dretime 
+ABC: + strash 
+ABC: + &get -n 
+ABC: + &dch -f 
+ABC: + &nf 
+ABC: + &put 
+ABC: + buffer 
+ABC: + upsize 
+ABC: + dnsize 
+ABC: + stime -p 
+ABC: WireLoad = "none"  Gates =    132 ( 21.2 %)   Cap =103.9 ff (  0.4 %)   Area =   155248.09 ( 99.2 %)   Delay = 14906.18 ps  ( 11.4 %)               
+ABC: Path  0 --      39 : 0    2 pi      A =   0.00  Df = 274.4  -22.9 ps  S = 636.3 ps  Cin =  0.0 ff  Cout = 120.6 ff  Cmax =   0.0 ff  G =    0  
+ABC: Path  1 --     137 : 3    2 OR3     A =1603.80  Df =3715.5-1397.1 ps  S =1145.7 ps  Cin = 56.6 ff  Cout = 108.8 ff  Cmax = 800.0 ff  G =  192  
+ABC: Path  2 --     138 : 4    4 NOR4    A =1603.80  Df =7457.3-3361.5 ps  S =5606.0 ps  Cin = 55.7 ff  Cout = 258.5 ff  Cmax = 800.0 ff  G =  463  
+ABC: Path  3 --     143 : 2    1 NOR2    A = 962.30  Df =10197.2-4188.2 ps  S =2304.6 ps  Cin = 57.8 ff  Cout = 131.6 ff  Cmax = 800.0 ff  G =  227  
+ABC: Path  4 --     144 : 2    1 XNOR2   A =1603.80  Df =12730.2 -300.5 ps  S =1854.8 ps  Cin =129.9 ff  Cout =  58.8 ff  Cmax = 800.0 ff  G =   45  
+ABC: Path  5 --     145 : 2    1 AND2_X1 A =1283.00  Df =14906.2 -765.3 ps  S = 689.3 ps  Cin = 58.7 ff  Cout =  36.2 ff  Cmax = 800.0 ff  G =   61  
+ABC: Start-point = pi38 (\phase [5]).  End-point = po5 ($auto$rtlil.cc:3513:MuxGate$892).
+ABC: + write_blif <abc-temp-dir>/output.blif 
+
+6.1.2. Re-integrating ABC results.
+ABC RESULTS:           AND2_X1 cells:       12
+ABC RESULTS:           AND3_X1 cells:        3
+ABC RESULTS:            BUF_X1 cells:        1
+ABC RESULTS:            BUF_X2 cells:        7
+ABC RESULTS:            INV_X1 cells:       20
+ABC RESULTS:              MUX2 cells:       19
+ABC RESULTS:             NAND2 cells:       14
+ABC RESULTS:             NAND3 cells:       11
+ABC RESULTS:             NAND4 cells:        3
+ABC RESULTS:              NOR2 cells:       31
+ABC RESULTS:              NOR3 cells:        2
+ABC RESULTS:              NOR4 cells:        2
+ABC RESULTS:               OR2 cells:        4
+ABC RESULTS:               OR3 cells:        2
+ABC RESULTS:             XNOR2 cells:        1
+ABC RESULTS:        internal signals:       60
+ABC RESULTS:           input signals:       50
+ABC RESULTS:          output signals:       78
+Removing temp directory.
+Removing global temp directory.
+
+7. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \i2c_slave_async..
+Removed 0 unused cells and 188 unused wires.
+<suppressed ~2 debug messages>
+
+8. Executing Verilog backend.
+
+8.1. Executing BMUXMAP pass.
+
+8.2. Executing DEMUXMAP pass.
+Dumping module `\i2c_slave_async'.
+
+9. Printing statistics.
+
+=== i2c_slave_async ===
+
+        +----------Local Count, excluding submodules.
+        |        +-Local Area, excluding submodules.
+        |        | 
+      214        - wires
+      263        - wire bits
+       56        - public wires
+      105        - public wire bits
+       12        - ports
+       26        - port bits
+      176   294778 cells
+        6        -   $scopeinfo
+       12    15396   AND2_X1
+        3   4811.4   AND3_X1
+        1    962.3   BUF_X1
+        7   6736.1   BUF_X2
+       34 1.31E+05   DFFRB
+        1   3849.1   DFFS
+       20    12830   INV_X1
+       19  36567.4   MUX2
+       14  13472.2   NAND2
+       11    14113   NAND3
+        3   4811.4   NAND4
+       31  29831.3   NOR2
+        2     2566   NOR3
+        2   3207.6   NOR4
+        4     5132   OR2
+        2   3207.6   OR3
+        3   4811.4   RSLATCH
+        1   1603.8   XNOR2
+
+   Area for cell type $scopeinfo is unknown!
+
+   Chip area for module '\i2c_slave_async': 294778.000000
+     of which used for sequential elements: 134718.500000 (45.70%)
+
+End of script. Logfile hash: ba43f8d485, time: 0.28s, user: 0.04s, system: 0.01s, MEM: 20.78 MB peak
+Yosys 0.68+post (git sha1 c12172fbae8af5e20f6fb52e3d4e92d56ed587b6, Release, AppleClang clang++ 21.0.0.21000101)
+Time spent: 75% 2x abc (0 sec), 5% 4x read_verilog (0 sec), ...
