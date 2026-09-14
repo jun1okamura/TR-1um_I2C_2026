@@ -156,7 +156,17 @@ def ringosc_pins():
             continue
         x0, y0, x1, y1 = r[0]
         cx, cy = ox + (x0 + x1) / 2, oy + (y0 + y1) / 2
-        edge = "RIGHT" if x0 > 810 else ("LEFT" if x1 < 810 else "BOTTOM")
+        # --- I2C 移植 (14): 辺は x ではなく**ピンの層**で決める ---------------
+        # 帯から外へ出る足は、水平なら M1、垂直なら M2（`route_chip.seg_layer`
+        # と同じ約束）。x だけで決めると `ENB`（帯の左下に出ている M2）が
+        # LEFT になり、M1 の足が y=-756.4 を横に走る。そこは RING_OSC の
+        # VSS レール（M1 y -758.1…-752.9）のまん中で、引いた瞬間に VSS と
+        # ショートする。層に合う向きの、近い方の辺を選ぶ。
+        bx0, by0, bx1, by1 = cfg.ringosc_box()
+        if lay == "M2":
+            edge = "TOP" if cy > (by0 + by1) / 2 else "BOTTOM"
+        else:
+            edge = "RIGHT" if cx > (bx0 + bx1) / 2 else "LEFT"
         out[f"{cfg.RING_OSC_CELL}.{name}"] = {
             "x": round(cx, 2), "y": round(cy, 2), "edge": edge, "layer": lay}
     return out

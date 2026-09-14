@@ -22,6 +22,7 @@ import argparse
 import json
 import os
 import sys
+from collections import defaultdict
 
 # （TD4 版はここで TD4_MACRO_MODE=portrait を固定していた。I2C の
 #   i2c_config はマクロを持たないので不要。）
@@ -97,9 +98,27 @@ def main():
         net_island[s["net"]] = ia
         print(f"  {s['net']:<14} {'OK' if ok else 'NG'}  島 {ia}")
 
+    # --- I2C 移植 (19): 同じパッド端子に着く別ネットは同じ島でよい ----------
+    # P15 は `rst_n` と `RING_OSC.ENB` の両方を駆動する（1 本のリセットで
+    # コアと RING_OSC を同時に解く）。同じ端子に着く以上、同じ島になるのが
+    # 正しい。端子を共有しないネットどうしだけを短絡として見る。
+    by_terminal = defaultdict(set)
+    for s in plan["signals"]:
+        for k in ("from", "to"):
+            if s[k].get("terminal"):
+                by_terminal[s[k]["terminal"]].add(s["net"])
+    allowed = set()
+    for nets in by_terminal.values():
+        for x in nets:
+            for y in nets:
+                allowed.add((x, y))
+    for nets in by_terminal.values():
+        if len(nets) > 1:
+            print(f"  （同じ端子を共有: {', '.join(sorted(nets))}）")
+
     seen = {}
     for n, i in net_island.items():
-        if i is not None and i in seen:
+        if i is not None and i in seen and (seen[i], n) not in allowed:
             bad.append(f"短絡: {seen[i]} と {n} が同じ島 {i}")
         seen[i] = n
 
@@ -117,31 +136,54 @@ def main():
             bad.append(f"{n} が電源の島 {i} に入っている")
 
     rails = {"VDD": vdd, "GND": gnd}
-    for t in plan["hiz_ties"] + plan["float_ties"]:
+    ties = plan.get("ties")
+    if ties is None:
+        ties = plan["hiz_ties"] + plan["float_ties"]
+    for t in ties:
         i = look(t["x"], t["y"], "M2")
         if i != rails[t["tie"]]:
             bad.append(f"{t['terminal']} が {t['tie']} の島に入っていない（{i}）")
-    print(f"  HIZ {len(plan['hiz_ties'])} 本 + 浮いた OUT "
-          f"{len(plan['float_ties'])} 本 のレール直結を確認")
+    print(f"  HIZ / 浮いた OUT {len(ties)} 本のレール直結を確認")
 
     # コアの電源タップ
     dx, dy = plan["core_offset"]
     ly2 = db.Layout()
     ly2.read(cfg.CHIP_CORE_GDS)
     core = ly2.cell(cfg.TOP_CELL_NAME)
-    taps = 0
+    # --- I2C 移植 (20): 下辺のタップは開放でよい --------------------------
+    # 下のチャネルは RING_OSC とロゴで埋まっていて、下辺のタップから
+    # 外へ出る道が無い（route_chip の移植 (17)）。TAP 柱で上辺と繋がって
+    # いるので電気的には届く -- **繋がっていることは確かめる**が、
+    # 「フレームまで自力で届いているか」は上辺のタップだけに問う。
+    ct_core = core.bbox().top * ly2.dbu
+    taps = open_taps = 0
     for s in core.shapes(ly2.layer(49, 0)).each():
         if not s.is_text() or s.text.string not in rails:
             continue
         x, y = s.text.x * ly2.dbu + dx, s.text.y * ly2.dbu + dy
         i = look(x, y, "M2")
+        top_side = s.text.y * ly2.dbu > ct_core / 2.0
         taps += 1
+        if not top_side:
+            open_taps += 1
         if i != rails[s.text.string]:
             bad.append(f"コアの {s.text.string} タップ ({x:.1f}, {y:.1f}) "
-                       f"が島 {i}（期待 {rails[s.text.string]}）")
-    print(f"  コアの電源タップ {taps} 本を確認")
+                       f"が島 {i}（期待 {rails[s.text.string]}）"
+                       + ("" if top_side else "  ※下辺"))
+    print(f"  コアの電源タップ {taps} 本を確認"
+          f"（うち下辺 {open_taps} 本は TAP 柱経由）")
 
     # REG8x16 のポート（チップ側でバーまで延ばした 4 本 + step11 の右下 1 組）
+    # I2C にマクロは無い（i2c_config.MACRO_MODE = "none"）。
+    if getattr(cfg, "MACRO_MODE", "none") == "none":
+        print()
+        if bad:
+            for b in bad:
+                print(f"PROBLEM: {b}")
+            return 1
+        print(f"すべて OK（{len(net_island)} ネットが独立、"
+              f"電源はフレームまで届いている）")
+        return 0
     import connect_macro_power as _cmp
     origin = None
     for inst in core.each_inst():
