@@ -44,13 +44,33 @@ def main():
     if top is None:
         raise SystemExit(f"{cfg.CHIP_TOP_CELL} が {a.inp} に無い")
 
-    # RING_OSC を階層ごと読み込む（セル名の衝突があれば KLayout が教える）
-    before = {c.name for c in ly.each_cell()}
-    ly.read(cfg.RING_OSC_GDS)
-    ro = ly.cell(cfg.RING_OSC_CELL)
-    if ro is None:
+    # --- RING_OSC を**別レイアウトで読んでから**名前を変えて取り込む ---------
+    # `ly.read(RING_OSC_GDS)` を直接やってはいけない。RING_OSC は**旧世代の
+    # STDCELL**（prBoundary 64.8 / bbox 68.8。こちらは 59.4 / 63.4）で組まれて
+    # いて、しかも中に `INV_X1` `FILL2` `AND2_X1` `TAP2` という**同じ名前のセル**
+    # を持っている。同じレイアウトへ読み込むと KLayout がそれらを上書きし、
+    # **コア側 47 個のセルが 5.4 µm 高い旧セルに化ける**。行が上下に食い込んで
+    # 拡散もコンタクトも壊れ、チップの DRC が 8,449 件になった（2026-09-14 実測。
+    # 内訳は M1.CL 1233 / CO.WM 810 / AN.WM 700 …）。
+    #
+    # 旧セルそのものが悪いわけではない（V10 でテープアウトした実績がある）。
+    # **同じ名前で 2 世代が同居できない**のが問題なので、取り込むときに
+    # RING_OSC の中身を全部 `RO_` 付きに改名する。トップの名前だけ元に戻す。
+    src = db.Layout()
+    src.read(cfg.RING_OSC_GDS)
+    if src.cell(cfg.RING_OSC_CELL) is None:
         raise SystemExit(f"{cfg.RING_OSC_CELL} が {cfg.RING_OSC_GDS} に無い")
+    for c in src.each_cell():
+        c.name = "RO_" + c.name
+    clash = sorted({c.name[3:] for c in src.each_cell()}
+                   & {c.name for c in ly.each_cell()})
+    before = {c.name for c in ly.each_cell()}
+    ro = ly.create_cell(cfg.RING_OSC_CELL)
+    ro.copy_tree(src.cell("RO_" + cfg.RING_OSC_CELL))
     added = sorted({c.name for c in ly.each_cell()} - before)
+    if clash:
+        print(f"  名前が衝突するセル {len(clash)} 個を RO_ 付きで取り込んだ: "
+              f"{', '.join(clash)}")
 
     ox, oy = cfg.RING_OSC_ORIGIN
     top.insert(db.CellInstArray(ro.cell_index(),

@@ -25,7 +25,6 @@ lef/*.lib.bak
 # TB が吐く波形（iverilog の $dumpfile がリポジトリ直下に落とす）
 *.vcd
 
-# PDK のチェックアウト先（クラウド側で clone する）
-TR-1um/
-# クラウド <-> Mac の受け渡し用
-.stage/
+# PDK DRC のレポート（drc_pdk.py が作る生成物）
+*_drc.lyrdb
+DRC_error.lyrdb
