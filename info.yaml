@@ -8,7 +8,7 @@
 # Project metadata (used for documentation / review)
 # ======================================================
 project:
-  title: "Async I2C Slave + RING_OSC (V10)"        # Project title (e.g. "Simple CPU", "PLL", "ADC")
+  title: "Async I2C Slave + RING_OSC (2026 MPW)"        # Project title (e.g. "Simple CPU", "PLL", "ADC")
   author: "jun1okamura"       # Your name
   discord: ""      # Optional: Discord username (for support / communication)
   description: "Clockless (SCL/SDA edge-driven) I2C slave core (V10: MUXDFFRB/RSLATCH synthesized-cell integration + full re-placement/re-routing), with an on-die ring-oscillator test structure. Chip-level DRC/LVS clean and SPICE transistor-level 14/14 PASS (WRITE/READ/NACK regression)"  # Short one-line description
@@ -21,7 +21,7 @@ gds:
   # - start with "tr_1um_"
   # - include your GitHub username (for uniqueness)
   # Example: tr_1um_jun1okamura
-  top_cell: "tr_1um_i2c_slave_async"
+  top_cell: "tr_1um_jun1okamura_i2c"
 
   # File extension of layout
   extension: "gds"
@@ -44,7 +44,7 @@ mdp:
   # Output GDS file name generated after MDP
   # Recommended:
   #   IP62_<github_username>.gds
-  file: "IP62_username.gds"
+  file: "IP62_jun1okamura.gds"
 
 # ======================================================
 # PDK configuration (DO NOT MODIFY unless necessary)

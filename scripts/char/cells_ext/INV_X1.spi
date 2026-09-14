@@ -1,0 +1,14 @@
+* Created by KLayout
+*** My special header ***
+
+* cell INV_X1
+* pin A
+* pin Y
+* pin vss
+* pin vdd
+.SUBCKT INV_X1 A Y vss vdd
+* device instance $1 r0 *1 4,47.8 PMOS
+XM1 vdd A Y vdd PMOS L=1u W=10.2u AS=28.56p AD=28.56p PS=26u PD=26u
+* device instance $2 r0 *1 5.4,8.2 NMOS
+XM2 vss A Y vss NMOS L=1u W=3.4u AS=9.52p AD=9.52p PS=12.4u PD=12.4u
+.ENDS INV_X1

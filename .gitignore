@@ -2,3 +2,18 @@
 .DS_Store
 TR-1um/
 script/__pycache__
+__pycache__/
+
+# Cowork の受け渡し用フォルダ（リポジトリの正本ではない）
+Claude outputs/
+
+# 特性化デッキの展開先。genjobs.py + runjobs.sh でいつでも作り直せる
+scripts/char/pack/
+scripts/char/decks/
+scripts/char/logs/
+
+# P&R の受け渡し用 tarball（cloud <-> Mac）
+.pnr_stage/
+
+# チップ ngspice の波形生データ
+layout/chip/simulation/*.raw.csv

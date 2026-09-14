@@ -1,0 +1,54 @@
+* MUXDFFRB — LVS ソースネットリスト
+* scripts/char/mkcellspice.py が生成。手で編集しないこと。
+*
+* 出どころ: **レイアウト抽出を golden として凍結したもの**。
+*   このセルは同じ論理でも CMOS 構造が一意に決まらない（回路図が無い）。
+*   38T。入力 MUX（S=0 で A / S=1 で B）+ DFFRB。
+*
+*   ** この .spice に対する LVS は「レイアウト vs そのレイアウトから作った網」
+*      なので、今この瞬間は何も証明しない。意味があるのは
+*      次にレイアウトを触ったときに差分が出ること（回帰検査）。**
+*
+*   凍結した時点で ngspice により機能を確認済み:
+*   真理値表 436 点 / 順序 87 点 すべて PASS（scripts/char/RESULTS.txt）。
+*
+.subckt MUXDFFRB CK A B S RSTB QB Q vdd vss
+MP0 vdd S n10 vdd PMOS W=5.2u L=1.0u
+MP1 vdd n3 n1 vdd PMOS W=11.2u L=1.0u
+MP2 vdd QS QB vdd PMOS W=10.4u L=1.0u
+MP3 vdd RSTB QB vdd PMOS W=10.4u L=1.0u
+MP4 vdd QB Q vdd PMOS W=10.4u L=1.0u
+MP5 vdd CK CKB vdd PMOS W=10.4u L=1.0u
+MP6 vdd CKB CKP vdd PMOS W=10.4u L=1.0u
+MP7 vdd QB n6 vdd PMOS W=5.2u L=1.0u
+MP8 n6 CKP QS vdd PMOS W=5.2u L=1.0u
+MP9 QS CKB QM vdd PMOS W=5.2u L=1.0u
+MP10 vdd n8 QM vdd PMOS W=5.2u L=1.0u
+MP11 vdd QM n7 vdd PMOS W=5.2u L=1.0u
+MP12 n8 CKB n7 vdd PMOS W=5.2u L=1.0u
+MP13 n8 CKP n11 vdd PMOS W=5.2u L=1.0u
+MP14 vdd n1 n11 vdd PMOS W=5.2u L=1.0u
+MP15 vdd A n4 vdd PMOS W=5.2u L=1.0u
+MP16 n4 S n3 vdd PMOS W=5.2u L=1.0u
+MP17 n3 n10 n2 vdd PMOS W=5.2u L=1.0u
+MP18 vdd B n2 vdd PMOS W=5.2u L=1.0u
+MN0 n9 n1 vss vss NMOS W=3.4u L=1.0u
+MN1 n9 CKB n8 vss NMOS W=3.4u L=1.0u
+MN2 n8 CKP n7 vss NMOS W=3.4u L=1.0u
+MN3 n7 QM vss vss NMOS W=3.4u L=1.0u
+MN4 vss n8 QM vss NMOS W=3.4u L=1.0u
+MN5 QS CKP QM vss NMOS W=3.4u L=1.0u
+MN6 n6 CKB QS vss NMOS W=3.4u L=1.0u
+MN7 n6 QB vss vss NMOS W=3.4u L=1.0u
+MN8 n5 QS vss vss NMOS W=3.4u L=1.0u
+MN9 n5 RSTB QB vss NMOS W=3.4u L=1.0u
+MN10 vss QB Q vss NMOS W=3.4u L=1.0u
+MN11 vss CK CKB vss NMOS W=3.4u L=1.0u
+MN12 vss CKB CKP vss NMOS W=3.4u L=1.0u
+MN13 n4 A vss vss NMOS W=3.4u L=1.0u
+MN14 n4 n10 n3 vss NMOS W=3.4u L=1.0u
+MN15 n3 S n2 vss NMOS W=3.4u L=1.0u
+MN16 n2 B vss vss NMOS W=3.4u L=1.0u
+MN17 n1 n3 vss vss NMOS W=3.4u L=1.0u
+MN18 n10 S vss vss NMOS W=3.4u L=1.0u
+.ends MUXDFFRB

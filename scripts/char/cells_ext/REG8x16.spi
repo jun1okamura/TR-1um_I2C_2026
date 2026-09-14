@@ -1,0 +1,537 @@
+* Created by KLayout
+*** My special header ***
+
+* cell REG8x16
+* pin ADD[0]
+* pin ADD[1]
+* pin ADD[2]
+* pin ADD[3]
+* pin D[0]
+* pin D[1]
+* pin D[2]
+* pin D[3]
+* pin D[4]
+* pin D[5]
+* pin D[6]
+* pin D[7]
+* pin Q[0]
+* pin Q[1]
+* pin Q[2]
+* pin Q[3]
+* pin Q[4]
+* pin Q[5]
+* pin Q[6]
+* pin Q[7]
+* pin WEB
+* pin vdd
+* pin vss
+.SUBCKT REG8x16 ADD[0] ADD[1] ADD[2] ADD[3] D[0] D[1] D[2] D[3] D[4] D[5] D[6]
++ D[7] Q[0] Q[1] Q[2] Q[3] Q[4] Q[5] Q[6] Q[7] WEB vdd vss
+* cell instance $4 r180 *1 -48.6,4.8
+X4 nI90 nI87 nI91 nI84 nI86 ADD[3] nI89 ADD[2] ADD[1] nI88 nI83 nI85
++ vdd ADD[0] WEB vss ADDBUF
+* cell instance $5 r180 *1 264.6,4.8
+X5 nI76 Q[6] nI68 D[6] vdd vss REGBUF
+* cell instance $6 r180 *1 226.8,4.8
+X6 nI77 Q[5] nI69 D[5] vdd vss REGBUF
+* cell instance $7 r180 *1 189,4.8
+X7 nI78 Q[4] nI70 D[4] vdd vss REGBUF
+* cell instance $8 r180 *1 151.2,4.8
+X8 nI79 Q[3] nI71 D[3] vdd vss REGBUF
+* cell instance $9 r180 *1 113.4,4.8
+X9 nI80 Q[2] nI72 D[2] vdd vss REGBUF
+* cell instance $10 r180 *1 75.6,4.8
+X10 nI81 Q[1] nI73 D[1] vdd vss REGBUF
+* cell instance $11 r180 *1 37.8,4.8
+X11 nI82 Q[0] nI74 D[0] vdd vss REGBUF
+* cell instance $12 r180 *1 302.4,4.8
+X12 nI75 Q[7] nI67 D[7] vdd vss REGBUF
+* cell instance $13 m45 *1 -86.4,166.2
+X13 vdd nI85 nI84 nI83 nI8 nI16 nI48 nI40 vss nI64 nI32 nI56 nI24
++ nI88 nI89 nI86 DEC2
+* cell instance $14 m45 *1 -86.4,57
+X14 vdd nI85 nI84 nI83 nI9 nI17 nI49 nI41 vss nI65 nI33 nI57 nI25
++ nI91 nI89 nI86 DEC2
+* cell instance $15 m45 *1 -86.4,275.4
+X15 vdd nI85 nI84 nI83 nI7 nI15 nI47 nI39 vss nI63 nI31 nI55 nI23
++ nI91 nI87 nI86 DEC2
+* cell instance $16 m45 *1 -86.4,384.6
+X16 vdd nI85 nI84 nI83 nI6 nI14 nI46 nI38 vss nI62 nI30 nI54 nI22
++ nI88 nI87 nI86 DEC2
+* cell instance $17 m45 *1 -86.4,493.8
+X17 vdd nI85 nI84 nI83 nI5 nI13 nI45 nI37 vss nI61 nI29 nI53 nI21
++ nI91 nI89 nI90 DEC2
+* cell instance $18 m45 *1 -86.4,603
+X18 vdd nI85 nI84 nI83 nI4 nI12 nI44 nI36 vss nI60 nI28 nI52 nI20
++ nI88 nI89 nI90 DEC2
+* cell instance $19 m45 *1 -86.4,712.2
+X19 vdd nI85 nI84 nI83 nI3 nI11 nI43 nI35 vss nI59 nI27 nI51 nI19
++ nI91 nI87 nI90 DEC2
+* cell instance $20 m45 *1 -86.4,821.4
+X20 vdd nI85 nI84 nI83 nI2 nI10 nI42 nI34 vss nI58 nI26 nI50 nI18
++ nI88 nI87 nI90 DEC2
+* cell instance $45 m0 *1 0,223.2
+X45 nI32 nI24 nI82 nI74 vdd nI16 nI8 vss TLAT
+* cell instance $46 m0 *1 37.8,223.2
+X46 nI32 nI24 nI81 nI73 vdd nI16 nI8 vss TLAT
+* cell instance $47 m0 *1 75.6,223.2
+X47 nI32 nI24 nI80 nI72 vdd nI16 nI8 vss TLAT
+* cell instance $48 m0 *1 113.4,223.2
+X48 nI32 nI24 nI79 nI71 vdd nI16 nI8 vss TLAT
+* cell instance $49 m0 *1 151.2,223.2
+X49 nI32 nI24 nI78 nI70 vdd nI16 nI8 vss TLAT
+* cell instance $50 m0 *1 189,223.2
+X50 nI32 nI24 nI77 nI69 vdd nI16 nI8 vss TLAT
+* cell instance $51 m0 *1 226.8,223.2
+X51 nI32 nI24 nI76 nI68 vdd nI16 nI8 vss TLAT
+* cell instance $52 m0 *1 264.6,223.2
+X52 nI32 nI24 nI75 nI67 vdd nI16 nI8 vss TLAT
+* cell instance $53 r0 *1 0,109.2
+X53 nI64 nI56 nI82 nI74 vdd nI48 nI40 vss TLAT
+* cell instance $54 r0 *1 37.8,109.2
+X54 nI64 nI56 nI81 nI73 vdd nI48 nI40 vss TLAT
+* cell instance $55 r0 *1 75.6,109.2
+X55 nI64 nI56 nI80 nI72 vdd nI48 nI40 vss TLAT
+* cell instance $56 r0 *1 113.4,109.2
+X56 nI64 nI56 nI79 nI71 vdd nI48 nI40 vss TLAT
+* cell instance $57 r0 *1 151.2,109.2
+X57 nI64 nI56 nI78 nI70 vdd nI48 nI40 vss TLAT
+* cell instance $58 r0 *1 189,109.2
+X58 nI64 nI56 nI77 nI69 vdd nI48 nI40 vss TLAT
+* cell instance $59 r0 *1 226.8,109.2
+X59 nI64 nI56 nI76 nI68 vdd nI48 nI40 vss TLAT
+* cell instance $60 r0 *1 264.6,109.2
+X60 nI64 nI56 nI75 nI67 vdd nI48 nI40 vss TLAT
+* cell instance $61 m0 *1 0,114
+X61 nI33 nI25 nI82 nI74 vdd nI17 nI9 vss TLAT
+* cell instance $62 m0 *1 37.8,114
+X62 nI33 nI25 nI81 nI73 vdd nI17 nI9 vss TLAT
+* cell instance $63 m0 *1 75.6,114
+X63 nI33 nI25 nI80 nI72 vdd nI17 nI9 vss TLAT
+* cell instance $64 m0 *1 113.4,114
+X64 nI33 nI25 nI79 nI71 vdd nI17 nI9 vss TLAT
+* cell instance $65 m0 *1 151.2,114
+X65 nI33 nI25 nI78 nI70 vdd nI17 nI9 vss TLAT
+* cell instance $66 m0 *1 189,114
+X66 nI33 nI25 nI77 nI69 vdd nI17 nI9 vss TLAT
+* cell instance $67 m0 *1 226.8,114
+X67 nI33 nI25 nI76 nI68 vdd nI17 nI9 vss TLAT
+* cell instance $68 m0 *1 264.6,114
+X68 nI33 nI25 nI75 nI67 vdd nI17 nI9 vss TLAT
+* cell instance $69 r0 *1 0,0
+X69 nI65 nI57 nI82 nI74 vdd nI49 nI41 vss TLAT
+* cell instance $70 r0 *1 37.8,0
+X70 nI65 nI57 nI81 nI73 vdd nI49 nI41 vss TLAT
+* cell instance $71 r0 *1 75.6,0
+X71 nI65 nI57 nI80 nI72 vdd nI49 nI41 vss TLAT
+* cell instance $72 r0 *1 113.4,0
+X72 nI65 nI57 nI79 nI71 vdd nI49 nI41 vss TLAT
+* cell instance $73 r0 *1 151.2,0
+X73 nI65 nI57 nI78 nI70 vdd nI49 nI41 vss TLAT
+* cell instance $74 r0 *1 189,0
+X74 nI65 nI57 nI77 nI69 vdd nI49 nI41 vss TLAT
+* cell instance $75 r0 *1 226.8,0
+X75 nI65 nI57 nI76 nI68 vdd nI49 nI41 vss TLAT
+* cell instance $76 r0 *1 264.6,0
+X76 nI65 nI57 nI75 nI67 vdd nI49 nI41 vss TLAT
+* cell instance $77 m0 *1 0,332.4
+X77 nI31 nI23 nI82 nI74 vdd nI15 nI7 vss TLAT
+* cell instance $78 m0 *1 37.8,332.4
+X78 nI31 nI23 nI81 nI73 vdd nI15 nI7 vss TLAT
+* cell instance $79 m0 *1 75.6,332.4
+X79 nI31 nI23 nI80 nI72 vdd nI15 nI7 vss TLAT
+* cell instance $80 m0 *1 113.4,332.4
+X80 nI31 nI23 nI79 nI71 vdd nI15 nI7 vss TLAT
+* cell instance $81 m0 *1 151.2,332.4
+X81 nI31 nI23 nI78 nI70 vdd nI15 nI7 vss TLAT
+* cell instance $82 m0 *1 189,332.4
+X82 nI31 nI23 nI77 nI69 vdd nI15 nI7 vss TLAT
+* cell instance $83 m0 *1 226.8,332.4
+X83 nI31 nI23 nI76 nI68 vdd nI15 nI7 vss TLAT
+* cell instance $84 m0 *1 264.6,332.4
+X84 nI31 nI23 nI75 nI67 vdd nI15 nI7 vss TLAT
+* cell instance $85 r0 *1 0,218.4
+X85 nI63 nI55 nI82 nI74 vdd nI47 nI39 vss TLAT
+* cell instance $86 r0 *1 37.8,218.4
+X86 nI63 nI55 nI81 nI73 vdd nI47 nI39 vss TLAT
+* cell instance $87 r0 *1 75.6,218.4
+X87 nI63 nI55 nI80 nI72 vdd nI47 nI39 vss TLAT
+* cell instance $88 r0 *1 113.4,218.4
+X88 nI63 nI55 nI79 nI71 vdd nI47 nI39 vss TLAT
+* cell instance $89 r0 *1 151.2,218.4
+X89 nI63 nI55 nI78 nI70 vdd nI47 nI39 vss TLAT
+* cell instance $90 r0 *1 189,218.4
+X90 nI63 nI55 nI77 nI69 vdd nI47 nI39 vss TLAT
+* cell instance $91 r0 *1 226.8,218.4
+X91 nI63 nI55 nI76 nI68 vdd nI47 nI39 vss TLAT
+* cell instance $92 r0 *1 264.6,218.4
+X92 nI63 nI55 nI75 nI67 vdd nI47 nI39 vss TLAT
+* cell instance $93 m0 *1 0,441.6
+X93 nI30 nI22 nI82 nI74 vdd nI14 nI6 vss TLAT
+* cell instance $94 m0 *1 37.8,441.6
+X94 nI30 nI22 nI81 nI73 vdd nI14 nI6 vss TLAT
+* cell instance $95 m0 *1 75.6,441.6
+X95 nI30 nI22 nI80 nI72 vdd nI14 nI6 vss TLAT
+* cell instance $96 m0 *1 113.4,441.6
+X96 nI30 nI22 nI79 nI71 vdd nI14 nI6 vss TLAT
+* cell instance $97 m0 *1 151.2,441.6
+X97 nI30 nI22 nI78 nI70 vdd nI14 nI6 vss TLAT
+* cell instance $98 m0 *1 189,441.6
+X98 nI30 nI22 nI77 nI69 vdd nI14 nI6 vss TLAT
+* cell instance $99 m0 *1 226.8,441.6
+X99 nI30 nI22 nI76 nI68 vdd nI14 nI6 vss TLAT
+* cell instance $100 m0 *1 264.6,441.6
+X100 nI30 nI22 nI75 nI67 vdd nI14 nI6 vss TLAT
+* cell instance $101 r0 *1 0,327.6
+X101 nI62 nI54 nI82 nI74 vdd nI46 nI38 vss TLAT
+* cell instance $102 r0 *1 37.8,327.6
+X102 nI62 nI54 nI81 nI73 vdd nI46 nI38 vss TLAT
+* cell instance $103 r0 *1 75.6,327.6
+X103 nI62 nI54 nI80 nI72 vdd nI46 nI38 vss TLAT
+* cell instance $104 r0 *1 113.4,327.6
+X104 nI62 nI54 nI79 nI71 vdd nI46 nI38 vss TLAT
+* cell instance $105 r0 *1 151.2,327.6
+X105 nI62 nI54 nI78 nI70 vdd nI46 nI38 vss TLAT
+* cell instance $106 r0 *1 189,327.6
+X106 nI62 nI54 nI77 nI69 vdd nI46 nI38 vss TLAT
+* cell instance $107 r0 *1 226.8,327.6
+X107 nI62 nI54 nI76 nI68 vdd nI46 nI38 vss TLAT
+* cell instance $108 r0 *1 264.6,327.6
+X108 nI62 nI54 nI75 nI67 vdd nI46 nI38 vss TLAT
+* cell instance $109 m0 *1 0,550.8
+X109 nI29 nI21 nI82 nI74 vdd nI13 nI5 vss TLAT
+* cell instance $110 m0 *1 37.8,550.8
+X110 nI29 nI21 nI81 nI73 vdd nI13 nI5 vss TLAT
+* cell instance $111 m0 *1 75.6,550.8
+X111 nI29 nI21 nI80 nI72 vdd nI13 nI5 vss TLAT
+* cell instance $112 m0 *1 113.4,550.8
+X112 nI29 nI21 nI79 nI71 vdd nI13 nI5 vss TLAT
+* cell instance $113 m0 *1 151.2,550.8
+X113 nI29 nI21 nI78 nI70 vdd nI13 nI5 vss TLAT
+* cell instance $114 m0 *1 189,550.8
+X114 nI29 nI21 nI77 nI69 vdd nI13 nI5 vss TLAT
+* cell instance $115 m0 *1 226.8,550.8
+X115 nI29 nI21 nI76 nI68 vdd nI13 nI5 vss TLAT
+* cell instance $116 m0 *1 264.6,550.8
+X116 nI29 nI21 nI75 nI67 vdd nI13 nI5 vss TLAT
+* cell instance $117 r0 *1 0,436.8
+X117 nI61 nI53 nI82 nI74 vdd nI45 nI37 vss TLAT
+* cell instance $118 r0 *1 37.8,436.8
+X118 nI61 nI53 nI81 nI73 vdd nI45 nI37 vss TLAT
+* cell instance $119 r0 *1 75.6,436.8
+X119 nI61 nI53 nI80 nI72 vdd nI45 nI37 vss TLAT
+* cell instance $120 r0 *1 113.4,436.8
+X120 nI61 nI53 nI79 nI71 vdd nI45 nI37 vss TLAT
+* cell instance $121 r0 *1 151.2,436.8
+X121 nI61 nI53 nI78 nI70 vdd nI45 nI37 vss TLAT
+* cell instance $122 r0 *1 189,436.8
+X122 nI61 nI53 nI77 nI69 vdd nI45 nI37 vss TLAT
+* cell instance $123 r0 *1 226.8,436.8
+X123 nI61 nI53 nI76 nI68 vdd nI45 nI37 vss TLAT
+* cell instance $124 r0 *1 264.6,436.8
+X124 nI61 nI53 nI75 nI67 vdd nI45 nI37 vss TLAT
+* cell instance $125 m0 *1 0,660
+X125 nI28 nI20 nI82 nI74 vdd nI12 nI4 vss TLAT
+* cell instance $126 m0 *1 37.8,660
+X126 nI28 nI20 nI81 nI73 vdd nI12 nI4 vss TLAT
+* cell instance $127 m0 *1 75.6,660
+X127 nI28 nI20 nI80 nI72 vdd nI12 nI4 vss TLAT
+* cell instance $128 m0 *1 113.4,660
+X128 nI28 nI20 nI79 nI71 vdd nI12 nI4 vss TLAT
+* cell instance $129 m0 *1 151.2,660
+X129 nI28 nI20 nI78 nI70 vdd nI12 nI4 vss TLAT
+* cell instance $130 m0 *1 189,660
+X130 nI28 nI20 nI77 nI69 vdd nI12 nI4 vss TLAT
+* cell instance $131 m0 *1 226.8,660
+X131 nI28 nI20 nI76 nI68 vdd nI12 nI4 vss TLAT
+* cell instance $132 m0 *1 264.6,660
+X132 nI28 nI20 nI75 nI67 vdd nI12 nI4 vss TLAT
+* cell instance $133 r0 *1 0,546
+X133 nI60 nI52 nI82 nI74 vdd nI44 nI36 vss TLAT
+* cell instance $134 r0 *1 37.8,546
+X134 nI60 nI52 nI81 nI73 vdd nI44 nI36 vss TLAT
+* cell instance $135 r0 *1 75.6,546
+X135 nI60 nI52 nI80 nI72 vdd nI44 nI36 vss TLAT
+* cell instance $136 r0 *1 113.4,546
+X136 nI60 nI52 nI79 nI71 vdd nI44 nI36 vss TLAT
+* cell instance $137 r0 *1 151.2,546
+X137 nI60 nI52 nI78 nI70 vdd nI44 nI36 vss TLAT
+* cell instance $138 r0 *1 189,546
+X138 nI60 nI52 nI77 nI69 vdd nI44 nI36 vss TLAT
+* cell instance $139 r0 *1 226.8,546
+X139 nI60 nI52 nI76 nI68 vdd nI44 nI36 vss TLAT
+* cell instance $140 r0 *1 264.6,546
+X140 nI60 nI52 nI75 nI67 vdd nI44 nI36 vss TLAT
+* cell instance $141 m0 *1 0,769.2
+X141 nI27 nI19 nI82 nI74 vdd nI11 nI3 vss TLAT
+* cell instance $142 m0 *1 37.8,769.2
+X142 nI27 nI19 nI81 nI73 vdd nI11 nI3 vss TLAT
+* cell instance $143 m0 *1 75.6,769.2
+X143 nI27 nI19 nI80 nI72 vdd nI11 nI3 vss TLAT
+* cell instance $144 m0 *1 113.4,769.2
+X144 nI27 nI19 nI79 nI71 vdd nI11 nI3 vss TLAT
+* cell instance $145 m0 *1 151.2,769.2
+X145 nI27 nI19 nI78 nI70 vdd nI11 nI3 vss TLAT
+* cell instance $146 m0 *1 189,769.2
+X146 nI27 nI19 nI77 nI69 vdd nI11 nI3 vss TLAT
+* cell instance $147 m0 *1 226.8,769.2
+X147 nI27 nI19 nI76 nI68 vdd nI11 nI3 vss TLAT
+* cell instance $148 m0 *1 264.6,769.2
+X148 nI27 nI19 nI75 nI67 vdd nI11 nI3 vss TLAT
+* cell instance $149 r0 *1 0,655.2
+X149 nI59 nI51 nI82 nI74 vdd nI43 nI35 vss TLAT
+* cell instance $150 r0 *1 37.8,655.2
+X150 nI59 nI51 nI81 nI73 vdd nI43 nI35 vss TLAT
+* cell instance $151 r0 *1 75.6,655.2
+X151 nI59 nI51 nI80 nI72 vdd nI43 nI35 vss TLAT
+* cell instance $152 r0 *1 113.4,655.2
+X152 nI59 nI51 nI79 nI71 vdd nI43 nI35 vss TLAT
+* cell instance $153 r0 *1 151.2,655.2
+X153 nI59 nI51 nI78 nI70 vdd nI43 nI35 vss TLAT
+* cell instance $154 r0 *1 189,655.2
+X154 nI59 nI51 nI77 nI69 vdd nI43 nI35 vss TLAT
+* cell instance $155 r0 *1 226.8,655.2
+X155 nI59 nI51 nI76 nI68 vdd nI43 nI35 vss TLAT
+* cell instance $156 r0 *1 264.6,655.2
+X156 nI59 nI51 nI75 nI67 vdd nI43 nI35 vss TLAT
+* cell instance $157 m0 *1 0,878.4
+X157 nI26 nI18 nI82 nI74 vdd nI10 nI2 vss TLAT
+* cell instance $158 m0 *1 37.8,878.4
+X158 nI26 nI18 nI81 nI73 vdd nI10 nI2 vss TLAT
+* cell instance $159 m0 *1 75.6,878.4
+X159 nI26 nI18 nI80 nI72 vdd nI10 nI2 vss TLAT
+* cell instance $160 m0 *1 113.4,878.4
+X160 nI26 nI18 nI79 nI71 vdd nI10 nI2 vss TLAT
+* cell instance $161 m0 *1 151.2,878.4
+X161 nI26 nI18 nI78 nI70 vdd nI10 nI2 vss TLAT
+* cell instance $162 m0 *1 189,878.4
+X162 nI26 nI18 nI77 nI69 vdd nI10 nI2 vss TLAT
+* cell instance $163 m0 *1 226.8,878.4
+X163 nI26 nI18 nI76 nI68 vdd nI10 nI2 vss TLAT
+* cell instance $164 m0 *1 264.6,878.4
+X164 nI26 nI18 nI75 nI67 vdd nI10 nI2 vss TLAT
+* cell instance $165 r0 *1 0,764.4
+X165 nI58 nI50 nI82 nI74 vdd nI42 nI34 vss TLAT
+* cell instance $166 r0 *1 37.8,764.4
+X166 nI58 nI50 nI81 nI73 vdd nI42 nI34 vss TLAT
+* cell instance $167 r0 *1 75.6,764.4
+X167 nI58 nI50 nI80 nI72 vdd nI42 nI34 vss TLAT
+* cell instance $168 r0 *1 113.4,764.4
+X168 nI58 nI50 nI79 nI71 vdd nI42 nI34 vss TLAT
+* cell instance $169 r0 *1 151.2,764.4
+X169 nI58 nI50 nI78 nI70 vdd nI42 nI34 vss TLAT
+* cell instance $170 r0 *1 189,764.4
+X170 nI58 nI50 nI77 nI69 vdd nI42 nI34 vss TLAT
+* cell instance $171 r0 *1 226.8,764.4
+X171 nI58 nI50 nI76 nI68 vdd nI42 nI34 vss TLAT
+* cell instance $172 r0 *1 264.6,764.4
+X172 nI58 nI50 nI75 nI67 vdd nI42 nI34 vss TLAT
+.ENDS REG8x16
+
+* cell REGBUF
+* pin Q
+* pin QQ
+* pin DD
+* pin D
+* pin vdd
+* pin vss
+.SUBCKT REGBUF Q QQ DD D vdd vss
+* device instance $1 r0 *1 29.8,47.8 PMOS
+XM1 DD n6 vdd vdd PMOS L=1u W=10.2u AS=28.56p AD=15.3p PS=26u PD=13.2u
+* device instance $2 r0 *1 33.8,47.8 PMOS
+XM2 vdd D n6 vdd PMOS L=1u W=10.2u AS=15.3p AD=28.56p PS=13.2u PD=26u
+* device instance $3 r0 *1 4,47.8 PMOS
+XM3 n3 Q vdd vdd PMOS L=1u W=10.2u AS=28.56p AD=15.3p PS=26u PD=13.2u
+* device instance $4 r0 *1 8,47.8 PMOS
+XM4 vdd n3 QQ vdd PMOS L=1u W=10.2u AS=15.3p AD=28.56p PS=13.2u PD=26u
+* device instance $5 r0 *1 5.4,8.2 NMOS
+XM5 n3 Q vss vss NMOS L=1u W=3.4u AS=9.52p AD=5.1p PS=12.4u PD=6.4u
+* device instance $6 r0 *1 9.4,8.2 NMOS
+XM6 vss n3 QQ vss NMOS L=1u W=3.4u AS=5.1p AD=9.52p PS=6.4u PD=12.4u
+* device instance $7 r0 *1 28.4,8.2 NMOS
+XM7 DD n6 vss vss NMOS L=1u W=3.4u AS=9.52p AD=5.1p PS=12.4u PD=6.4u
+* device instance $8 r0 *1 32.4,8.2 NMOS
+XM8 vss D n6 vss NMOS L=1u W=3.4u AS=5.1p AD=9.52p PS=6.4u PD=12.4u
+.ENDS REGBUF
+
+* cell DEC2
+* pin 
+* pin WEB
+* pin AB0
+* pin A0
+* pin 
+* pin 
+* pin 
+* pin 
+* pin VSS
+* pin 
+* pin 
+* pin 
+* pin 
+* pin 
+* pin 
+* pin 
+.SUBCKT DEC2 n1 WEB AB0 A0 n16 n18 n20 n28 VSS nI54 nI53 nI52 nI51
++ nI41 nI40 nI27
+* device instance $1 r0 *1 -22.2,68.8 PMOS
+XM1 n28 n20 n21 n1 PMOS L=1u W=12.2u AS=34.16p AD=7.32p PS=30u PD=13.4u
+* device instance $2 r0 *1 -20,68.8 PMOS
+XM2 n21 WEB n1 n1 PMOS L=1u W=12.2u AS=7.32p AD=30.5p PS=13.4u PD=17.2u
+* device instance $3 r0 *1 -14,68.8 PMOS
+XM3 n1 AB0 n20 n1 PMOS L=1u W=12.2u AS=30.5p AD=18.3p PS=17.2u PD=15.2u
+* device instance $4 r0 *1 -10,68.8 PMOS
+XM4 n20 nI41 n1 n1 PMOS L=1u W=12.2u AS=18.3p AD=18.3p PS=15.2u PD=15.2u
+* device instance $5 r0 *1 -6,68.8 PMOS
+XM5 n1 nI40 n20 n1 PMOS L=1u W=12.2u AS=18.3p AD=18.3p PS=15.2u PD=15.2u
+* device instance $6 r0 *1 -2,68.8 PMOS
+XM6 n20 nI27 n1 n1 PMOS L=1u W=12.2u AS=18.3p AD=18.3p PS=15.2u PD=15.2u
+* device instance $7 r0 *1 2,68.8 PMOS
+XM7 n1 nI27 n18 n1 PMOS L=1u W=12.2u AS=18.3p AD=18.3p PS=15.2u PD=15.2u
+* device instance $8 r0 *1 6,68.8 PMOS
+XM8 n18 nI40 n1 n1 PMOS L=1u W=12.2u AS=18.3p AD=18.3p PS=15.2u PD=15.2u
+* device instance $9 r0 *1 10,68.8 PMOS
+XM9 n1 nI41 n18 n1 PMOS L=1u W=12.2u AS=18.3p AD=18.3p PS=15.2u PD=15.2u
+* device instance $10 r0 *1 14,68.8 PMOS
+XM10 n18 A0 n1 n1 PMOS L=1u W=12.2u AS=18.3p AD=30.5p PS=15.2u PD=17.2u
+* device instance $11 r0 *1 20,68.8 PMOS
+XM11 n1 WEB n17 n1 PMOS L=1u W=12.2u AS=30.5p AD=7.32p PS=17.2u PD=13.4u
+* device instance $12 r0 *1 22.2,68.8 PMOS
+XM12 n17 n18 n16 n1 PMOS L=1u W=12.2u AS=7.32p AD=34.16p PS=13.4u PD=30u
+* device instance $13 r0 *1 -9.6,12.4 NMOS
+XM13 n20 AB0 n32 VSS NMOS L=1u W=4.6u AS=12.88p AD=2.76p PS=14.8u PD=5.8u
+* device instance $14 r0 *1 -7.4,12.4 NMOS
+XM14 n32 nI41 n31 VSS NMOS L=1u W=4.6u AS=2.76p AD=2.76p PS=5.8u PD=5.8u
+* device instance $15 r0 *1 -5.2,12.4 NMOS
+XM15 n31 nI40 n36 VSS NMOS L=1u W=4.6u AS=2.76p AD=2.76p PS=5.8u PD=5.8u
+* device instance $16 r0 *1 -3,12.4 NMOS
+XM16 n36 nI27 VSS VSS NMOS L=1u W=4.6u AS=2.76p AD=11.5p PS=5.8u PD=9.6u
+* device instance $17 r0 *1 3,12.4 NMOS
+XM17 VSS nI27 n35 VSS NMOS L=1u W=4.6u AS=11.5p AD=2.76p PS=9.6u PD=5.8u
+* device instance $18 r0 *1 5.2,12.4 NMOS
+XM18 n35 nI40 n29 VSS NMOS L=1u W=4.6u AS=2.76p AD=2.76p PS=5.8u PD=5.8u
+* device instance $19 r0 *1 7.4,12.4 NMOS
+XM19 n29 nI41 n30 VSS NMOS L=1u W=4.6u AS=2.76p AD=2.76p PS=5.8u PD=5.8u
+* device instance $20 r0 *1 9.6,12.4 NMOS
+XM20 n30 A0 n18 VSS NMOS L=1u W=4.6u AS=2.76p AD=12.88p PS=5.8u PD=14.8u
+* device instance $21 r0 *1 30.2,68.8 PMOS
+XM21 nI51 n16 n1 n1 PMOS L=1u W=12.2u AS=34.16p AD=18.3p PS=30u PD=15.2u
+* device instance $22 r0 *1 34.2,68.8 PMOS
+XM22 n1 n18 nI53 n1 PMOS L=1u W=12.2u AS=18.3p AD=34.16p PS=15.2u PD=30u
+* device instance $23 r0 *1 30.2,26.9 NMOS
+XM23 nI51 n16 VSS VSS NMOS L=1u W=4.6u AS=12.88p AD=6.9p PS=14.8u PD=7.6u
+* device instance $24 r0 *1 34.2,26.9 NMOS
+XM24 VSS n18 nI53 VSS NMOS L=1u W=4.6u AS=6.9p AD=12.88p PS=7.6u PD=14.8u
+* device instance $25 r0 *1 22.2,26.9 NMOS
+XM25 VSS n18 n16 VSS NMOS L=1u W=4.6u AS=12.88p AD=12.88p PS=14.8u PD=14.8u
+* device instance $26 r0 *1 22.2,12.4 NMOS
+XM26 VSS WEB n16 VSS NMOS L=1u W=4.6u AS=12.88p AD=12.88p PS=14.8u PD=14.8u
+* device instance $27 m90 *1 -30.2,68.8 PMOS
+XM27 nI52 n28 n1 n1 PMOS L=1u W=12.2u AS=34.16p AD=18.3p PS=30u PD=15.2u
+* device instance $28 m90 *1 -34.2,68.8 PMOS
+XM28 n1 n20 nI54 n1 PMOS L=1u W=12.2u AS=18.3p AD=34.16p PS=15.2u PD=30u
+* device instance $29 m90 *1 -30.2,26.9 NMOS
+XM29 nI52 n28 VSS VSS NMOS L=1u W=4.6u AS=12.88p AD=6.9p PS=14.8u PD=7.6u
+* device instance $30 m90 *1 -34.2,26.9 NMOS
+XM30 VSS n20 nI54 VSS NMOS L=1u W=4.6u AS=6.9p AD=12.88p PS=7.6u PD=14.8u
+* device instance $31 m90 *1 -22.2,26.9 NMOS
+XM31 VSS n20 n28 VSS NMOS L=1u W=4.6u AS=12.88p AD=12.88p PS=14.8u PD=14.8u
+* device instance $32 m90 *1 -22.2,12.4 NMOS
+XM32 VSS WEB n28 VSS NMOS L=1u W=4.6u AS=12.88p AD=12.88p PS=14.8u PD=14.8u
+.ENDS DEC2
+
+* cell TLAT
+* pin RD
+* pin WRB
+* pin Q
+* pin D
+* pin vdd
+* pin RDB
+* pin WR
+* pin vss
+.SUBCKT TLAT RD WRB Q D vdd RDB WR vss
+* device instance $1 r0 *1 29.5,40.2 PMOS
+XM1 vdd n6 n7 vdd PMOS L=1u W=7.2u AS=20.16p AD=10.8p PS=20u PD=10.2u
+* device instance $2 r0 *1 33.5,40.2 PMOS
+XM2 n7 RDB Q vdd PMOS L=1u W=7.2u AS=10.8p AD=20.16p PS=10.2u PD=20u
+* device instance $3 r0 *1 9.5,40.2 PMOS
+XM3 D WRB n4 vdd PMOS L=1u W=7.2u AS=20.16p AD=10.8p PS=20u PD=10.2u
+* device instance $4 r0 *1 13.5,40.2 PMOS
+XM4 n4 WR n5 vdd PMOS L=1u W=7.2u AS=10.8p AD=10.8p PS=10.2u PD=10.2u
+* device instance $5 r0 *1 17.5,40.2 PMOS
+XM5 n5 n6 vdd vdd PMOS L=1u W=7.2u AS=10.8p AD=10.8p PS=10.2u PD=10.2u
+* device instance $6 r0 *1 21.5,40.2 PMOS
+XM6 vdd n4 n6 vdd PMOS L=1u W=7.2u AS=10.8p AD=20.16p PS=10.2u PD=20u
+* device instance $7 r0 *1 29.5,17.9 NMOS
+XM7 vss n6 n7 vss NMOS L=1u W=3.4u AS=9.52p AD=5.1p PS=12.4u PD=6.4u
+* device instance $8 r0 *1 33.5,17.9 NMOS
+XM8 n7 RD Q vss NMOS L=1u W=3.4u AS=5.1p AD=9.52p PS=6.4u PD=12.4u
+* device instance $9 r0 *1 9.5,17.9 NMOS
+XM9 D WR n4 vss NMOS L=1u W=3.4u AS=9.52p AD=5.1p PS=12.4u PD=6.4u
+* device instance $10 r0 *1 13.5,17.9 NMOS
+XM10 n4 WRB n5 vss NMOS L=1u W=3.4u AS=5.1p AD=5.1p PS=6.4u PD=6.4u
+* device instance $11 r0 *1 17.5,17.9 NMOS
+XM11 n5 n6 vss vss NMOS L=1u W=3.4u AS=5.1p AD=5.1p PS=6.4u PD=6.4u
+* device instance $12 r0 *1 21.5,17.9 NMOS
+XM12 vss n4 n6 vss NMOS L=1u W=3.4u AS=5.1p AD=9.52p PS=6.4u PD=12.4u
+.ENDS TLAT
+
+* cell ADDBUF
+* pin AB3
+* pin AB2
+* pin AB1
+* pin AB0
+* pin A3
+* pin A3_PIN
+* pin A2
+* pin A2_PIN
+* pin A1_PIN
+* pin A1
+* pin A0
+* pin WEB
+* pin vdd
+* pin A0_PIN
+* pin WEB_PIN
+* pin vss
+.SUBCKT ADDBUF AB3 AB2 AB1 AB0 A3 A3_PIN A2 A2_PIN A1_PIN A1 A0 WEB vdd A0_PIN
++ WEB_PIN vss
+* device instance $1 r0 *1 -20,41.7 PMOS
+XM1 A3 AB3 vdd vdd PMOS L=1u W=10.2u AS=28.56p AD=15.3p PS=26u PD=13.2u
+* device instance $2 r0 *1 -16,41.7 PMOS
+XM2 vdd A3_PIN AB3 vdd PMOS L=1u W=10.2u AS=15.3p AD=28.56p PS=13.2u PD=26u
+* device instance $3 r0 *1 16,41.7 PMOS
+XM3 AB0 A0_PIN vdd vdd PMOS L=1u W=10.2u AS=28.56p AD=15.3p PS=26u PD=13.2u
+* device instance $4 r0 *1 20,41.7 PMOS
+XM4 vdd AB0 A0 vdd PMOS L=1u W=10.2u AS=15.3p AD=28.56p PS=13.2u PD=26u
+* device instance $5 r0 *1 28,41.7 PMOS
+XM5 WEB n6 vdd vdd PMOS L=1u W=10.2u AS=28.56p AD=15.3p PS=26u PD=13.2u
+* device instance $6 r0 *1 32,41.7 PMOS
+XM6 vdd WEB_PIN n6 vdd PMOS L=1u W=10.2u AS=15.3p AD=28.56p PS=13.2u PD=26u
+* device instance $7 r0 *1 4,41.7 PMOS
+XM7 AB1 A1_PIN vdd vdd PMOS L=1u W=10.2u AS=28.56p AD=15.3p PS=26u PD=13.2u
+* device instance $8 r0 *1 8,41.7 PMOS
+XM8 vdd AB1 A1 vdd PMOS L=1u W=10.2u AS=15.3p AD=28.56p PS=13.2u PD=26u
+* device instance $9 r0 *1 -8,41.7 PMOS
+XM9 A2 AB2 vdd vdd PMOS L=1u W=10.2u AS=28.56p AD=15.3p PS=26u PD=13.2u
+* device instance $10 r0 *1 -4,41.7 PMOS
+XM10 vdd A2_PIN AB2 vdd PMOS L=1u W=10.2u AS=15.3p AD=28.56p PS=13.2u PD=26u
+* device instance $11 r0 *1 28,17.9 NMOS
+XM11 WEB n6 vss vss NMOS L=1u W=3.4u AS=9.52p AD=5.1p PS=12.4u PD=6.4u
+* device instance $12 r0 *1 32,17.9 NMOS
+XM12 vss WEB_PIN n6 vss NMOS L=1u W=3.4u AS=5.1p AD=9.52p PS=6.4u PD=12.4u
+* device instance $13 r0 *1 16,17.9 NMOS
+XM13 AB0 A0_PIN vss vss NMOS L=1u W=3.4u AS=9.52p AD=5.1p PS=12.4u PD=6.4u
+* device instance $14 r0 *1 20,17.9 NMOS
+XM14 vss AB0 A0 vss NMOS L=1u W=3.4u AS=5.1p AD=9.52p PS=6.4u PD=12.4u
+* device instance $15 r0 *1 4,17.9 NMOS
+XM15 AB1 A1_PIN vss vss NMOS L=1u W=3.4u AS=9.52p AD=5.1p PS=12.4u PD=6.4u
+* device instance $16 r0 *1 8,17.9 NMOS
+XM16 vss AB1 A1 vss NMOS L=1u W=3.4u AS=5.1p AD=9.52p PS=6.4u PD=12.4u
+* device instance $17 r0 *1 -8,17.9 NMOS
+XM17 A2 AB2 vss vss NMOS L=1u W=3.4u AS=9.52p AD=5.1p PS=12.4u PD=6.4u
+* device instance $18 r0 *1 -4,17.9 NMOS
+XM18 vss A2_PIN AB2 vss NMOS L=1u W=3.4u AS=5.1p AD=9.52p PS=6.4u PD=12.4u
+* device instance $19 r0 *1 -20,17.9 NMOS
+XM19 A3 AB3 vss vss NMOS L=1u W=3.4u AS=9.52p AD=5.1p PS=12.4u PD=6.4u
+* device instance $20 r0 *1 -16,17.9 NMOS
+XM20 vss A3_PIN AB3 vss NMOS L=1u W=3.4u AS=5.1p AD=9.52p PS=6.4u PD=12.4u
+.ENDS ADDBUF

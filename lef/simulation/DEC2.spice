@@ -1,0 +1,46 @@
+* DEC2 — LVS ソースネットリスト
+* scripts/char/mkcellspice.py が生成。手で編集しないこと。
+*
+* 出どころ: **設計意図から手で書いたもの**（scripts/mkspice.py 由来）。
+*   レイアウトを見ずに書かれたネットで、REG8x16 の LVS がクリーンになった
+*   時点でレイアウトと一致することが実証済み。
+*   -> この .spice に対する LVS が通れば「レイアウト = 設計意図」と言える。
+*
+* 単体 LVS 用に、電源ネット名をこのセルのラベル（vss）に合わせてある。
+*
+.subckt DEC2 A0 AB0 A1 A2 A3 WEB WRE WRBE RDE RDBE WRO WRBO RDO RDBO vdd vss
+* --- 行 E: RDB=NAND4(A) / RD=INV / WR=NOR2(RDB,WEB) / WRB=INV ---
+MPE0 RDBE AB0 vdd vdd PMOS W=12.2u L=1.0u
+MPE1 RDBE A1 vdd vdd PMOS W=12.2u L=1.0u
+MPE2 RDBE A2 vdd vdd PMOS W=12.2u L=1.0u
+MPE3 RDBE A3 vdd vdd PMOS W=12.2u L=1.0u
+MNE0 s1_E A3 vss vss NMOS W=4.6u L=1.0u
+MNE1 s2_E A2 s1_E vss NMOS W=4.6u L=1.0u
+MNE2 s3_E A1 s2_E vss NMOS W=4.6u L=1.0u
+MNE3 RDBE AB0 s3_E vss NMOS W=4.6u L=1.0u
+MPEA RDE RDBE vdd vdd PMOS W=12.2u L=1.0u
+MNEA RDE RDBE vss vss NMOS W=4.6u L=1.0u
+MPEB p1_E WEB vdd vdd PMOS W=12.2u L=1.0u
+MPEC WRE RDBE p1_E vdd PMOS W=12.2u L=1.0u
+MNEB WRE RDBE vss vss NMOS W=4.6u L=1.0u
+MNEC WRE WEB vss vss NMOS W=4.6u L=1.0u
+MPED WRBE WRE vdd vdd PMOS W=12.2u L=1.0u
+MNED WRBE WRE vss vss NMOS W=4.6u L=1.0u
+* --- 行 O: RDB=NAND4(A) / RD=INV / WR=NOR2(RDB,WEB) / WRB=INV ---
+MPO0 RDBO A0 vdd vdd PMOS W=12.2u L=1.0u
+MPO1 RDBO A1 vdd vdd PMOS W=12.2u L=1.0u
+MPO2 RDBO A2 vdd vdd PMOS W=12.2u L=1.0u
+MPO3 RDBO A3 vdd vdd PMOS W=12.2u L=1.0u
+MNO0 s1_O A3 vss vss NMOS W=4.6u L=1.0u
+MNO1 s2_O A2 s1_O vss NMOS W=4.6u L=1.0u
+MNO2 s3_O A1 s2_O vss NMOS W=4.6u L=1.0u
+MNO3 RDBO A0 s3_O vss NMOS W=4.6u L=1.0u
+MPOA RDO RDBO vdd vdd PMOS W=12.2u L=1.0u
+MNOA RDO RDBO vss vss NMOS W=4.6u L=1.0u
+MPOB p1_O WEB vdd vdd PMOS W=12.2u L=1.0u
+MPOC WRO RDBO p1_O vdd PMOS W=12.2u L=1.0u
+MNOB WRO RDBO vss vss NMOS W=4.6u L=1.0u
+MNOC WRO WEB vss vss NMOS W=4.6u L=1.0u
+MPOD WRBO WRO vdd vdd PMOS W=12.2u L=1.0u
+MNOD WRBO WRO vss vss NMOS W=4.6u L=1.0u
+.ends DEC2

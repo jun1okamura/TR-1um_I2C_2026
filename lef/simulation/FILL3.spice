@@ -1,0 +1,18 @@
+* FILL3 — LVS ソースネットリスト
+* scripts/char/mkcellspice.py が生成。手で編集しないこと。
+*
+* 出どころ: **レイアウト抽出を golden として凍結したもの**。
+*   このセルは同じ論理でも CMOS 構造が一意に決まらない（回路図が無い）。
+*   2T。デキャップ（MOS 容量）。FILL2 より L が長い。
+*
+*   ** この .spice に対する LVS は「レイアウト vs そのレイアウトから作った網」
+*      なので、今この瞬間は何も証明しない。意味があるのは
+*      次にレイアウトを触ったときに差分が出ること（回帰検査）。**
+*
+*   凍結した時点で ngspice により機能を確認済み:
+*   真理値表 436 点 / 順序 87 点 すべて PASS（scripts/char/RESULTS.txt）。
+*
+.subckt FILL3  vdd vss
+MP0 vdd vss vdd vdd PMOS W=15.8u L=8.6u
+MN0 vss vdd vss vss NMOS W=13.1u L=8.6u
+.ends FILL3

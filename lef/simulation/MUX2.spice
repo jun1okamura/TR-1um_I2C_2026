@@ -1,0 +1,28 @@
+* MUX2 — LVS ソースネットリスト
+* scripts/char/mkcellspice.py が生成。手で編集しないこと。
+*
+* 出どころ: **レイアウト抽出を golden として凍結したもの**。
+*   このセルは同じ論理でも CMOS 構造が一意に決まらない（回路図が無い）。
+*   12T。S の INV + AOI22 + 出力 INV。S=0 で A、S=1 で B。
+*
+*   ** この .spice に対する LVS は「レイアウト vs そのレイアウトから作った網」
+*      なので、今この瞬間は何も証明しない。意味があるのは
+*      次にレイアウトを触ったときに差分が出ること（回帰検査）。**
+*
+*   凍結した時点で ngspice により機能を確認済み:
+*   真理値表 436 点 / 順序 87 点 すべて PASS（scripts/char/RESULTS.txt）。
+*
+.subckt MUX2 A B Y S vdd vss
+MP0 vdd S n4 vdd PMOS W=5.2u L=1.0u
+MP1 vdd n2 Y vdd PMOS W=11.2u L=1.0u
+MP2 vdd A n3 vdd PMOS W=5.2u L=1.0u
+MP3 n3 S n2 vdd PMOS W=5.2u L=1.0u
+MP4 n2 n4 n1 vdd PMOS W=5.2u L=1.0u
+MP5 vdd B n1 vdd PMOS W=5.2u L=1.0u
+MN0 vss n2 Y vss NMOS W=3.4u L=1.0u
+MN1 n3 A vss vss NMOS W=3.4u L=1.0u
+MN2 n3 n4 n2 vss NMOS W=3.4u L=1.0u
+MN3 n2 S n1 vss NMOS W=3.4u L=1.0u
+MN4 n1 B vss vss NMOS W=3.4u L=1.0u
+MN5 n4 S vss vss NMOS W=3.4u L=1.0u
+.ends MUX2

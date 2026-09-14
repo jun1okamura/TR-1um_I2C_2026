@@ -1,0 +1,32 @@
+* DEC0 — LVS ソースネットリスト
+* scripts/char/mkcellspice.py が生成。手で編集しないこと。
+*
+* 出どころ: **レイアウト抽出を golden として凍結したもの**。
+*   このセルは同じ論理でも CMOS 構造が一意に決まらない（回路図が無い）。
+*   16T。隣とミラーで拡散を共有する半セル。**単体では LVS できない**（最小単位は DEC2）。参考として置く。
+*
+*   ** この .spice に対する LVS は「レイアウト vs そのレイアウトから作った網」
+*      なので、今この瞬間は何も証明しない。意味があるのは
+*      次にレイアウトを触ったときに差分が出ること（回帰検査）。**
+*
+*   凍結した時点で ngspice により機能を確認済み:
+*   真理値表 436 点 / 順序 87 点 すべて PASS（scripts/char/RESULTS.txt）。
+*
+.subckt DEC0  vdd vss
+MP0 n8 WR WRB vdd PMOS W=12.2u L=1.0u
+MP1 n8 RDB RD vdd PMOS W=12.2u L=1.0u
+MP2 vdd A3 RDB vdd PMOS W=12.2u L=1.0u
+MP3 n7 A2 RDB vdd PMOS W=12.2u L=1.0u
+MP4 n7 A1 RDB vdd PMOS W=12.2u L=1.0u
+MP5 n7 A1 RDB vdd PMOS W=12.2u L=1.0u
+MP6 n7 n11 n6 vdd PMOS W=12.2u L=1.0u
+MP7 n6 RDB WR vdd PMOS W=12.2u L=1.0u
+MN0 n2 RDB WR vss NMOS W=4.6u L=1.0u
+MN1 n1 WR WRB vss NMOS W=4.6u L=1.0u
+MN2 n1 RDB RD vss NMOS W=4.6u L=1.0u
+MN3 vss A3 n5 vss NMOS W=4.6u L=1.0u
+MN4 n5 A2 n4 vss NMOS W=4.6u L=1.0u
+MN5 n4 A1 n3 vss NMOS W=4.6u L=1.0u
+MN6 n3 A1 RDB vss NMOS W=4.6u L=1.0u
+MN7 n2 n11 WR vss NMOS W=4.6u L=1.0u
+.ends DEC0

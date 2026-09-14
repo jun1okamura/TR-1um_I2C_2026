@@ -1,0 +1,37 @@
+* TR-1um TLAT — KLayout 抽出 (scripts/klayout_extract.py)
+
+* cell TLAT
+* pin D
+* pin Q
+* pin RD
+* pin RDB
+* pin WR
+* pin WRB
+* pin vss
+* pin vdd
+.SUBCKT TLAT D Q RD RDB WR WRB vss vdd
+* device instance $1 r0 *1 29.5,40.2 PMOS
+XM$1 \$7 \$6 vdd vdd PMOS L=1U W=7.2U AS=20.16P AD=10.8P PS=20U PD=10.2U
+* device instance $2 r0 *1 33.5,40.2 PMOS
+XM$2 Q RDB \$7 vdd PMOS L=1U W=7.2U AS=10.8P AD=20.16P PS=10.2U PD=20U
+* device instance $3 r0 *1 9.5,40.2 PMOS
+XM$3 \$4 WRB D vdd PMOS L=1U W=7.2U AS=20.16P AD=10.8P PS=20U PD=10.2U
+* device instance $4 r0 *1 13.5,40.2 PMOS
+XM$4 \$5 WR \$4 vdd PMOS L=1U W=7.2U AS=10.8P AD=10.8P PS=10.2U PD=10.2U
+* device instance $5 r0 *1 17.5,40.2 PMOS
+XM$5 vdd \$6 \$5 vdd PMOS L=1U W=7.2U AS=10.8P AD=10.8P PS=10.2U PD=10.2U
+* device instance $6 r0 *1 21.5,40.2 PMOS
+XM$6 \$6 \$4 vdd vdd PMOS L=1U W=7.2U AS=10.8P AD=20.16P PS=10.2U PD=20U
+* device instance $7 r0 *1 29.5,17.9 NMOS
+XM$7 \$7 \$6 vss vss NMOS L=1U W=3.4U AS=9.52P AD=5.1P PS=12.4U PD=6.4U
+* device instance $8 r0 *1 33.5,17.9 NMOS
+XM$8 Q RD \$7 vss NMOS L=1U W=3.4U AS=5.1P AD=9.52P PS=6.4U PD=12.4U
+* device instance $9 r0 *1 9.5,17.9 NMOS
+XM$9 \$4 WR D vss NMOS L=1U W=3.4U AS=9.52P AD=5.1P PS=12.4U PD=6.4U
+* device instance $10 r0 *1 13.5,17.9 NMOS
+XM$10 \$5 WRB \$4 vss NMOS L=1U W=3.4U AS=5.1P AD=5.1P PS=6.4U PD=6.4U
+* device instance $11 r0 *1 17.5,17.9 NMOS
+XM$11 vss \$6 \$5 vss NMOS L=1U W=3.4U AS=5.1P AD=5.1P PS=6.4U PD=6.4U
+* device instance $12 r0 *1 21.5,17.9 NMOS
+XM$12 \$6 \$4 vss vss NMOS L=1U W=3.4U AS=5.1P AD=9.52P PS=6.4U PD=12.4U
+.ENDS TLAT

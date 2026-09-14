@@ -1,0 +1,44 @@
+* TR-1um DEC0 — KLayout 抽出 (scripts/klayout_extract.py)
+
+* cell DEC0
+* pin RD
+* pin RDB
+* pin WR
+* pin WRB
+* pin vdd
+* pin vss
+* pin vss
+.SUBCKT DEC0 RD RDB WR WRB vdd vss vss$1
+* device instance $1 r0 *1 2,68.8 PMOS
+XM$1 RDB \$16 vdd \$19 PMOS L=1U W=12.2U AS=34.16P AD=18.3P PS=30U PD=15.2U
+* device instance $2 r0 *1 6,68.8 PMOS
+XM$2 vdd \$13 RDB \$19 PMOS L=1U W=12.2U AS=18.3P AD=18.3P PS=15.2U PD=15.2U
+* device instance $3 r0 *1 10,68.8 PMOS
+XM$3 RDB \$14 vdd \$19 PMOS L=1U W=12.2U AS=18.3P AD=18.3P PS=15.2U PD=15.2U
+* device instance $4 r0 *1 14,68.8 PMOS
+XM$4 vdd \$5 RDB \$19 PMOS L=1U W=12.2U AS=18.3P AD=30.5P PS=15.2U PD=17.2U
+* device instance $5 r0 *1 20,68.8 PMOS
+XM$5 \$18 \$6 vdd \$19 PMOS L=1U W=12.2U AS=30.5P AD=7.32P PS=17.2U PD=13.4U
+* device instance $6 r0 *1 22.2,68.8 PMOS
+XM$6 WR RDB \$18 \$19 PMOS L=1U W=12.2U AS=7.32P AD=34.16P PS=13.4U PD=30U
+* device instance $7 r0 *1 30.2,68.8 PMOS
+XM$7 vdd WR WRB \$19 PMOS L=1U W=12.2U AS=34.16P AD=18.3P PS=30U PD=15.2U
+* device instance $8 r0 *1 34.2,68.8 PMOS
+XM$8 RD RDB vdd \$19 PMOS L=1U W=12.2U AS=18.3P AD=34.16P PS=15.2U PD=30U
+* device instance $9 r0 *1 22.2,26.9 NMOS
+XM$9 WR RDB vss vss$1 NMOS L=1U W=4.6U AS=12.88P AD=12.88P PS=14.8U PD=14.8U
+* device instance $10 r0 *1 30.2,26.9 NMOS
+XM$10 vss WR WRB vss$1 NMOS L=1U W=4.6U AS=12.88P AD=6.9P PS=14.8U PD=7.6U
+* device instance $11 r0 *1 34.2,26.9 NMOS
+XM$11 RD RDB vss vss$1 NMOS L=1U W=4.6U AS=6.9P AD=12.88P PS=7.6U PD=14.8U
+* device instance $12 r0 *1 22.2,12.4 NMOS
+XM$12 WR \$6 vss vss$1 NMOS L=1U W=4.6U AS=12.88P AD=12.88P PS=14.8U PD=14.8U
+* device instance $13 r0 *1 3,12.4 NMOS
+XM$13 \$10 \$16 vss vss$1 NMOS L=1U W=4.6U AS=12.88P AD=2.76P PS=14.8U PD=5.8U
+* device instance $14 r0 *1 5.2,12.4 NMOS
+XM$14 \$11 \$13 \$10 vss$1 NMOS L=1U W=4.6U AS=2.76P AD=2.76P PS=5.8U PD=5.8U
+* device instance $15 r0 *1 7.4,12.4 NMOS
+XM$15 \$12 \$14 \$11 vss$1 NMOS L=1U W=4.6U AS=2.76P AD=2.76P PS=5.8U PD=5.8U
+* device instance $16 r0 *1 9.6,12.4 NMOS
+XM$16 RDB \$5 \$12 vss$1 NMOS L=1U W=4.6U AS=2.76P AD=12.88P PS=5.8U PD=14.8U
+.ENDS DEC0

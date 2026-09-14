@@ -1,0 +1,19 @@
+* NOR3 — LVS ソースネットリスト
+* scripts/char/mkcellspice.py が生成。手で編集しないこと。
+*
+* 出どころ: **論理式から組み立てた**（レイアウトを見ていない）。
+*   Y = !(A+B+C)
+*   CMOS の直列/並列構造は論理式から一意に決まるので、これは独立なソース。
+*   レイアウト抽出とグラフ同型であることを確認済み (6Tr)。
+*   -> この .spice に対する LVS が通れば「レイアウト = 意図した論理」と言える。
+*
+* TR-1um (IP62)  W(P)=10.2u / W(N)=3.4u / L=1.0u
+*
+.subckt NOR3 Y C A B vdd vss
+MP0 s1 A vdd vdd PMOS W=10.2u L=1.0u
+MP1 s2 B s1 vdd PMOS W=10.2u L=1.0u
+MP2 Y C s2 vdd PMOS W=10.2u L=1.0u
+MN0 Y A vss vss NMOS W=3.4u L=1.0u
+MN1 Y B vss vss NMOS W=3.4u L=1.0u
+MN2 Y C vss vss NMOS W=3.4u L=1.0u
+.ends NOR3

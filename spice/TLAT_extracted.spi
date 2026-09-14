@@ -1,0 +1,15 @@
+.subckt TLAT RDB RD WRB WR D Q vdd vss
+* auto-extracted by scripts/gds_extract.py -- NOT an LVS-grade netlist
+M0 vdd n1 n4 vdd pmos W=7.2u L=1.0u
+M1 n4 RDB Q vdd pmos W=7.2u L=1.0u
+M2 n3 WRB D vdd pmos W=7.2u L=1.0u
+M3 n3 WR n2 vdd pmos W=7.2u L=1.0u
+M4 vdd n1 n2 vdd pmos W=7.2u L=1.0u
+M5 vdd n3 n1 vdd pmos W=7.2u L=1.0u
+M6 n3 WR D vss nmos W=3.4u L=1.0u
+M7 n3 WRB n2 vss nmos W=3.4u L=1.0u
+M8 n2 n1 vss vss nmos W=3.4u L=1.0u
+M9 n1 n3 vss vss nmos W=3.4u L=1.0u
+M10 n4 n1 vss vss nmos W=3.4u L=1.0u
+M11 n4 RD Q vss nmos W=3.4u L=1.0u
+.ends

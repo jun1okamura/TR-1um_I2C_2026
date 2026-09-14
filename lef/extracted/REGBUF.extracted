@@ -1,0 +1,27 @@
+* TR-1um REGBUF — KLayout 抽出 (scripts/klayout_extract.py)
+
+* cell REGBUF
+* pin D
+* pin DD
+* pin Q
+* pin QQ
+* pin vss
+* pin vdd
+.SUBCKT REGBUF D DD Q QQ vss vdd
+* device instance $1 r0 *1 29.8,47.8 PMOS
+XM$1 vdd \$6 DD vdd PMOS L=1U W=10.2U AS=28.56P AD=15.3P PS=26U PD=13.2U
+* device instance $2 r0 *1 33.8,47.8 PMOS
+XM$2 \$6 D vdd vdd PMOS L=1U W=10.2U AS=15.3P AD=28.56P PS=13.2U PD=26U
+* device instance $3 r0 *1 4,47.8 PMOS
+XM$3 vdd Q \$3 vdd PMOS L=1U W=10.2U AS=28.56P AD=15.3P PS=26U PD=13.2U
+* device instance $4 r0 *1 8,47.8 PMOS
+XM$4 QQ \$3 vdd vdd PMOS L=1U W=10.2U AS=15.3P AD=28.56P PS=13.2U PD=26U
+* device instance $5 r0 *1 28.4,8.2 NMOS
+XM$5 vss \$6 DD vss NMOS L=1U W=3.4U AS=9.52P AD=5.1P PS=12.4U PD=6.4U
+* device instance $6 r0 *1 32.4,8.2 NMOS
+XM$6 \$6 D vss vss NMOS L=1U W=3.4U AS=5.1P AD=9.52P PS=6.4U PD=12.4U
+* device instance $7 r0 *1 5.4,8.2 NMOS
+XM$7 vss Q \$3 vss NMOS L=1U W=3.4U AS=9.52P AD=5.1P PS=12.4U PD=6.4U
+* device instance $8 r0 *1 9.4,8.2 NMOS
+XM$8 QQ \$3 vss vss NMOS L=1U W=3.4U AS=5.1P AD=9.52P PS=6.4U PD=12.4U
+.ENDS REGBUF

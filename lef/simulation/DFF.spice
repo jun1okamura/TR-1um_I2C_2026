@@ -1,0 +1,40 @@
+* DFF — LVS ソースネットリスト
+* scripts/char/mkcellspice.py が生成。手で編集しないこと。
+*
+* 出どころ: **レイアウト抽出を golden として凍結したもの**。
+*   このセルは同じ論理でも CMOS 構造が一意に決まらない（回路図が無い）。
+*   24T。マスタスレーブ + クロックバッファ内蔵。
+*
+*   ** この .spice に対する LVS は「レイアウト vs そのレイアウトから作った網」
+*      なので、今この瞬間は何も証明しない。意味があるのは
+*      次にレイアウトを触ったときに差分が出ること（回帰検査）。**
+*
+*   凍結した時点で ngspice により機能を確認済み:
+*   真理値表 436 点 / 順序 87 点 すべて PASS（scripts/char/RESULTS.txt）。
+*
+.subckt DFF CK D QB Q vdd vss
+MP0 vdd QS QB vdd PMOS W=10.4u L=1.0u
+MP1 vdd CK CKB vdd PMOS W=10.4u L=1.0u
+MP2 vdd CKB CKP vdd PMOS W=10.4u L=1.0u
+MP3 vdd QB Q vdd PMOS W=10.4u L=1.0u
+MP4 vdd D n5 vdd PMOS W=5.2u L=1.0u
+MP5 n5 CKP n3 vdd PMOS W=5.2u L=1.0u
+MP6 n3 CKB n2 vdd PMOS W=5.2u L=1.0u
+MP7 vdd QM n2 vdd PMOS W=5.2u L=1.0u
+MP8 vdd n3 QM vdd PMOS W=5.2u L=1.0u
+MP9 QS CKB QM vdd PMOS W=5.2u L=1.0u
+MP10 n1 CKP QS vdd PMOS W=5.2u L=1.0u
+MP11 vdd QB n1 vdd PMOS W=5.2u L=1.0u
+MN0 vss CK CKB vss NMOS W=3.4u L=1.0u
+MN1 vss CKB CKP vss NMOS W=3.4u L=1.0u
+MN2 vss QB Q vss NMOS W=3.4u L=1.0u
+MN3 vss QS QB vss NMOS W=3.4u L=1.0u
+MN4 n4 D vss vss NMOS W=3.4u L=1.0u
+MN5 n4 CKB n3 vss NMOS W=3.4u L=1.0u
+MN6 n3 CKP n2 vss NMOS W=3.4u L=1.0u
+MN7 n2 QM vss vss NMOS W=3.4u L=1.0u
+MN8 vss n3 QM vss NMOS W=3.4u L=1.0u
+MN9 QS CKP QM vss NMOS W=3.4u L=1.0u
+MN10 n1 CKB QS vss NMOS W=3.4u L=1.0u
+MN11 n1 QB vss vss NMOS W=3.4u L=1.0u
+.ends DFF

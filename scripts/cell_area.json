@@ -1,0 +1,343 @@
+{
+ "cells": {
+  "ADDBUF": {
+   "area": 5132.2,
+   "array": false,
+   "h": 59.4,
+   "tr": 20,
+   "w": 86.4
+  },
+  "AND2_X1": {
+   "area": 1283.0,
+   "array": false,
+   "h": 59.4,
+   "tr": 6,
+   "w": 21.6
+  },
+  "AND3_X1": {
+   "area": 1603.8,
+   "array": false,
+   "h": 59.4,
+   "tr": 8,
+   "w": 27.0
+  },
+  "AND4_X1": {
+   "area": 1924.6,
+   "array": false,
+   "h": 59.4,
+   "tr": 10,
+   "w": 32.4
+  },
+  "BUFTH": {
+   "area": 1924.6,
+   "array": false,
+   "h": 59.4,
+   "tr": 10,
+   "w": 32.4
+  },
+  "BUF_X1": {
+   "area": 962.3,
+   "array": false,
+   "h": 59.4,
+   "tr": 4,
+   "w": 16.2
+  },
+  "BUF_X2": {
+   "area": 962.3,
+   "array": false,
+   "h": 59.4,
+   "tr": 6,
+   "w": 16.2
+  },
+  "DEC0": {
+   "area": 5132.2,
+   "array": false,
+   "h": 86.4,
+   "tr": 16,
+   "w": 59.4
+  },
+  "DEC16": {
+   "area": 75893.8,
+   "array": true,
+   "h": 86.4,
+   "tr": 256,
+   "w": 878.4
+  },
+  "DEC2": {
+   "area": 9849.6,
+   "array": true,
+   "h": 86.4,
+   "tr": 32,
+   "w": 114.0
+  },
+  "DEL1": {
+   "area": 1924.6,
+   "array": false,
+   "h": 59.4,
+   "tr": 10,
+   "w": 32.4
+  },
+  "DFF": {
+   "area": 3849.1,
+   "array": false,
+   "h": 59.4,
+   "tr": 24,
+   "w": 64.8
+  },
+  "DFFRB": {
+   "area": 3849.1,
+   "array": false,
+   "h": 59.4,
+   "tr": 29,
+   "w": 64.8
+  },
+  "DFFS": {
+   "area": 3849.1,
+   "array": false,
+   "h": 59.4,
+   "tr": 29,
+   "w": 64.8
+  },
+  "FILL1": {
+   "area": 320.8,
+   "array": false,
+   "h": 59.4,
+   "tr": 0,
+   "w": 5.4
+  },
+  "FILL2": {
+   "area": 641.5,
+   "array": false,
+   "h": 59.4,
+   "tr": 2,
+   "w": 10.8
+  },
+  "FILL3": {
+   "area": 962.3,
+   "array": false,
+   "h": 59.4,
+   "tr": 2,
+   "w": 16.2
+  },
+  "INV_X1": {
+   "area": 641.5,
+   "array": false,
+   "h": 59.4,
+   "tr": 2,
+   "w": 10.8
+  },
+  "INV_X2": {
+   "area": 641.5,
+   "array": false,
+   "h": 59.4,
+   "tr": 2,
+   "w": 10.8
+  },
+  "MUX2": {
+   "area": 1924.6,
+   "array": false,
+   "h": 59.4,
+   "tr": 12,
+   "w": 32.4
+  },
+  "MUXDFFRB": {
+   "area": 5773.7,
+   "array": false,
+   "h": 59.4,
+   "tr": 38,
+   "w": 97.2
+  },
+  "NAND2": {
+   "area": 962.3,
+   "array": false,
+   "h": 59.4,
+   "tr": 4,
+   "w": 16.2
+  },
+  "NAND3": {
+   "area": 1283.0,
+   "array": false,
+   "h": 59.4,
+   "tr": 6,
+   "w": 21.6
+  },
+  "NAND4": {
+   "area": 1603.8,
+   "array": false,
+   "h": 59.4,
+   "tr": 8,
+   "w": 27.0
+  },
+  "NOR2": {
+   "area": 962.3,
+   "array": false,
+   "h": 59.4,
+   "tr": 4,
+   "w": 16.2
+  },
+  "NOR3": {
+   "area": 1283.0,
+   "array": false,
+   "h": 59.4,
+   "tr": 6,
+   "w": 21.6
+  },
+  "NOR4": {
+   "area": 1603.8,
+   "array": false,
+   "h": 59.4,
+   "tr": 8,
+   "w": 27.0
+  },
+  "OR2": {
+   "area": 1283.0,
+   "array": false,
+   "h": 59.4,
+   "tr": 6,
+   "w": 21.6
+  },
+  "OR3": {
+   "area": 1603.8,
+   "array": false,
+   "h": 59.4,
+   "tr": 8,
+   "w": 27.0
+  },
+  "OR4": {
+   "area": 1924.6,
+   "array": false,
+   "h": 59.4,
+   "tr": 10,
+   "w": 32.4
+  },
+  "REG4x16": {
+   "area": 231757.2,
+   "array": false,
+   "h": 933.0,
+   "tr": 1076,
+   "w": 248.4
+  },
+  "REG8x16": {
+   "area": 372826.8,
+   "array": false,
+   "h": 933.0,
+   "tr": 1876,
+   "w": 399.6
+  },
+  "REGBUF": {
+   "area": 2245.3,
+   "array": false,
+   "h": 59.4,
+   "tr": 8,
+   "w": 37.8
+  },
+  "REGBUF4": {
+   "area": 9622.8,
+   "array": true,
+   "h": 59.4,
+   "tr": 32,
+   "w": 162.0
+  },
+  "REGBUF8": {
+   "area": 18604.1,
+   "array": true,
+   "h": 59.4,
+   "tr": 64,
+   "w": 313.2
+  },
+  "RSLATCH": {
+   "area": 1603.8,
+   "array": false,
+   "h": 59.4,
+   "tr": 8,
+   "w": 27.0
+  },
+  "TAP2": {
+   "area": 641.5,
+   "array": false,
+   "h": 59.4,
+   "tr": 0,
+   "w": 10.8
+  },
+  "TAP2S": {
+   "area": 641.5,
+   "array": false,
+   "h": 59.4,
+   "tr": 0,
+   "w": 10.8
+  },
+  "TAP3": {
+   "area": 962.3,
+   "array": false,
+   "h": 59.4,
+   "tr": 0,
+   "w": 16.2
+  },
+  "TLAT": {
+   "area": 2245.3,
+   "array": false,
+   "h": 59.4,
+   "tr": 12,
+   "w": 37.8
+  },
+  "TLAT128": {
+   "area": 275114.9,
+   "array": true,
+   "h": 878.4,
+   "tr": 1536,
+   "w": 313.2
+  },
+  "TLAT4": {
+   "area": 9622.8,
+   "array": true,
+   "h": 59.4,
+   "tr": 48,
+   "w": 162.0
+  },
+  "TLAT4B": {
+   "area": 18468.0,
+   "array": true,
+   "h": 114.0,
+   "tr": 96,
+   "w": 162.0
+  },
+  "TLAT64": {
+   "area": 142300.8,
+   "array": true,
+   "h": 878.4,
+   "tr": 768,
+   "w": 162.0
+  },
+  "TLAT8": {
+   "area": 18604.1,
+   "array": true,
+   "h": 59.4,
+   "tr": 96,
+   "w": 313.2
+  },
+  "TLAT8B": {
+   "area": 35704.8,
+   "array": true,
+   "h": 114.0,
+   "tr": 192,
+   "w": 313.2
+  },
+  "XNOR2": {
+   "area": 1603.8,
+   "array": false,
+   "h": 59.4,
+   "tr": 10,
+   "w": 27.0
+  },
+  "XOR2": {
+   "area": 1603.8,
+   "array": false,
+   "h": 59.4,
+   "tr": 10,
+   "w": 27.0
+  }
+ },
+ "poly_pitch": 5.4,
+ "row_height": 59.4,
+ "source": "lef/TR-1um_STDCELL.gds"
+}

@@ -1,0 +1,32 @@
+* ADDBUF — LVS ソースネットリスト
+* scripts/char/mkcellspice.py が生成。手で編集しないこと。
+*
+* 出どころ: **設計意図から手で書いたもの**（scripts/mkspice.py 由来）。
+*   レイアウトを見ずに書かれたネットで、REG8x16 の LVS がクリーンになった
+*   時点でレイアウトと一致することが実証済み。
+*   -> この .spice に対する LVS が通れば「レイアウト = 設計意図」と言える。
+*
+* 単体 LVS 用に、電源ネット名をこのセルのラベル（vss）に合わせてある。
+*
+.subckt ADDBUF A0_PIN A1_PIN A2_PIN A3_PIN WEB_PIN A0 AB0 A1 AB1 A2 AB2 A3 AB3 WEB vdd vss
+MP0 AB0 A0_PIN vdd vdd PMOS W=10.2u L=1.0u
+MN0 AB0 A0_PIN vss vss NMOS W=3.4u L=1.0u
+MP1 A0 AB0 vdd vdd PMOS W=10.2u L=1.0u
+MN1 A0 AB0 vss vss NMOS W=3.4u L=1.0u
+MP2 AB1 A1_PIN vdd vdd PMOS W=10.2u L=1.0u
+MN2 AB1 A1_PIN vss vss NMOS W=3.4u L=1.0u
+MP3 A1 AB1 vdd vdd PMOS W=10.2u L=1.0u
+MN3 A1 AB1 vss vss NMOS W=3.4u L=1.0u
+MP4 AB2 A2_PIN vdd vdd PMOS W=10.2u L=1.0u
+MN4 AB2 A2_PIN vss vss NMOS W=3.4u L=1.0u
+MP5 A2 AB2 vdd vdd PMOS W=10.2u L=1.0u
+MN5 A2 AB2 vss vss NMOS W=3.4u L=1.0u
+MP6 AB3 A3_PIN vdd vdd PMOS W=10.2u L=1.0u
+MN6 AB3 A3_PIN vss vss NMOS W=3.4u L=1.0u
+MP7 A3 AB3 vdd vdd PMOS W=10.2u L=1.0u
+MN7 A3 AB3 vss vss NMOS W=3.4u L=1.0u
+MP8 wt WEB_PIN vdd vdd PMOS W=10.2u L=1.0u
+MN8 wt WEB_PIN vss vss NMOS W=3.4u L=1.0u
+MP9 WEB wt vdd vdd PMOS W=10.2u L=1.0u
+MN9 WEB wt vss vss NMOS W=3.4u L=1.0u
+.ends ADDBUF

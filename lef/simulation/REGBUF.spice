@@ -1,0 +1,24 @@
+* REGBUF — LVS ソースネットリスト
+* scripts/char/mkcellspice.py が生成。手で編集しないこと。
+*
+* 出どころ: **設計意図から手で書いたもの**（scripts/mkspice.py 由来）。
+*   レイアウトを見ずに書かれたネットで、REG8x16 の LVS がクリーンになった
+*   時点でレイアウトと一致することが実証済み。
+*   -> この .spice に対する LVS が通れば「レイアウト = 設計意図」と言える。
+*
+* 単体 LVS 用に、電源ネット名をこのセルのラベル（vss）に合わせてある。
+*
+* ** 注意: `scripts/mkspice.py` の REGBUF は D と DD が逆に書いてある。**
+*    レイアウトは D が入力・DD が出力（ngspice で確認済み）。
+*    アレイ側は XBUF が第1ポートに外部 D[j] を繋いでいるので辻褄が合っており、
+*    REG8x16 の LVS は通る。単体で使うためここでは入れ替えてある。
+.subckt REGBUF D DD Q QQ vdd vss
+MP0 w1 D vdd vdd PMOS W=10.2u L=1.0u
+MN0 w1 D vss vss NMOS W=3.4u L=1.0u
+MP1 DD w1 vdd vdd PMOS W=10.2u L=1.0u
+MN1 DD w1 vss vss NMOS W=3.4u L=1.0u
+MP2 r1 Q vdd vdd PMOS W=10.2u L=1.0u
+MN2 r1 Q vss vss NMOS W=3.4u L=1.0u
+MP3 QQ r1 vdd vdd PMOS W=10.2u L=1.0u
+MN3 QQ r1 vss vss NMOS W=3.4u L=1.0u
+.ends REGBUF

@@ -1,0 +1,24 @@
+* TLAT — LVS ソースネットリスト
+* scripts/char/mkcellspice.py が生成。手で編集しないこと。
+*
+* 出どころ: **設計意図から手で書いたもの**（scripts/mkspice.py 由来）。
+*   レイアウトを見ずに書かれたネットで、REG8x16 の LVS がクリーンになった
+*   時点でレイアウトと一致することが実証済み。
+*   -> この .spice に対する LVS が通れば「レイアウト = 設計意図」と言える。
+*
+* 単体 LVS 用に、電源ネット名をこのセルのラベル（vss）に合わせてある。
+*
+.subckt TLAT WR WRB RD RDB D Q vdd vss
+MP0 D WRB n3 vdd PMOS W=7.2u L=1.0u
+MN0 D WR n3 vss NMOS W=3.4u L=1.0u
+MP1 n1 n3 vdd vdd PMOS W=7.2u L=1.0u
+MN1 n1 n3 vss vss NMOS W=3.4u L=1.0u
+MP2 n2 n1 vdd vdd PMOS W=7.2u L=1.0u
+MN2 n2 n1 vss vss NMOS W=3.4u L=1.0u
+MP3 n2 WR n3 vdd PMOS W=7.2u L=1.0u
+MN3 n2 WRB n3 vss NMOS W=3.4u L=1.0u
+MP4 n4 n1 vdd vdd PMOS W=7.2u L=1.0u
+MN4 n4 n1 vss vss NMOS W=3.4u L=1.0u
+MP5 n4 RDB Q vdd PMOS W=7.2u L=1.0u
+MN5 n4 RD Q vss NMOS W=3.4u L=1.0u
+.ends TLAT

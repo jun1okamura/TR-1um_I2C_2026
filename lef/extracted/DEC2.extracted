@@ -1,0 +1,76 @@
+* TR-1um DEC2 — KLayout 抽出 (scripts/klayout_extract.py)
+
+* cell DEC2
+* pin A0
+* pin AB0
+* pin VSS
+* pin WEB
+.SUBCKT DEC2 A0 AB0 VSS WEB
+* cell instance $1 m90 *1 0,0
+X$1 VSS \$22 \$28 WEB \$1 \$1 VSS DEC0
+* cell instance $2 r0 *1 0,0
+X$2 VSS \$18 \$16 WEB \$1 \$1 VSS DEC0
+* device instance $1 r0 *1 -22.2,68.8 PMOS
+XM$1 \$27 \$22 \$28 \$1 PMOS L=1U W=12.2U AS=34.16P AD=7.32P PS=30U PD=13.4U
+* device instance $2 r0 *1 -20,68.8 PMOS
+XM$2 \$1 WEB \$27 \$1 PMOS L=1U W=12.2U AS=7.32P AD=30.5P PS=13.4U PD=17.2U
+* device instance $3 r0 *1 -14,68.8 PMOS
+XM$3 \$22 AB0 \$1 \$1 PMOS L=1U W=12.2U AS=30.5P AD=18.3P PS=17.2U PD=15.2U
+* device instance $4 r0 *1 -10,68.8 PMOS
+XM$4 \$1 \$I41 \$22 \$1 PMOS L=1U W=12.2U AS=18.3P AD=18.3P PS=15.2U PD=15.2U
+* device instance $5 r0 *1 -6,68.8 PMOS
+XM$5 \$22 \$I40 \$1 \$1 PMOS L=1U W=12.2U AS=18.3P AD=18.3P PS=15.2U PD=15.2U
+* device instance $6 r0 *1 -2,68.8 PMOS
+XM$6 \$1 \$I27 \$22 \$1 PMOS L=1U W=12.2U AS=18.3P AD=18.3P PS=15.2U PD=15.2U
+* device instance $7 r0 *1 2,68.8 PMOS
+XM$7 \$18 \$I27 \$1 \$1 PMOS L=1U W=12.2U AS=18.3P AD=18.3P PS=15.2U PD=15.2U
+* device instance $8 r0 *1 6,68.8 PMOS
+XM$8 \$1 \$I40 \$18 \$1 PMOS L=1U W=12.2U AS=18.3P AD=18.3P PS=15.2U PD=15.2U
+* device instance $9 r0 *1 10,68.8 PMOS
+XM$9 \$18 \$I41 \$1 \$1 PMOS L=1U W=12.2U AS=18.3P AD=18.3P PS=15.2U PD=15.2U
+* device instance $10 r0 *1 14,68.8 PMOS
+XM$10 \$1 A0 \$18 \$1 PMOS L=1U W=12.2U AS=18.3P AD=30.5P PS=15.2U PD=17.2U
+* device instance $11 r0 *1 20,68.8 PMOS
+XM$11 \$23 WEB \$1 \$1 PMOS L=1U W=12.2U AS=30.5P AD=7.32P PS=17.2U PD=13.4U
+* device instance $12 r0 *1 22.2,68.8 PMOS
+XM$12 \$16 \$18 \$23 \$1 PMOS L=1U W=12.2U AS=7.32P AD=34.16P PS=13.4U PD=30U
+* device instance $13 r0 *1 -9.6,12.4 NMOS
+XM$13 \$35 AB0 \$22 VSS NMOS L=1U W=4.6U AS=12.88P AD=2.76P PS=14.8U PD=5.8U
+* device instance $14 r0 *1 -7.4,12.4 NMOS
+XM$14 \$34 \$I41 \$35 VSS NMOS L=1U W=4.6U AS=2.76P AD=2.76P PS=5.8U PD=5.8U
+* device instance $15 r0 *1 -5.2,12.4 NMOS
+XM$15 \$36 \$I40 \$34 VSS NMOS L=1U W=4.6U AS=2.76P AD=2.76P PS=5.8U PD=5.8U
+* device instance $16 r0 *1 -3,12.4 NMOS
+XM$16 VSS \$I27 \$36 VSS NMOS L=1U W=4.6U AS=2.76P AD=11.5P PS=5.8U PD=9.6U
+* device instance $17 r0 *1 3,12.4 NMOS
+XM$17 \$33 \$I27 VSS VSS NMOS L=1U W=4.6U AS=11.5P AD=2.76P PS=9.6U PD=5.8U
+* device instance $18 r0 *1 5.2,12.4 NMOS
+XM$18 \$30 \$I40 \$33 VSS NMOS L=1U W=4.6U AS=2.76P AD=2.76P PS=5.8U PD=5.8U
+* device instance $19 r0 *1 7.4,12.4 NMOS
+XM$19 \$32 \$I41 \$30 VSS NMOS L=1U W=4.6U AS=2.76P AD=2.76P PS=5.8U PD=5.8U
+* device instance $20 r0 *1 9.6,12.4 NMOS
+XM$20 \$18 A0 \$32 VSS NMOS L=1U W=4.6U AS=2.76P AD=12.88P PS=5.8U PD=14.8U
+.ENDS DEC2
+
+* cell DEC0
+* pin vss
+* pin RDB
+* pin WR
+* pin 
+* pin vdd
+* pin 
+* pin vss
+.SUBCKT DEC0 vss RDB WR \$6 vdd \$15 vss$1
+* device instance $1 r0 *1 30.2,68.8 PMOS
+XM$1 vdd WR WRB \$15 PMOS L=1U W=12.2U AS=34.16P AD=18.3P PS=30U PD=15.2U
+* device instance $2 r0 *1 34.2,68.8 PMOS
+XM$2 RD RDB vdd \$15 PMOS L=1U W=12.2U AS=18.3P AD=34.16P PS=15.2U PD=30U
+* device instance $3 r0 *1 30.2,26.9 NMOS
+XM$3 vss WR WRB vss$1 NMOS L=1U W=4.6U AS=12.88P AD=6.9P PS=14.8U PD=7.6U
+* device instance $4 r0 *1 34.2,26.9 NMOS
+XM$4 RD RDB vss vss$1 NMOS L=1U W=4.6U AS=6.9P AD=12.88P PS=7.6U PD=14.8U
+* device instance $5 r0 *1 22.2,26.9 NMOS
+XM$5 WR RDB vss vss$1 NMOS L=1U W=4.6U AS=12.88P AD=12.88P PS=14.8U PD=14.8U
+* device instance $6 r0 *1 22.2,12.4 NMOS
+XM$6 WR \$6 vss vss$1 NMOS L=1U W=4.6U AS=12.88P AD=12.88P PS=14.8U PD=14.8U
+.ENDS DEC0

@@ -1,0 +1,23 @@
+
+10. Printing statistics.
+
+=== td4_soc_arr ===
+
+        +----------Local Count, excluding submodules.
+        | 
+      103 wires
+      169 wire bits
+       30 public wires
+       90 public wire bits
+        8 ports
+       14 port bits
+      109 cells
+       38   $_AND_
+       25   $_DFFE_PN0P_
+        8   $_MUX_
+        9   $_NOT_
+       14   $_OR_
+       13   $_XOR_
+        1   $scopeinfo
+        1   td4_mem
+
