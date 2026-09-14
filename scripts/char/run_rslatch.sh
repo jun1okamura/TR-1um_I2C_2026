@@ -54,7 +54,7 @@ echo "  cells_ext/RSLATCH.spi: $(grep -c '^XM' "$HERE/cells_ext/RSLATCH.spi") �
 say "1. デッキ生成"
 python3 char_latch.py gen -o "$PACK" || die "デッキ生成に失敗"
 
-say "2. ngspice（並列 $J）"
+say "2. ngspice（並列 ${J}）"
 ./runjobs.sh -j "$J" -m "$MODELS" -p "$PACK" || die "ngspice の実行に失敗"
 
 say "3. 回収と検算"
