@@ -90,6 +90,8 @@ def measure(cell, pin, side, n, tag):
 
 
 def main():
+    # 引数でセルを絞れる（RSLATCH だけ測り直す、など）。既定は全セル。
+    want = set(sys.argv[1:])
     drv = json.load(open(f"{HERE}/char/{DRV}.json"))
     row = drv["arcs"][0]["cell_fall"][SLEWS.index(SLEW_IN)]     # 入力立上り -> 出力立下り
     print(f"基準ドライバ {DRV} / 入力遷移 {SLEW_IN}ns の cell_fall 行を逆引きに使う")
@@ -100,9 +102,22 @@ def main():
             continue
         d = json.load(open(f"{HERE}/char/{f}"))
         cell = d["cell"]
+        if want and cell not in want:
+            continue
         if not os.path.exists(f"{CELLDIR}/{cell}{CELLEXT}"):
             continue
-        if d.get("seq"):
+        if d.get("latch"):
+            # SR ラッチ。**反対側の入力を High に張って測る。**
+            # 例えば S を測るなら R=1。この条件で S を振ると S=R=1 の状態と
+            # R だけの状態を行き来し、QB が実際に振れる（S のゲートは QB 側の
+            # Tr に付いている）ので、ミラー帰還込みの、駆動側から見た本当の
+            # 負荷になる。R を 0 に張ると初期状態が決まらない（両安定）ので使えない。
+            import char_latch
+            sp = char_latch.LATCH[cell]
+            pins = sorted(sp["ins"])
+            sides = {p: {sp["other"][p]: 1} for p in pins}
+            raws = {p: (d.get("cap") or {}).get(p) for p in pins}
+        elif d.get("seq"):
             # 順序セルは char_seq.py が容量を測っていないので、ここで全入力ピンを測る。
             # 非同期ピンは非アクティブ側に固定する。
             idle = {"RSTB": 1, "SET": 0, "S": 0, "B": 0}

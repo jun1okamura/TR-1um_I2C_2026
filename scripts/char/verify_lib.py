@@ -73,6 +73,13 @@ def check_tables():
         elif d.get("seq"):
             for k, t in d["ckq"].items():
                 groups.append((f"CK->Q {k}", t))
+        elif d.get("latch"):
+            # SR ラッチはアクティブ端にしかアークが立たない（S↓ / R↓ では出力が
+            # 動かない）。存在する向きの表だけを見る。
+            for a in d["arcs"]:
+                for k in ("cell_rise", "cell_fall", "rise_transition", "fall_transition"):
+                    if a.get(k) is not None:
+                        groups.append((f"{a['related_pin']}->{a['pin']} {k}", a[k]))
         elif d.get("macro"):
             # REG8x16 のようなマクロ。アークは read[<ADD ピン>] の下にある。
             for ad, arc in sorted(d.get("read", {}).items()):

@@ -127,3 +127,53 @@ ngspice を回さず、**手順 3 と同じ実行の実測値**で検算しま�
 | `mklib.py` | `char/*.json` → Liberty |
 | `verify_lib.py` | `.lib` の検算 |
 | `check_comb.py` / `check_seq.py` / `check_pass.py` | 論理の確認（`.lib` とは独立） |
+
+---
+
+# RSLATCH を足す（`run_rslatch.sh`）
+
+`lef/tr1um_typ_5v0_25c.lib` には **`RSLATCH` だけ入っていない**（LEF と GDS には
+ある）。Async I2C は SR ラッチを 3 個使うので、`.lib` に無いと `abc -liberty` が
+貼れず OpenSTA も遅延を持てない。これを埋めるための一式。
+
+```sh
+cd scripts/char
+./run_rslatch.sh -j 18          # -j 既定は物理コア数
+```
+
+デッキは 136 本しかないので 1 分もかからない。中でやっているのは
+
+| 段 | 中身 |
+|---|---|
+| 0 | `lef/extracted/RSLATCH.extracted` → `cells_ext/RSLATCH.spi`（無ければ） |
+| 1 | `char_latch.py gen` → `pack_rslatch/decks/` に 136 本 |
+| 2 | `runjobs.sh -p pack_rslatch` で並列実行 → `results.txt` |
+| 3 | `char_latch.py collect` → `char/RSLATCH.json` と格子外での検算 |
+| 3.5 | `calib_cap.py RSLATCH` → 入力容量を等価容量へ較正 |
+| 4 | `mklib.py` で `.lib` を作り直す（**RSLATCH 以外が変わっていないことも確認する**） |
+| 5 | `verify_lib.py` |
+
+## 出るはずの値（2 コアのクラウドで事前に流したときの実測）
+
+| | |
+|---|---|
+| 入力容量 S / R | 電荷から 76.7 fF → 較正後 **60.5 fF**（比 0.79、N=2/4 のばらつき 3.7%） |
+| S→Q / R→QB（preset） | slew 0.6ns / CL 50fF で **2.676 ns** |
+| S→QB / R→Q（clear） | 同条件で **1.242 ns** |
+| 最小 High パルス幅 | **1.85 ns**（等比 10% 刻みの掃引なので分解能 10%） |
+| 格子の外（slew 1.0 / CL 150fF）での照合 | ずれ 0.0〜0.2% |
+
+S 側と R 側が同じ値になるのは、レイアウトが対称（PMOS 10.2u / NMOS 3.4u が
+両側同じ）だから。**片方だけずれたらレイアウトを疑うこと。**
+
+## 測り方で気をつけたところ
+
+- **測る前に反対側の入力で初期化する。** t=0 から 20ns まで反対側を VDD に張り、
+  21ns で放す（NOR ラッチはそのまま保持する）。100ns で測る側を振る。
+- **アクティブ端にしかアークが立たない。** S↓ / R↓ では出力は動かないので、
+  Liberty には preset / clear のアーク（片方向の表）として書く。
+- **クロス結合なので反対側の出力の負荷が効く。** 測る側に負荷を掃引し、
+  反対側は 25 fF 固定。この条件は `.lib` のコメントにも書いてある。
+- **`dont_use` を付ける。** RTL で明示インスタンスする前提のセルで、ABC に
+  SR ラッチを勝手に組ませてはいけない。`.lib` に入れるのは P&R の負荷計算と
+  OpenSTA のため。

@@ -9,6 +9,7 @@ Claude outputs/
 
 # 特性化デッキの展開先。genjobs.py + runjobs.sh でいつでも作り直せる
 scripts/char/pack/
+scripts/char/pack_rslatch/
 scripts/char/decks/
 scripts/char/logs/
 

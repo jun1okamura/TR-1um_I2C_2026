@@ -198,6 +198,83 @@ def emit_seq(cell, data, o):
     o.append(f'{IND}}}')
 
 
+def emit_latch(cell, d, o):
+    """SR ラッチ（`RSLATCH`）。クロックが無いので preset / clear のアークで書く。
+
+    **値は条件付き。** クロス結合なので反対側の出力の負荷が遅延に効く。
+    測る側の出力に負荷を掃引し、反対側には固定 25fF を付けて測った
+    （`char_latch.py`）。その条件を .lib のコメントにも残す。
+
+    `dont_use` を付ける。RTL で明示インスタンスする前提のセルで、
+    ABC に SR ラッチを勝手に組ませてはいけない。.lib に入れるのは
+    P&R の負荷計算と OpenSTA のため。
+    """
+    spec = cellspec.LATCH[cell]
+    area = AREAS[cell]["area"]
+    # 電荷から出した cap はミラー分を含んでいて遅延計算には過大（実測で 1.27 倍）。
+    # calib_cap.py が求めた等価容量があればそちらを使う（組合せセルと同じ）。
+    caps = d.get("cap_cal") or d.get("cap", {})
+    cond = d.get("cond", {})
+    ins = sorted({a["related_pin"] for a in d["arcs"]})
+    outs = sorted({a["pin"] for a in d["arcs"]})
+    o.append(f'{IND}cell ({cell}) {{')
+    o.append(f'{IND*2}area : {area:.1f};')
+    o.append(f'{IND*2}dont_use : true;   /* RTL で明示インスタンスする。ABC に組ませない */')
+    o.append(f'{IND*2}dont_touch : true;')
+    o.append(f'{IND*2}/* 測定条件: 測る側の出力に負荷を掃引、反対側の出力は '
+             f'{cond.get("cl_other", 25):g} fF 固定 */')
+    o.append(f'{IND*2}latch (IQ, IQN) {{')
+    o.append(f'{IND*3}preset : "{spec["preset"]}";')
+    o.append(f'{IND*3}clear : "{spec["clear"]}";')
+    o.append(f'{IND*3}/* NOR 型なので S=R=1 のときは Q=QB=L */')
+    o.append(f'{IND*3}clear_preset_var1 : L;')
+    o.append(f'{IND*3}clear_preset_var2 : L;')
+    o.append(f'{IND*2}}}')
+    for p in ins:
+        o.append(f'{IND*2}pin ({p}) {{')
+        o.append(f'{IND*3}direction : input;')
+        c = caps.get(p)
+        if c:
+            o.append(f'{IND*3}capacitance : {c:.3f};')
+        o.append(f'{IND*3}max_transition : {d.get("slews", SLEWS)[-1]:g};')
+        w = (d.get("mpw") or {}).get(p)
+        if w:
+            o.append(f'{IND*3}/* 状態が変わって残る最小の High パルス幅（50%-50%、入力遷移 '
+                     f'{cond.get("mpw_slew", 0.1):g}ns / 負荷 {cond.get("cl_mpw", 50):g}fF)。')
+            o.append(f'{IND*3}   等比 10% 刻みの掃引で求めたので分解能は 10%。 */')
+            o.append(f'{IND*3}timing () {{')
+            o.append(f'{IND*4}related_pin : "{p}";')
+            o.append(f'{IND*4}timing_type : min_pulse_width;')
+            o.append(f'{IND*4}rise_constraint (scalar) {{')
+            o.append(f'{IND*5}values("{w:.4f}");')
+            o.append(f'{IND*4}}}')
+            o.append(f'{IND*3}}}')
+        o.append(f'{IND*2}}}')
+    fn = {"Q": "IQ", "QB": "IQN"}
+    for p in outs:
+        o.append(f'{IND*2}pin ({p}) {{')
+        o.append(f'{IND*3}direction : output;')
+        if p in fn:
+            o.append(f'{IND*3}function : "{fn[p]}";')
+        o.append(f'{IND*3}max_capacitance : {LOADS[-1]:g};')
+        for a in d["arcs"]:
+            if a["pin"] != p:
+                continue
+            o.append(f'{IND*3}timing () {{')
+            o.append(f'{IND*4}related_pin : "{a["related_pin"]}";')
+            o.append(f'{IND*4}timing_type : {a["type"]};')
+            o.append(f'{IND*4}timing_sense : {a["sense"]};')
+            for key in ("cell_rise", "rise_transition", "cell_fall", "fall_transition"):
+                if a.get(key) is None:
+                    continue
+                o.append(f'{IND*4}{key} (delay_template_7x7) {{')
+                o.append(values_block(a[key], IND * 5))
+                o.append(f'{IND*4}}}')
+            o.append(f'{IND*3}}}')
+        o.append(f'{IND*2}}}')
+    o.append(f'{IND}}}')
+
+
 def emit_pad(cell, d, o):
     """パッドセル（3 ステートの双方向 IO）。
 
@@ -506,6 +583,8 @@ def main():
             continue
         if d.get("pad"):
             emit_pad(name, d, o)
+        elif d.get("latch"):
+            emit_latch(name, d, o)
         elif d.get("seq"):
             emit_seq(name, d, o)
         else:
