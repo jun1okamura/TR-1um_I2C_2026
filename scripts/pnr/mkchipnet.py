@@ -47,7 +47,7 @@ import sys
 os.environ.setdefault("TD4_MACRO_MODE", "portrait")
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import td4_config as cfg                                    # noqa: E402
+import i2c_config as cfg                                    # noqa: E402
 
 GIO_CELL = "OSS_FRAME_GIO"          # .spice の中での名前
 CHIP_GIO_CELL = cfg.FRAME_CELL_CHIP  # チップ GDS / LVS での名前（OSS_FRAME）

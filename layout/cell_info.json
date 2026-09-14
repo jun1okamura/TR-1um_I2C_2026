@@ -1,0 +1,392 @@
+{
+ "ADDBUF": {
+  "cls": "BLOCK",
+  "height_um": 59.4,
+  "origin": [
+   -48.6,
+   0.0
+  ],
+  "sites": 16.0,
+  "width_um": 86.4
+ },
+ "AND2_X1": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 4.0,
+  "width_um": 21.6
+ },
+ "AND3_X1": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 5.0,
+  "width_um": 27.0
+ },
+ "AND4_X1": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 6.0,
+  "width_um": 32.4
+ },
+ "BUFTH": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 6.0,
+  "width_um": 32.4
+ },
+ "BUF_X1": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 3.0,
+  "width_um": 16.2
+ },
+ "BUF_X2": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 3.0,
+  "width_um": 16.2
+ },
+ "DEC0": {
+  "cls": "BLOCK",
+  "height_um": 86.4,
+  "origin": [
+   -2.4,
+   0.0
+  ],
+  "sites": 11.0,
+  "width_um": 59.4
+ },
+ "DEL1": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 6.0,
+  "width_um": 32.4
+ },
+ "DFF": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 12.0,
+  "width_um": 64.8
+ },
+ "DFFRB": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 12.0,
+  "width_um": 64.8
+ },
+ "DFFS": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 12.0,
+  "width_um": 64.8
+ },
+ "FILL1": {
+  "cls": "CORE SPACER",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 1.0,
+  "width_um": 5.4
+ },
+ "FILL2": {
+  "cls": "CORE SPACER",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 2.0,
+  "width_um": 10.8
+ },
+ "FILL3": {
+  "cls": "CORE SPACER",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 3.0,
+  "width_um": 16.2
+ },
+ "INV_X1": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 2.0,
+  "width_um": 10.8
+ },
+ "INV_X2": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 2.0,
+  "width_um": 10.8
+ },
+ "MEMPORT": {
+  "cls": "BLOCK",
+  "height_um": 502.2,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 296.0,
+  "width_um": 1598.4
+ },
+ "MUX2": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 6.0,
+  "width_um": 32.4
+ },
+ "MUXDFFRB": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 18.0,
+  "width_um": 97.2
+ },
+ "NAND2": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 3.0,
+  "width_um": 16.2
+ },
+ "NAND3": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 4.0,
+  "width_um": 21.6
+ },
+ "NAND4": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 5.0,
+  "width_um": 27.0
+ },
+ "NOR2": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 3.0,
+  "width_um": 16.2
+ },
+ "NOR3": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 4.0,
+  "width_um": 21.6
+ },
+ "NOR4": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 5.0,
+  "width_um": 27.0
+ },
+ "OR2": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 4.0,
+  "width_um": 21.6
+ },
+ "OR3": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 5.0,
+  "width_um": 27.0
+ },
+ "OR4": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 6.0,
+  "width_um": 32.4
+ },
+ "REG4x16": {
+  "cls": "BLOCK",
+  "height_um": 933.0,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 46.0,
+  "width_um": 248.4
+ },
+ "REG8x16": {
+  "cls": "BLOCK",
+  "height_um": 933.0,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 74.0,
+  "width_um": 399.6
+ },
+ "REGBUF": {
+  "cls": "BLOCK",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 7.0,
+  "width_um": 37.8
+ },
+ "RSLATCH": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 5.0,
+  "width_um": 27.0
+ },
+ "TAP2": {
+  "cls": "CORE WELLTAP",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 2.0,
+  "width_um": 10.8
+ },
+ "TAP2S": {
+  "cls": "BLOCK",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 2.0,
+  "width_um": 10.8
+ },
+ "TAP3": {
+  "cls": "CORE WELLTAP",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 3.0,
+  "width_um": 16.2
+ },
+ "TLAT": {
+  "cls": "BLOCK",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 7.0,
+  "width_um": 37.8
+ },
+ "XNOR2": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 5.0,
+  "width_um": 27.0
+ },
+ "XOR2": {
+  "cls": "CORE",
+  "height_um": 59.4,
+  "origin": [
+   0.0,
+   0.0
+  ],
+  "sites": 5.0,
+  "width_um": 27.0
+ }
+}

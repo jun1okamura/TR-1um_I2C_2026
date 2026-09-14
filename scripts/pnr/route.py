@@ -166,10 +166,18 @@ def _port_dir():
     return dict(h.PORT_DIR_DERIVED)
 
 
+# RTL のポートだが**電源**であるもの。Async I2C の `i2c_slave_async` は
+# `.VDD(VDD) .GND(GND)` まで繋いだ構造インスタンスを持つため、モジュールの
+# ポート宣言に VDD / GND が並ぶ。これは信号ピンではなく、step9 の電源ピンと
+# チップ側の電源リングで供給されるので、**信号ピンの網羅チェックからは外す**。
+# TD4 の RTL にはこのポートが無かったので、TD4 版には無かった除外。
+POWER_PORTS = {"VDD", "VSS", "GND"}
+
+
 def expected_ports():
     """every top-level pin the layout must expose: scalars + bus bits."""
     import highlight_top_pins_nrow_fm as h
-    out = list(h.SCALAR_PORTS)
+    out = [p for p in h.SCALAR_PORTS if p not in POWER_PORTS]
     for bus, w in h.BUS_PORTS.items():
         out += [f"{bus}[{i}]" for i in range(w)]
     return sorted(out)
@@ -297,20 +305,26 @@ def stage10(ch_heights):
     # ハードマクロの y 範囲は identity 写像で残す（マクロは参照なので中身が
     # 縮まらない。中で潰すとマクロだけ下がって配線がピンから外れる）。
     _mx0, _my0, _mx1, _my1 = cfg.macro_box()
+    # I2C はマクロ無しで macro_box() が縮退した (0,0,0,0) を返す。そのまま渡すと
+    # y=0 に幅ゼロの保護区間ができ、PROTECT_PAD で ±1 トラック膨らんで
+    # **ch[0] の底が理由もなく圧縮から外れる**。マクロが無いときは渡さない。
+    _extra = [] if getattr(cfg, "MACRO_MODE", "landscape") == "none" \
+        else [(_my0, _my1)]
     sq.main(in_gds=cfg.POWERPINS_GDS,
             compaction_info_path=cfg.COMPACTION_INFO_JSON,
             out_gds=cfg.SQUEEZED_GDS,
             pin_map_in=cfg.PIN_MAP_RR_JSON, pin_map_out=cfg.PIN_MAP_SQ_JSON,
             net_shapes_in=cfg.NET_SHAPES_RR_JSON,
             net_shapes_out=cfg.NET_SHAPES_SQ_JSON,
-            extra_protect=[(_my0, _my1)])
+            extra_protect=_extra)
 
 
 def routed_core_h(ch):
     p = json.load(open(cfg.PLACEMENT_JSON))
     h = sum(ch) + len(p["rows"]) * p["row_height"]
     # 縦置きではマクロが行スタックより高くなりうる
-    return max(h, p["macro"]["box"][3])
+    m = p.get("macro")           # I2C はマクロ無し（None）
+    return max(h, m["box"][3]) if m else h
 
 
 def checks(gds, pin_map, ch, squeezed=False):

@@ -17,7 +17,7 @@ TD4 で増えたもの = **ハードマクロ `REG8x16`**。
 
   信号ピン 21 本 (ADD/WEB/D/Q) は全部 M2 で**下辺 1 列** (y 1.1…4.5)、
   OBS は M1/M2 とも全面。したがってピンの真下にチャネルが要る。
-  `td4_config.macro_box()` はマクロを ch[0] ぶん持ち上げて **row0 の底面と
+  `i2c_config.macro_box()` はマクロを ch[0] ぶん持ち上げて **row0 の底面と
   面一**にしてある。チャネルルータから見ると「933 µm 高い row0 のセル」。
 
   配置器での扱い:
@@ -39,7 +39,7 @@ from collections import defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import td4_config as cfg                                    # noqa: E402
+import i2c_config as cfg                                    # noqa: E402
 import netlist_util as nu                                   # noqa: E402
 import lef_parser                                           # noqa: E402
 
@@ -53,6 +53,12 @@ MACRO_PHYS = cfg.MACRO_CELL    # 置く物理セル
 MACRO_ROW = (getattr(cfg, "MACRO_ALIGN_ROW", 0)
              if getattr(cfg, "MACRO_MODE", "landscape") == "portrait" else 0) - 1
 LOOKAHEAD = 6                  # 区画詰めで先を見る本数（行内順序を崩さない範囲）
+
+# --- I2C 移植: ハードマクロを持たない設計への対応 -------------------------
+# TD4 は `REG8x16` を必ず 1 個置く前提で書かれている。Async I2C のコアは
+# 標準セルだけなので、`i2c_config.MACRO_MODE == "none"` のときはマクロの段を
+# 素通りさせる。**アルゴリズムは触らない**方針なので、分岐を足すだけにした。
+NO_MACRO = getattr(cfg, "MACRO_MODE", "landscape") == "none"
 
 
 # ---------------------------------------------------------------- ネット展開
@@ -75,9 +81,14 @@ def load(net_path, info_path):
     info = json.load(open(info_path))
 
     macro = [i for i in insts if i.cell == MACRO]
-    if len(macro) != 1:
+    if NO_MACRO:
+        if macro:
+            raise SystemExit(f"MACRO_MODE=none なのに {MACRO} が {len(macro)} 個ある")
+        macro = None
+    elif len(macro) != 1:
         raise SystemExit(f"{MACRO} のインスタンスが {len(macro)} 個。1 個のはず")
-    macro = macro[0]
+    else:
+        macro = macro[0]
     cells = [i for i in insts if i is not macro]
 
     width = {i.name: info[i.cell]["width_um"] for i in cells}
@@ -106,6 +117,8 @@ def load(net_path, info_path):
 
 def macro_pin_x(macro_pin):
     """net -> マクロのピン中心 x（コアローカル）。LEF から実測。"""
+    if not macro_pin:
+        return {}                      # マクロ無し
     lef = lef_parser.parse_lef(cfg.LEF_PATH)[MACRO_PHYS]["pins"]
     mx0, my0, _, _ = cfg.macro_box()
     out = {}
@@ -193,11 +206,12 @@ def partition(names, width, net_cells, n, cap, macro_name, restarts, seed,
     混んだ行はフィードスルーの隙間が無くなって配線で詰まる。"""
     cap = min(cap, sum(width.values()) / n * (1.0 + tol))
     rng = random.Random(seed)
-    fixed = {macro_name}
+    fixed = {macro_name} if macro_name else set()
     best_a, best_c = None, None
     for _ in range(restarts):
         a = balanced_init(names, width, n, rng, cap)
-        a[macro_name] = MACRO_ROW
+        if macro_name:
+            a[macro_name] = MACRO_ROW
         c = refine(a, width, net_cells, n, cap, fixed)
         if best_c is None or c < best_c:
             best_a, best_c = dict(a), c
@@ -543,7 +557,7 @@ def write_gds(path, rows, rows_y, macro_inst, info, top=None):
     src = {c.name: c for c in lib.cells}
     out = gdstk.Library(name=top, unit=1e-6, precision=1e-9)
 
-    keep = {MACRO_PHYS}
+    keep = set() if NO_MACRO else {MACRO_PHYS}
     for row in rows:
         for cname, _, _, _ in row:
             keep.add(cfg.PRI_CELL if cname == "__PRI__" else cname)
@@ -566,9 +580,10 @@ def write_gds(path, rows, rows_y, macro_inst, info, top=None):
             core.add(gdstk.Reference(
                 src[cfg.PRI_CELL if cname == "__PRI__" else cname], (x, rows_y[r])))
     # マクロ。GDS のセル原点は prBoundary 左下ではないので実測オフセットを足す。
-    mx0, my0, _, _ = cfg.macro_box()
-    ox, oy = info[MACRO_PHYS]["origin"]
-    core.add(gdstk.Reference(src[MACRO_PHYS], (mx0 - ox, my0 - oy)))
+    if not NO_MACRO:
+        mx0, my0, _, _ = cfg.macro_box()
+        ox, oy = info[MACRO_PHYS]["origin"]
+        core.add(gdstk.Reference(src[MACRO_PHYS], (mx0 - ox, my0 - oy)))
 
     cw, ch = cfg.core_size()
     core.add(gdstk.rectangle((0, 0), (cw, ch), layer=235, datatype=0))
@@ -627,20 +642,23 @@ def main(net_path=None, info_path=None, restarts=800, order_passes=40,
     usable = row_w - sum(w for _x, w, _k in fx)
     total = sum(width.values())
     print(f"配置: 標準セル {len(cells)} 個 / 幅合計 {total:.1f} um")
-    print(f"      + マクロ {MACRO_PHYS}（ネットリストでは {MACRO}）{macro.name} "
-          f"{cfg.MACRO_W} x {cfg.MACRO_H} um @ {cfg.macro_box()}")
+    mname = macro.name if macro else None
+    if macro:
+        print(f"      + マクロ {MACRO_PHYS}（ネットリストでは {MACRO}）{macro.name} "
+              f"{cfg.MACRO_W} x {cfg.MACRO_H} um @ {cfg.macro_box()}")
     print(f"      {n} 行 x {row_w:.1f} um（TAP {taps} + 優先コリドー {pris}"
           f"（{cfg.PRI_PITCH} um ごと）を引いて実効 {usable:.1f} um/行、"
           f"計 {n*usable:.1f} um）")
     if total > n * usable:
         raise SystemExit(f"!! 入らない: {total:.1f} um 必要、{n*usable:.1f} um しかない")
-    print(f"      マクロのパッド {len(mpin)} 本は y {cfg.macro_box()[3]-4.5:.1f}…"
-          f"{cfg.macro_box()[3]-1.1:.1f}（ルータ座標の下）から ch[0] を向く")
+    if macro:
+        print(f"      マクロのパッド {len(mpin)} 本は y {cfg.macro_box()[3]-4.5:.1f}…"
+              f"{cfg.macro_box()[3]-1.1:.1f}（ルータ座標の下）から ch[0] を向く")
 
     rows_y, _ = cfg.row_y()
 
     # ---- step1: 行割当
-    assign, cut = partition(names, width, net_cells, n, usable, macro.name,
+    assign, cut = partition(names, width, net_cells, n, usable, mname,
                             restarts, seed, tol=tol)
     cross = crossings(assign, net_cells, ports, n)
     need = [c * cfg.TRACK_PITCH for c in cross]
@@ -650,12 +668,12 @@ def main(net_path=None, info_path=None, restarts=800, order_passes=40,
     tight = [i for i, (a, b) in enumerate(zip(need, cfg.CH_HEIGHTS)) if a > b]
     if tight:
         print(f"  ** ch{tight} は見積りが予算を超えている（ルータのジョグでさらに"
-              f"増えるので td4_config.CH_HEIGHTS を見直すこと）")
+              f"増えるので i2c_config.CH_HEIGHTS を見直すこと）")
 
     order = [[c for c in names if assign[c] == r] for r in range(n)]
     hp1 = hpwl(order, width, net_cells, ports, rows_y, mpin)
     rows = [pack_row(s, width, cellof, row_w, False, False)[0] for s in order]
-    dump(1, "rows", rows, rows_y, macro.name, info,
+    dump(1, "rows", rows, rows_y, mname, info,
          dict(assign=assign, cut=cut, channel_crossings=cross,
               hpwl_um=round(hp1, 1)))
 
@@ -665,12 +683,12 @@ def main(net_path=None, info_path=None, restarts=800, order_passes=40,
     rows = [pack_row(s, width, cellof, row_w, False, False)[0] for s in order]
     print(f"  行内順序: HPWL {hp1:.0f} → {hp2:.0f} um "
           f"({(hp1-hp2)/hp1*100:.1f}% 改善)")
-    dump(2, "ordered", rows, rows_y, macro.name, info,
+    dump(2, "ordered", rows, rows_y, mname, info,
          dict(assign=assign, hpwl_um=round(hp2, 1)))
 
     # ---- step3: TAP
     rows = [pack_row(s, width, cellof, row_w, True, False)[0] for s in order]
-    dump(3, "tap", rows, rows_y, macro.name, info,
+    dump(3, "tap", rows, rows_y, mname, info,
          dict(assign=assign, tap_x=tap_positions(row_w),
               pri_x=[x for x, _w, k in fixed_blocks(row_w) if k == "pri"],
               segments=row_segments(row_w)[1]))
@@ -679,14 +697,14 @@ def main(net_path=None, info_path=None, restarts=800, order_passes=40,
     packed = [pack_row(s, width, cellof, row_w, True, True, fill_mode)
               for s in order]
     rows = [p[0] for p in packed]
-    gds = dump(4, "fill", rows, rows_y, macro.name, info,
+    gds = dump(4, "fill", rows, rows_y, mname, info,
                dict(assign=assign, tap_x=tap_positions(row_w),
                     pri_x=[x for x, _w, k in fixed_blocks(row_w) if k == "pri"],
                     channel_crossings=cross, hpwl_um=round(hp2, 1),
                     row_end_x=[p[1] for p in packed]))
 
     ra = os.path.join(cfg.LAYOUT, "row_assignment.json")
-    json.dump({k: v for k, v in assign.items() if k != macro.name},
+    json.dump({k: v for k, v in assign.items() if k != mname},
               open(ra, "w"), indent=1)
     print(f"  wrote {os.path.relpath(ra, cfg.ROOT)}")
     return gds

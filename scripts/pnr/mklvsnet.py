@@ -37,7 +37,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import td4_config as cfg                                    # noqa: E402
+import i2c_config as cfg                                    # noqa: E402
 import netlist_parser                                       # noqa: E402
 
 SIM_DIR = os.path.join(cfg.ROOT, "lef", "simulation")

@@ -15,7 +15,7 @@ from matplotlib.patches import Rectangle
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import td4_config as cfg                                    # noqa: E402
+import i2c_config as cfg                                    # noqa: E402
 
 STEPS = [(1, "rows"), (2, "ordered"), (3, "tap"), (4, "fill")]
 COL = {"TAP2": "#e74c3c", "FILL1": "#f5b7b1", "FILL2": "#f5b7b1",

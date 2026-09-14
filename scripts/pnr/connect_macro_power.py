@@ -46,7 +46,7 @@ M1 のストラップは信号エスケープの縦 M2 と交差するが**別�
 ## 置き場所
 
 **step10（圧縮）の後**に掛ける。圧縮前に入れると y が動く/削られる。
-座標はハードコードせず、配置 GDS のマクロ実体 + LEF のポート + `td4_config`
+座標はハードコードせず、配置 GDS のマクロ実体 + LEF のポート + `i2c_config`
 の TAP 位置から導出し、ルータと同じく**実ジオメトリに対してライブ検査**する。
 """
 from __future__ import annotations
@@ -58,7 +58,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import td4_config as cfg                                    # noqa: E402
+import i2c_config as cfg                                    # noqa: E402
 import spi_config as _cfg                                   # noqa: E402
 
 import klayout.db as db                                     # noqa: E402
@@ -164,7 +164,7 @@ def main():
     ap.add_argument("gds")
     ap.add_argument("-o", "--out", required=True)
     ap.add_argument("--width", type=float, default=cfg.POWER_BAR_W,
-                    help="ストラップの幅 µm（既定 = td4_config.POWER_BAR_W）")
+                    help="ストラップの幅 µm（既定 = i2c_config.POWER_BAR_W）")
     ap.add_argument("--gap", type=float, default=cfg.POWER_BAR_GAP,
                     help="ストラップ間の隙間 µm")
     a = ap.parse_args()

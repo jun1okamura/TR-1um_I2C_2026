@@ -23,7 +23,7 @@ import klayout.db as db
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _HERE)
-import td4_config as _cfg
+import i2c_config as _cfg
 
 FRAME_GDS = _cfg.FRAME_GDS
 FRAME_CELL = _cfg.FRAME_CELL

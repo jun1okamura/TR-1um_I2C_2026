@@ -39,7 +39,7 @@ import argparse, json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import td4_config as cfg                                    # noqa: E402
+import i2c_config as cfg                                    # noqa: E402
 import lef_parser                                           # noqa: E402
 import netlist_parser                                       # noqa: E402
 import netlist_util as nu                                   # noqa: E402
@@ -58,6 +58,9 @@ def conv_rects(rects, dx):
             raise SystemExit(f"知らないレイヤ名 {lay!r}（LAYER に足すこと）")
         out.append([LAYER[lay], round(dx + x0, 4), y0, round(dx + x1, 4), y1])
     return out
+
+
+NO_MACRO = getattr(cfg, "MACRO_MODE", "landscape") == "none"
 
 
 def main(place_json=PLACE, out_json=None, net_path=None, lef_path=None):
@@ -106,52 +109,57 @@ def main(place_json=PLACE, out_json=None, net_path=None, lef_path=None):
             raise SystemExit(f"row {r} の右端が {w}（行幅 {pl['row_width']} のはず）")
         rows.append(out)
 
-    # ---- マクロを row0 の末尾に ------------------------------------------
-    mx0, my0, _, my1 = cfg.macro_box()
-    if cfg.MACRO_MODE == "landscape" and my1 > 1e-6:
-        raise SystemExit(f"マクロ帯の上端 {my1} が 0 を超える。帯はルータ座標の"
-                         f"下に置くこと")
-    mrow = getattr(cfg, "MACRO_ALIGN_ROW", 0) if cfg.MACRO_MODE == "portrait" else 0
-    row0_y0 = cfg.row_y()[0][mrow]
-    mcell, minst = pl["macro"]["cell"], pl["macro"].get("net_cell", cfg.MACRO_NET_CELL)
-    mcell, minst = pl["macro"]["cell"], pl["macro"]["inst"]
-    # **バス接続を開く。** `netlist_parser` はピンごとに 1 ネットしか持たず、
-    # `.ADD({ _004_, _003_, _002_, _001_ })` を丸ごと 1 本として返す。
-    # そのままだと LEF 側の `ADD[0]` … `ADD[3]` に 1 本も当たらず、
-    # **マクロのピンが 1 本しか繋がらないまま静かに通る**。
-    resolve = netlist_parser._build_alias_resolver(open(net_path).read())
-    mconn = {}
-    for i in nu.parse(open(net_path).read()):
-        if i.name != minst:
-            continue
-        for pin, expr in i.conns.items():
-            for pn, n in place.expand(pin, expr):
-                mconn[pn] = resolve(n.strip())
-    mpins, nmac = {}, 0
-    for pname, pinfo in macros[mcell]["pins"].items():
-        netname = None
-        if pinfo["use"] not in ("POWER", "GROUND"):
-            netname = mconn.get(pname)
-            if netname:
-                nmac += 1
-        # ピンの y は**帯ローカル**。ルータは row_y0[0] を足すので、
-        # (帯の y0 + ローカル y) - row_y0[0] に直しておく。
-        mpins[pname] = {"net": netname, "use": pinfo["use"],
-                        "direction": pinfo["direction"],
-                        "rects": [[l, x0, round(my0 + y0 - row0_y0, 4),
-                                   x1, round(my0 + y1 - row0_y0, 4)]
-                                  for l, x0, y0, x1, y1
-                                  in conv_rects(pinfo["rects"], mx0)]}
-    # マクロは**ピン列が向くチャネルの上の行**に足す。ルータは行ごとに
-    # `row_y0[r]` を足してピンの絶対 y を作るので、ここで入れる行と
-    # 上の `row0_y0` は同じ行でなければならない。
-    rows[mrow].append({"type": mcell, "name": minst, "row": mrow, "x": mx0,
-                       "width": cfg.MACRO_W, "pins": mpins})
+    # ---- マクロを row0 の末尾に（I2C はマクロ無しなので丸ごと飛ばす）----
+    mcell = minst = None
+    mpins, mconn, nmac, mx0, my0, row0_y0 = {}, {}, 0, 0.0, 0.0, cfg.row_y()[0][0]
+    if not NO_MACRO:
+        # ---- マクロを row0 の末尾に ------------------------------------------
+        mx0, my0, _, my1 = cfg.macro_box()
+        if cfg.MACRO_MODE == "landscape" and my1 > 1e-6:
+            raise SystemExit(f"マクロ帯の上端 {my1} が 0 を超える。帯はルータ座標の"
+                             f"下に置くこと")
+        mrow = getattr(cfg, "MACRO_ALIGN_ROW", 0) if cfg.MACRO_MODE == "portrait" else 0
+        row0_y0 = cfg.row_y()[0][mrow]
+        mcell, minst = pl["macro"]["cell"], pl["macro"].get("net_cell", cfg.MACRO_NET_CELL)
+        mcell, minst = pl["macro"]["cell"], pl["macro"]["inst"]
+        # **バス接続を開く。** `netlist_parser` はピンごとに 1 ネットしか持たず、
+        # `.ADD({ _004_, _003_, _002_, _001_ })` を丸ごと 1 本として返す。
+        # そのままだと LEF 側の `ADD[0]` … `ADD[3]` に 1 本も当たらず、
+        # **マクロのピンが 1 本しか繋がらないまま静かに通る**。
+        resolve = netlist_parser._build_alias_resolver(open(net_path).read())
+        mconn = {}
+        for i in nu.parse(open(net_path).read()):
+            if i.name != minst:
+                continue
+            for pin, expr in i.conns.items():
+                for pn, n in place.expand(pin, expr):
+                    mconn[pn] = resolve(n.strip())
+        mpins, nmac = {}, 0
+        for pname, pinfo in macros[mcell]["pins"].items():
+            netname = None
+            if pinfo["use"] not in ("POWER", "GROUND"):
+                netname = mconn.get(pname)
+                if netname:
+                    nmac += 1
+            # ピンの y は**帯ローカル**。ルータは row_y0[0] を足すので、
+            # (帯の y0 + ローカル y) - row_y0[0] に直しておく。
+            mpins[pname] = {"net": netname, "use": pinfo["use"],
+                            "direction": pinfo["direction"],
+                            "rects": [[l, x0, round(my0 + y0 - row0_y0, 4),
+                                       x1, round(my0 + y1 - row0_y0, 4)]
+                                      for l, x0, y0, x1, y1
+                                      in conv_rects(pinfo["rects"], mx0)]}
+        # マクロは**ピン列が向くチャネルの上の行**に足す。ルータは行ごとに
+        # `row_y0[r]` を足してピンの絶対 y を作るので、ここで入れる行と
+        # 上の `row0_y0` は同じ行でなければならない。
+        rows[mrow].append({"type": mcell, "name": minst, "row": mrow, "x": mx0,
+                           "width": cfg.MACRO_W, "pins": mpins})
 
     data = {"row_height": pl["row_h"], "row_width": pl["row_width"],
             "core_w": pl["core_w"], "core_h": pl["core_h"],
             "ch_heights": pl["ch_heights"],
-            "macro": {"cell": mcell, "inst": minst, "box": pl["macro"]["box"]},
+            "macro": (None if NO_MACRO
+                      else {"cell": mcell, "inst": minst, "box": pl["macro"]["box"]}),
             "top_cell": cfg.TOP_CELL_NAME, "rows": rows}
     os.makedirs(os.path.dirname(out_json), exist_ok=True)
     json.dump(data, open(out_json, "w"), indent=1)
@@ -160,16 +168,18 @@ def main(place_json=PLACE, out_json=None, net_path=None, lef_path=None):
           f"コア {data['core_w']} x {data['core_h']}")
     print(f"  ch_heights {data['ch_heights']}")
     print(f"  優先コリドー {npri} 本 / ネットの付いた信号ピン {nsig} 本")
-    pad_y = [r[2] for p in mpins.values() for r in p["rects"]]
-    print(f"  マクロ {mcell} {minst} @ ({mx0}, {my0})、信号パッド {nmac} 本 "
-          f"（row0 相対 y {min(pad_y):.1f}…{max(pad_y):.1f}、絶対 y "
-          f"{min(pad_y)+row0_y0:.1f}）")
-    want = sum(1 for pn, pi in macros[mcell]["pins"].items()
-               if pi["use"] not in ("POWER", "GROUND"))
-    if nmac != want:
-        raise SystemExit(f"マクロの信号ピン {want} 本のうち {nmac} 本しか"
-                         f"ネットが付いていない: "
-                         f"{sorted(set(macros[mcell]['pins']) - set(mconn))}")
+    if not NO_MACRO:
+        pad_y = [r[2] for p in mpins.values() for r in p["rects"]]
+        print(f"  マクロ {mcell} {minst} @ ({mx0}, {my0})、信号パッド {nmac} 本 "
+              f"（row0 相対 y {min(pad_y):.1f}…{max(pad_y):.1f}、絶対 y "
+              f"{min(pad_y)+row0_y0:.1f}）")
+        want = sum(1 for pn, pi in macros[mcell]["pins"].items()
+                   if pi["use"] not in ("POWER", "GROUND"))
+        if nmac != want:
+            raise SystemExit(f"マクロの信号ピン {want} 本のうち {nmac} 本しか"
+                             f"ネットが付いていない: "
+                             f"{sorted(set(macros[mcell]['pins']) - set(mconn))}")
+
     return out_json
 
 

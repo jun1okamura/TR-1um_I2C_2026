@@ -288,6 +288,43 @@ def main(in_gds, compaction_info_path, out_gds, pin_map_in=None, pin_map_out=Non
     dbu = layout.dbu
     top = layout.cell(TOP_CELL_NAME)
 
+    # --- I2C 移植 (10): 実ジオメトリで「使用中のトラック」を測り直す ----------
+    # `compaction_info` は **step6（チャネル配線）が書いた記録**で、その後の
+    #   step7  短絡のリップアップ／再配線（トランクを別トラックへ移す）
+    #   step8  トップピンの引き出し（コア端まで届く長い M1 トランクを足す）
+    #   step8b トップピン後のリップアップ
+    # が足したり動かしたりした配線を知らない。記録上「未使用」のトラックに
+    # 実際には M1 が乗っていると、そのスライスごと削られて **M1 が高さ 0 に
+    # 潰れ、隣の配線と地続きになる**（実測: 短絡 1 件 + V1 間隔違反 1 件。
+    # 潰れた実物は net `_097_` の M1 (197.1, 2685.9)-(224.1, 2687.7) が
+    # y 876.7 の高さ 0 の箱になっていた）。
+    #
+    # 記録を信じずに、**入力 GDS の M1 を実測して使用トラックに足す**。
+    # 横トランクは高さ 1.8 µm なので、それ以下の M1 の y 中心がトラックに
+    # 乗っていれば「使用中」と見なす。削り残しが少し増えるだけで、
+    # 潰してよいスライスの判定は保守側に倒れる。
+    _recovered = 0
+    for _p in db.Region(top.begin_shapes_rec(layout.layer(13, 0))).each():
+        _b = _p.bbox()
+        _y0, _y1 = _b.bottom * dbu, _b.top * dbu
+        if _y1 - _y0 > 3.0:
+            continue                      # 縦のパッドや電源。トラックではない
+        _yc = (_y0 + _y1) / 2
+        for _c, _cy in enumerate(ch_y0):
+            if not (_cy <= _yc <= _cy + ch_heights[_c]):
+                continue
+            _i = int(round((_yc - _cy - track0_offset) / track_pitch))
+            if abs(_cy + track0_offset + _i * track_pitch - _yc) < 0.9 \
+                    and _i not in kept_by_channel[_c]:
+                kept_by_channel[_c].append(_i)
+                _recovered += 1
+            break
+    if _recovered:
+        for _c in kept_by_channel:
+            kept_by_channel[_c] = sorted(set(kept_by_channel[_c]))
+        print(f"step6 の記録に無いが実際に M1 が乗っているトラックを "
+              f"{_recovered} 本回収した（step7/step8 が足した配線）")
+
     protect_y = collect_protect_y(layout, top)
     # --- TD4 移植 (6b): 保護区間を 1 トラックぶん膨らませる ---------------------
     # 保護区間は identity 写像のまま残るが、**その外側は詰まる**ので、隣の

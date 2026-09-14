@@ -28,7 +28,7 @@ import sys
 os.environ.setdefault("TD4_MACRO_MODE", "portrait")
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import td4_config as cfg                                    # noqa: E402
+import i2c_config as cfg                                    # noqa: E402
 
 import klayout.db as db                                     # noqa: E402
 
@@ -92,7 +92,7 @@ def main():
     top, gds_ext, lvs_ext, netlist_only = read_info(a.info)
     if top != cfg.CHIP_TOP_CELL:
         raise SystemExit(f"info.yaml の top_cell {top!r} と "
-                         f"td4_config.CHIP_TOP_CELL {cfg.CHIP_TOP_CELL!r} が違う")
+                         f"i2c_config.CHIP_TOP_CELL {cfg.CHIP_TOP_CELL!r} が違う")
     if netlist_only.lower() == "true":
         print("  注意: info.yaml の lvs.netlist_only が true "
               "-- CI は抽出するだけで照合しない")

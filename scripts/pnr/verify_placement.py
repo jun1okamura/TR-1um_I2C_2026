@@ -17,9 +17,10 @@ import json, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import td4_config as cfg                                    # noqa: E402
+import i2c_config as cfg                                    # noqa: E402
 import netlist_util as nu                                   # noqa: E402
 
+NO_MACRO = getattr(cfg, "MACRO_MODE", "landscape") == "none"
 EPS = 1e-6
 
 
@@ -62,12 +63,16 @@ def main(path=None):
         if [round(v, 3) for v in tx] != [round(v, 3) for v in cfg.TAP_X]:
             bad.append(f"row{r}: TAP の x が {tx}（{cfg.TAP_X} のはず）")
 
-    # ---- 5. マクロ
+    # ---- 5. マクロ（I2C はマクロ無し）
     mx0, my0, mx1, my1 = cfg.macro_box()
-    if [round(v, 3) for v in d["macro"]["box"]] != [round(v, 3) for v in (mx0, my0, mx1, my1)]:
-        bad.append(f"マクロ枠 {d['macro']['box']} が設定 {(mx0,my0,mx1,my1)} と違う")
     ys, stack = cfg.row_y()
-    if cfg.MACRO_MODE == "portrait":
+    if NO_MACRO:
+        note.append("ハードマクロ無し（標準セルだけのコア）")
+    elif [round(v, 3) for v in d["macro"]["box"]] != [round(v, 3) for v in (mx0, my0, mx1, my1)]:
+        bad.append(f"マクロ枠 {d['macro']['box']} が設定 {(mx0,my0,mx1,my1)} と違う")
+    if NO_MACRO:
+        pass
+    elif cfg.MACRO_MODE == "portrait":
         # 縦置き: 行の**右**。行スタックと x が重ならないこと、底面が row0 と
         # 面一であること（下辺のピン列が ch[0] を向くための拘束）。
         if mx0 < cfg.ROW_WIDTH_UM - EPS:
@@ -103,7 +108,7 @@ def main(path=None):
     lib = gdstk.read_gds(gds)
     top = {c.name: c for c in lib.cells}[cfg.TOP_CELL_NAME]
     nref = len(top.references)
-    njson = sum(len(r) for r in d["rows"]) + 1          # +1 = マクロ
+    njson = sum(len(r) for r in d["rows"]) + (0 if NO_MACRO else 1)   # +1 = マクロ
     if nref != njson:
         bad.append(f"GDS の参照 {nref} 個 vs JSON {njson} 個")
     pr = [p for p in top.polygons if (p.layer, p.datatype) == (235, 0)]
@@ -114,8 +119,11 @@ def main(path=None):
         if abs(b[1][0] - b[0][0] - cw) > EPS or abs(b[1][1] - b[0][1] - ch) > EPS:
             bad.append(f"トップ prBoundary {b} がコア {cw}x{ch} と違う")
     # マクロ参照の実位置
-    mref = [r for r in top.references if r.cell.name == cfg.MACRO_CELL]
-    if len(mref) != 1:
+    mref = [] if NO_MACRO else [r for r in top.references
+                                if r.cell.name == cfg.MACRO_CELL]
+    if NO_MACRO:
+        pass
+    elif len(mref) != 1:
         bad.append(f"GDS のマクロ参照が {len(mref)} 個")
     else:
         mb = [p for p in mref[0].cell.polygons if (p.layer, p.datatype) == (235, 0)]
@@ -139,7 +147,8 @@ def main(path=None):
           f"充填率 " + ", ".join(f"{u/usable*100:.0f}%" for u in used)
           + f"（実効 {usable:.1f} um/行）")
     print(f"  論理セル幅 {sum(used):.1f} um / FILL {sum(fills):.1f} um")
-    print(f"  マクロ {cfg.MACRO_CELL} @ ({mx0}, {my0}) - ({mx1}, {my1})")
+    if not NO_MACRO:
+        print(f"  マクロ {cfg.MACRO_CELL} @ ({mx0}, {my0}) - ({mx1}, {my1})")
     for n in note:
         print(f"  - {n}")
     if bad:

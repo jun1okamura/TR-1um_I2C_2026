@@ -83,7 +83,7 @@ def main(placement_json=PLACEMENT_JSON, out_gds=OUT_GDS, ch_heights=None):
             # TD4 移植: ハードマクロの帯は row0 の下（負の y）に置く。
             # 行の y オフセットではなく placement JSON の macro.box を使う。
             y_use = y_off
-            if inst["type"] == placement.get("macro", {}).get("cell"):
+            if inst["type"] == (placement.get("macro") or {}).get("cell"):
                 y_use = placement["macro"]["box"][1]
             y_dbu = int(round(y_use / dbu))
             top.insert(db.CellInstArray(src.cell_index(), db.Trans(db.Vector(x_dbu, y_dbu))))
@@ -105,7 +105,7 @@ def main(placement_json=PLACEMENT_JSON, out_gds=OUT_GDS, ch_heights=None):
     # TD4 移植 (15): 帯の上辺と ch[0] の間に確保した M1 電源バスバーの枠。
     # ルータはここに何も描かない（予約枠）。(250,1) に出すので KLayout で
     # チャネル注釈 (250,0) と区別できる。
-    import td4_config as _cfg
+    import i2c_config as _cfg
     bar_ann = layout.layer(250, 1)
     txt = layout.layer(250, 2)
     for name, y0, y1 in _cfg.power_bars():

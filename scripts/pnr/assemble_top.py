@@ -28,7 +28,7 @@ frame GDS の図形を測る）で、原点中心 1840 角は全層で完全に�
 **いちばん左のセルの N ウェル (140,0) が x=-6.3 まで出ている**から
 （`CORE_WIDTH_UM` は prBoundary の幅）。
 
-`td4_config.chip_geometry()` が **native bbox を中心対称**に置く
+`i2c_config.chip_geometry()` が **native bbox を中心対称**に置く
 （SCLK_SPI と同じ流儀）。結果:
 
     コア bbox  -802.35 … 802.35  x  -678.5 … 678.5
@@ -60,7 +60,7 @@ import sys
 os.environ.setdefault("TD4_MACRO_MODE", "portrait")
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import td4_config as cfg                                    # noqa: E402
+import i2c_config as cfg                                    # noqa: E402
 
 import klayout.db as db                                     # noqa: E402
 
@@ -89,7 +89,7 @@ def main():
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("-o", "--out", default=OUT_GDS)
     ap.add_argument("--core-gds", default=None,
-                    help="既定は td4_config.FINAL_GDS（縦置きなら step11）")
+                    help="既定は i2c_config.FINAL_GDS（縦置きなら step11）")
     ap.add_argument("--keep-unused", action="store_true",
                     help="参照されないトップセルを残す（既定は刈る）")
     ap.add_argument("--ptect", action="store_true",

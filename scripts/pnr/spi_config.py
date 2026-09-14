@@ -1,8 +1,8 @@
-"""spi_config.py -- 薄皮。中身は td4_config.py。
+"""spi_config.py -- 薄皮。中身は i2c_config.py。
 
-`TR-1um_Async_I2C` → `TR-1um_SCLK_SPI` と渡ってきた配線スクリプトは
-`import spi_config as _cfg` と書いてある。**原本を書き換えると移植の監査証跡が
-切れる**ので、名前だけ合わせてこちらへ流す。設定を触るときは td4_config.py を
-直すこと。
+`TR-1um_Async_I2C` → `TR-1um_SCLK_SPI` → `TR-1um_TD4` と渡ってきた配線
+スクリプトは `import spi_config as _cfg` と書いてある。**原本を書き換えると
+移植の監査証跡が切れる**ので、名前だけ合わせてこちらへ流す。
+設定を触るときは i2c_config.py を直すこと。
 """
-from td4_config import *          # noqa: F401,F403
+from i2c_config import *          # noqa: F401,F403

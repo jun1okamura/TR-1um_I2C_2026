@@ -42,7 +42,7 @@ M1 は水平・M2 は垂直で、`lef/TR-1um_tech.lef` の方向規則どおり�
   `lef/TR-1um_PNR.gds`   標準セル + `MEMPORT`（1598.4 × 399.6）を 1 ファイルに
   `lef/TR-1um_PNR.lef`   同じく MACRO を 1 ファイルに
 
-**配置配線はこの 2 つだけを読む**（`td4_config.CELL_GDS` / `LEF_PATH`）。
+**配置配線はこの 2 つだけを読む**（`i2c_config.CELL_GDS` / `LEF_PATH`）。
 ライブラリ本体（`TR-1um_STDCELL.gds` / `TR-1um_cells.lef`）は汚さない。
 
 以降のフローから見ると「上辺 1 列にピンがあるハードマクロ 1 個」になるので、
@@ -61,7 +61,7 @@ import argparse, math, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import td4_config as cfg                                    # noqa: E402
+import i2c_config as cfg                                    # noqa: E402
 import lef_parser                                           # noqa: E402
 
 SRC_CELL = "REG8x16"

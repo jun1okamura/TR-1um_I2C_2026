@@ -488,7 +488,7 @@ def main(placement_json=PLACEMENT_JSON, in_gds=IN_GDS, out_gds=OUT_GDS,
     # ハードマクロ (`MEMPORT`) は row0 のインスタンス列の末尾に入っているが、
     # 実体は**行スタックの下の帯**（ルータ座標で y < 0）で、幅はコア幅そのもの。
     # 行の右端を数えるときはこれを除く。
-    macro_cell = placement.get("macro", {}).get("cell")
+    macro_cell = (placement.get("macro") or {}).get("cell")
     for r, row_insts in enumerate(rows):
         inrow = sorted([i for i in row_insts if i["type"] != macro_cell],
                        key=lambda i: i["x"])

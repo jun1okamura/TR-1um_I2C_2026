@@ -26,7 +26,7 @@ import sys
 os.environ.setdefault("TD4_MACRO_MODE", "portrait")
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import td4_config as cfg                                    # noqa: E402
+import i2c_config as cfg                                    # noqa: E402
 
 SIM = os.path.join(cfg.CHIP, "simulation")
 VDD = 5.0
