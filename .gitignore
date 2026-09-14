@@ -18,3 +18,6 @@ scripts/char/logs/
 
 # チップ ngspice の波形生データ
 layout/chip/simulation/*.raw.csv
+
+# mklib.py が .lib を作り直すときに取る退避
+lef/*.lib.bak
