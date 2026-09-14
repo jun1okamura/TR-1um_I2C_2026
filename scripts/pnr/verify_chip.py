@@ -173,6 +173,28 @@ def main():
     print(f"  コアの電源タップ {taps} 本を確認"
           f"（うち下辺 {open_taps} 本は TAP 柱経由）")
 
+    # --- I2C 移植 (24): RING_OSC の電源とバスバー --------------------------
+    # RING_OSC は最初の版ではチップ電源にまったく繋がっていなかった。
+    # 移植 (23) で両脇の M2 ストラップを M1 に落として上下のバスバーへ
+    # 繋いだので、5 本のレール全部が正しい島に乗っていることを確かめる。
+    # レールの y は RING_OSC の GDS 実測（セル y に RING_OSC_ORIGIN[1] を足す）。
+    ro_y = cfg.RING_OSC_ORIGIN[1]
+    # セル y は RING_OSC 自身のラベル位置（GDS 実測）をそのまま使う。
+    ro_checks = [("VSS 下端レール", -106.9, "GND"), ("VDD 下レール", -52.3, "VDD"),
+                 ("VSS 中レール", 2.3, "GND"), ("VDD 上レール", 56.9, "VDD"),
+                 ("VSS 上端レール", 111.5, "GND")]
+    for nm, cy, rail in ro_checks:
+        i = look(cfg.RING_OSC_ORIGIN[0] + 400.0, ro_y + cy, "M1")
+        if i != rails[rail]:
+            bad.append(f"RING_OSC の {nm} が島 {i}（期待 {rails[rail]} = {rail}）")
+    print(f"  RING_OSC のレール {len(ro_checks)} 本を確認")
+    for nm, x, y, rail in (("RING_OSC 上の VDD バー", 0.0, -522.5, "VDD"),
+                           ("RING_OSC 下の VSS バー", 0.0, -780.0, "GND")):
+        i = look(x, y, "M1")
+        if i != rails[rail]:
+            bad.append(f"{nm} が島 {i}（期待 {rails[rail]} = {rail}）")
+    print("  RING_OSC 上下の M1 バスバー 2 本を確認")
+
     # REG8x16 のポート（チップ側でバーまで延ばした 4 本 + step11 の右下 1 組）
     # I2C にマクロは無い（i2c_config.MACRO_MODE = "none"）。
     if getattr(cfg, "MACRO_MODE", "none") == "none":

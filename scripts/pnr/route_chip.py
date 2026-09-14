@@ -17,6 +17,8 @@
     895.0   GND リング（同上）                          移植 (18)
     815.4   レーン 0、以降 5.4 ピッチで 14 本（最上 885.6）  移植 (15)
     810.0   RING_OSC の帯の縁（M1。M2 は 809.0）
+   -522.5   RING_OSC 上の VDD バスバー（M1、幅 6）           移植 (23)
+   -780.0   RING_OSC 下の VSS バスバー（M1、幅 10）          移植 (23)
     805.5   コアの bbox（x）。y は上 780.2 / 下 -183.0
 
 ## TD4 と違うところ（I2C 移植 (15)-(20)）
@@ -34,6 +36,18 @@
  (18) `DIS` の枝分かれぶん混むのでレーンが 14 本要る（2 µm 刻みで全周を
       探しても 14）。リングを 895 / 912 まで外へ寄せて帯を広げた。
  (19) (20) は verify_chip.py 側（同じ端子を共有するネット、開放の下辺タップ）。
+ (21) 同じネット / 同じ端子は 1 本の幹 + 端点ごとの足にまとめる。`DIS` は
+      P7 から 9 本に枝分かれしていてレーンを 9 本食っていた。32 本 -> 23 群、
+      14 レーン -> 10 レーン、総長 58626 -> 47511 µm。
+ (22) 電源バー <-> フレームの電源 PAD は V10 と同じ形（幅 10 µm x 5 本、
+      ピッチ 12、ピンの x を中心に -24…+24、複数カットの via）。
+ (23) コアと RING_OSC の**両脇**の M2 電源ストラップを M1 に落として、
+      RING_OSC の上（VDD）/ 下（VSS）に置いた M1 バスバーへ繋ぐ。
+      M1 でなければならない理由: 左右のチャネルの縦は M2 のレーンが、
+      コアと RING_OSC の間は OpenSUSI ロゴ（M2）が埋めている。
+      これで RING_OSC に電源が入る（(17) までの版では RING_OSC は
+      チップ電源にまったく繋がっていなかった）。
+ (24) は verify_chip.py 側（RING_OSC のレール 5 本とバスバー 2 本）。
 
 ## なぜリングを 2 本引くのか
 
@@ -56,9 +70,25 @@ HIZ と浮いた OUT の結線はすべてレール直結で、四辺に散っ�
        リングへ。下辺中央の VSS 壁ピンへは**リングの下辺から** M2 の
        ストリップ 5 本で降ろす。残り三辺の壁ピンにも短いストラップ。
   VDD  上チャネルの M1 バス（y=804）で上辺の VDD タップ 4 本を束ね、
-       M2 ライザ 5 本（x 80..320）で VDD リングへ。リングの M1 にそのまま
-       乗り換えて y=927 のフレーム M1 VDD ピンへ入る。M2 のまま 920 まで
-       行くとフレームの VSS（M2、上辺 920..934）に当たる。
+       M2 ストリップ 5 本（x 176..224、幅 10）で VDD リングへ。リングの M1
+       にそのまま乗り換えて y=927 のフレーム M1 VDD ピンへ入る。M2 のまま
+       920 まで行くとフレームの VSS（M2、上辺 920..934）に当たる。
+
+## 両脇と下半分（移植 (23)）
+
+  コア  下辺の両脇の TAP ストラップ（M2）をコアの下へ少し延ばして M1 に
+        落とす。GND は y=-190 の M1 タイで GND リングへ、VDD は GND の
+        タイを M2 のまま跨いでから y=-198 で M1 に落ち、ロゴ（M2）の上を
+        縦断して RING_OSC 上の VDD バスバーへ。
+  RING_OSC  両脇の TAP ストラップ（M2、全高）をセルの外へ少し延ばして
+        M1 に落とす。VDD は上のバスバーへ、VSS は下のバスバーへ。
+        セルの中で via を打ってはいけない -- RING_OSC の上端と下端の
+        レールはどちらも VSS で全幅にわたっているので、VDD 側の via の
+        M1 パッドがそこに乗る。
+  バスバー  VDD は y=-522.5（ロゴ下端 -516 と RING_OSC 上端 -537.1 の
+        間。`tx_data[3]`/`tx_data[4]` のパッド足 y=-530 の上に置く）、
+        VSS は y=-780。どちらも左右でリングに落ちる。VSS はさらに
+        VSS PAD からの M2 ストリップ 5 本が下から直接刺さる。
 
   usage: python3 scripts/pnr/route_chip.py [-o OUT]
 """
@@ -191,6 +221,48 @@ STRAP_W = 6.0
 # 通る。実測でこの 2 列は M2 も V1 も空で、横切るのは別ネットの M1 だけ
 # （左列で 23 本）。M2 x M1 なので via を打たなければ何も起きない。
 MACRO_RISER_W = 3.4      # マクロのポート幅ちょうど。段差を作らない
+
+# --- I2C 移植 (23): 両脇の M2 電源を M1 に落として上下のバーへ ---------------
+# コアも RING_OSC も、いちばん外側の TAP 柱が **M2 の縦ストラップ**で全高を
+# 貫いている（実測）:
+#
+#            VSS ストラップ            VDD ストラップ        M2 の y 範囲
+#   コア左    -798.2…-794.8 (w 3.4)    -792.8…-789.4        -183.0 … 780.2
+#   コア右     789.4… 792.8            794.8… 798.2         同上
+#   RO 左     -809.0…-805.6 (w 3.4)    -803.6…-800.2        -758.1 … -537.1
+#   RO 右      800.2… 803.6             805.6… 809.0        同上
+#
+# （左は VSS が外、右は VDD が外。TAP セルが左右で鏡なので）
+#
+# これを横へ引き出すには **M1 でなければならない**:
+#   * 左右のチャネルの縦は M2 のレーンが埋めている
+#   * コアと RING_OSC の間は OpenSUSI ロゴ（**M2**）が塞いでいる
+# M1 なら、レーンの M2 もロゴの M2 も via を打たずに跨げる。
+#
+# 乗り換える場所は**セルの外**。ストラップの端の内側に via を打つと、
+# via の M1 パッドが隣の極性のレール（RING_OSC の上端は VSS が全幅）に
+# 乗ってしまう。M2 をわずかに延ばしてから、セルの外で M1 に落とす。
+RO_STRAP_W = 3.4         # RING_OSC のストラップ幅（実測）。段差を作らない
+RO_STRAP_X = {"VDD": (-801.9, 807.3), "GND": (-807.3, 801.9)}
+RO_M2_TOP, RO_M2_BOT = -537.1, -758.1     # RING_OSC の M2 の上端 / 下端
+
+# RING_OSC の上（ロゴ下端 -516 と RING_OSC 上端 -537.1 の 21.1 µm）に VDD、
+# 下（-758.1 とレーン 0 の -816.3 の 58.2 µm）に VSS の M1 バスバー。
+# 上の窓は `tx_data[3]`(左) / `tx_data[4]`(右) のパッド足 y=-530 が
+# -530.9…-529.1 で横切っているので、その上の -529.1…-516 に置く。
+RO_VDD_BAR_Y, RO_VDD_BAR_W = -522.5, 6.0   # -525.5…-519.5（足まで 3.6）
+RO_VSS_BAR_Y, RO_VSS_BAR_W = -780.0, 10.0  # -785.0…-775.0
+RO_BAR_X = 810.0                            # バーの素の左右端（= 帯の幅）
+RO_VIA_TOP_Y = -532.0    # M2 を少し伸ばして M1 に乗り換える点（上）
+RO_VIA_BOT_Y = -763.0    # 同（下）
+
+# コアの下（コア下端 -183.0 とロゴ上端 -203.0 の 20 µm）:
+#   GND は y=-190 の M1 で横へ出して GND リングへ
+#   VDD は M2 のまま GND のタイを跨いでから -198 で M1 に落とし、
+#        ロゴの上を縦に降りて RING_OSC 上の VDD バーへ
+CORE_GND_TIE_Y = -190.0
+CORE_VDD_SWITCH_Y = -198.0
+FLANK_W = 3.4            # コアのストラップ幅ちょうど
 # via を 2 カット縦積みするぶん、スタブをバーの中心より先まで伸ばす
 # （V10 の VIA_STACK_MARGIN と同じ）。
 VIA_STACK_MARGIN = 3.5
@@ -752,10 +824,14 @@ def main():
         d.via(sx, GND_BUS_Y, STRIP_VIA, STRIP_VIA)        # M1 バス -> M2
         d.wire("M2", sx, GND_BUS_Y, sx, GND_RING_R, STRIP_W)
         d.via(sx, GND_RING_R, STRIP_VIA, STRIP_VIA)       # GND リングへ
+    # 移植 (23): VSS PAD からの M2 は GND リングで止めず、RING_OSC 下の
+    # VSS バスバーまで伸ばして繋ぐ（ユーザ指示「VSS は VSSPAD からの M2 と
+    # 繋いでください」）。途中で下辺のレーン（M1 水平）を跨ぐが層が違う。
     for o in STRIP_OFFSETS:
         sx = VSS_PIN_X + o
-        d.wire("M2", sx, -GND_RING_R, sx, VSS_LAND_Y, STRIP_W)
+        d.wire("M2", sx, RO_VSS_BAR_Y, sx, VSS_LAND_Y, STRIP_W)
         d.via(sx, -GND_RING_R, STRIP_VIA, STRIP_VIA)
+        d.via(sx, RO_VSS_BAR_Y, STRIP_VIA, STRIP_VIA)
     # 残り三辺の VSS 壁ピンへ
     for edge, v in VSS_STRAP:
         p = (v, 0.0) if edge in ("TOP", "BOTTOM") else (0.0, v)
@@ -768,6 +844,60 @@ def main():
           f"x={[GND_STRIP_X + o for o in STRIP_OFFSETS]} -> リング、"
           f"下辺も {len(STRIP_OFFSETS)} 本 x={[VSS_PIN_X + o for o in STRIP_OFFSETS]}"
           f" -> VSS 壁ピン y={VSS_LAND_Y}、ほか {len(VSS_STRAP)} 本のストラップ")
+
+    # ---- I2C 移植 (23): 両脇の M2 電源を M1 に落として上下のバーへ ---------
+    # RING_OSC の上に VDD、下に VSS の M1 バスバー。
+    d.net = "VDD"
+    d.wire("M1", -VDD_RING_R, RO_VDD_BAR_Y, VDD_RING_R, RO_VDD_BAR_Y, RO_VDD_BAR_W)
+    for sx in (-VDD_RING_R, VDD_RING_R):
+        d.via(sx, RO_VDD_BAR_Y, RING_VIA, RO_VDD_BAR_W - 0.8)   # VDD リングへ
+    d.net = "GND"
+    d.wire("M1", -GND_RING_R, RO_VSS_BAR_Y, GND_RING_R, RO_VSS_BAR_Y, RO_VSS_BAR_W)
+    for sx in (-GND_RING_R, GND_RING_R):
+        d.via(sx, RO_VSS_BAR_Y, RING_VIA, RING_VIA)             # GND リングへ
+    d.net = None
+    print(f"RING_OSC 上の VDD バー M1 y={RO_VDD_BAR_Y} 幅 {RO_VDD_BAR_W} "
+          f"x ±{VDD_RING_R}、下の VSS バー M1 y={RO_VSS_BAR_Y} "
+          f"幅 {RO_VSS_BAR_W} x ±{GND_RING_R}")
+
+    # RING_OSC の両脇のストラップ: M2 をセルの外へ少し延ばしてから M1 に落とす。
+    # （セルの中で via を打つと M1 パッドが逆極性のレールに乗る -- RING_OSC の
+    #   上端と下端のレールはどちらも VSS で、全幅にわたっている。）
+    for net, y_end, via_y, bar_y in (("VDD", RO_M2_TOP, RO_VIA_TOP_Y, RO_VDD_BAR_Y),
+                                     ("GND", RO_M2_BOT, RO_VIA_BOT_Y, RO_VSS_BAR_Y)):
+        d.net = net
+        for sx in RO_STRAP_X[net]:
+            d.wire("M2", sx, y_end, sx, via_y, RO_STRAP_W)
+            d.via(sx, via_y, RO_STRAP_W, RO_STRAP_W)
+            d.wire("M1", sx, via_y, sx, bar_y, RO_STRAP_W)
+        d.net = None
+    print(f"  RING_OSC 両脇 VDD x={list(RO_STRAP_X['VDD'])} -> 上のバー、"
+          f"VSS x={list(RO_STRAP_X['GND'])} -> 下のバー（幅 {RO_STRAP_W}）")
+
+    # コアの両脇のストラップ: コアの下へ M2 を延ばしてから M1 に落とす。
+    #   GND  y=-190 で M1 に落として横へ、GND リングへ
+    #   VDD  GND のタイを M2 のまま跨いでから y=-198 で M1 に落とし、
+    #        ロゴ（M2）の上を縦に降りて RING_OSC 上の VDD バーへ
+    for net, ring_r in (("GND", GND_RING_R), ("VDD", VDD_RING_R)):
+        xs = taps[net]["BOTTOM"]
+        flanks = (min(xs), max(xs))
+        d.net = net
+        for sx in flanks:
+            if net == "GND":
+                d.wire("M2", sx, cb, sx, CORE_GND_TIE_Y, FLANK_W)
+                d.via(sx, CORE_GND_TIE_Y, FLANK_W, FLANK_W)
+                out = -ring_r if sx < 0 else ring_r
+                d.wire("M1", sx, CORE_GND_TIE_Y, out, CORE_GND_TIE_Y, FLANK_W)
+                d.via(out, CORE_GND_TIE_Y, RING_VIA, FLANK_W)
+            else:
+                d.wire("M2", sx, cb, sx, CORE_VDD_SWITCH_Y, FLANK_W)
+                d.via(sx, CORE_VDD_SWITCH_Y, FLANK_W, FLANK_W)
+                d.wire("M1", sx, CORE_VDD_SWITCH_Y, sx, RO_VDD_BAR_Y, FLANK_W)
+        d.net = None
+        print(f"  コア両脇 {net} x={list(flanks)} -> "
+              + ("GND リング（y=%.1f の M1 タイ）" % CORE_GND_TIE_Y if net == "GND"
+                 else "RING_OSC 上の VDD バー（y=%.1f で M1 に、ロゴの上を縦断）"
+                      % CORE_VDD_SWITCH_Y))
 
     with open(a.out.replace(".gds", "_net_shapes.json"), "w") as f:
         json.dump(dict(d.shapes), f, indent=1)
