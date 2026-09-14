@@ -7,7 +7,7 @@
   -805.5,
   -172.2,
   805.5,
-  835.2
+  791.0
  ],
  "ring_osc_origin": [
   -810.0,
@@ -22,8 +22,8 @@
    "kind": "P",
    "from": {
     "what": "core",
-    "x": -429.3,
-    "y": 833.7,
+    "x": 164.7,
+    "y": 789.5,
     "edge": "TOP",
     "layer": "M2",
     "port": "scl"
@@ -36,7 +36,7 @@
     "layer": "M2",
     "terminal": "P1"
    },
-   "ring_run_um": 159.3,
+   "ring_run_um": 434.7,
    "same_edge": true
   },
   {
@@ -46,8 +46,8 @@
    "kind": "P",
    "from": {
     "what": "core",
-    "x": -569.7,
-    "y": 833.7,
+    "x": 116.1,
+    "y": 789.5,
     "edge": "TOP",
     "layer": "M2",
     "port": "sda_in"
@@ -60,7 +60,7 @@
     "layer": "M2",
     "terminal": "P2"
    },
-   "ring_run_um": 39.7,
+   "ring_run_um": 646.1,
    "same_edge": true
   },
   {
@@ -70,8 +70,8 @@
    "kind": "HIZ",
    "from": {
     "what": "core",
-    "x": 218.7,
-    "y": 833.7,
+    "x": 240.3,
+    "y": 789.5,
     "edge": "TOP",
     "layer": "M2",
     "port": "sda_oe"
@@ -84,7 +84,7 @@
     "layer": "M2",
     "terminal": "HIZ2"
    },
-   "ring_run_um": 798.7,
+   "ring_run_um": 820.3,
    "same_edge": true
   },
   {
@@ -94,9 +94,9 @@
    "kind": "P",
    "from": {
     "what": "core",
-    "x": -797.7,
-    "y": 462.0,
-    "edge": "LEFT",
+    "x": 797.7,
+    "y": 602.4,
+    "edge": "RIGHT",
     "layer": "M1",
     "port": "tx_data[0]"
    },
@@ -108,8 +108,8 @@
     "layer": "M2",
     "terminal": "P3"
    },
-   "ring_run_um": 68.0,
-   "same_edge": true
+   "ring_run_um": 2554.4,
+   "same_edge": false
   },
   {
    "net": "rx_data[0]",
@@ -118,10 +118,10 @@
    "kind": "OUT",
    "from": {
     "what": "core",
-    "x": 797.7,
-    "y": 351.0,
-    "edge": "RIGHT",
-    "layer": "M1",
+    "x": -94.5,
+    "y": 789.5,
+    "edge": "TOP",
+    "layer": "M2",
     "port": "rx_data[0]"
    },
    "to": {
@@ -132,7 +132,7 @@
     "layer": "M2",
     "terminal": "OUT3"
    },
-   "ring_run_um": 2715.8,
+   "ring_run_um": 1128.9,
    "same_edge": false
   },
   {
@@ -166,10 +166,10 @@
    "kind": "P",
    "from": {
     "what": "core",
-    "x": 396.9,
-    "y": 833.7,
-    "edge": "TOP",
-    "layer": "M2",
+    "x": 797.7,
+    "y": 597.0,
+    "edge": "RIGHT",
+    "layer": "M1",
     "port": "tx_data[1]"
    },
    "to": {
@@ -180,7 +180,7 @@
     "layer": "M2",
     "terminal": "P4"
    },
-   "ring_run_um": 1970.3,
+   "ring_run_um": 2819.8,
    "same_edge": false
   },
   {
@@ -190,10 +190,10 @@
    "kind": "OUT",
    "from": {
     "what": "core",
-    "x": -747.9,
-    "y": 833.7,
-    "edge": "TOP",
-    "layer": "M2",
+    "x": -797.7,
+    "y": 441.1,
+    "edge": "LEFT",
+    "layer": "M1",
     "port": "rx_data[1]"
    },
    "to": {
@@ -204,8 +204,8 @@
     "layer": "M2",
     "terminal": "OUT4"
    },
-   "ring_run_um": 915.5,
-   "same_edge": false
+   "ring_run_um": 261.1,
+   "same_edge": true
   },
   {
    "net": "DIS",
@@ -238,9 +238,9 @@
    "kind": "P",
    "from": {
     "what": "core",
-    "x": -797.7,
-    "y": 456.6,
-    "edge": "LEFT",
+    "x": 797.7,
+    "y": 312.7,
+    "edge": "RIGHT",
     "layer": "M1",
     "port": "tx_data[2]"
    },
@@ -252,8 +252,8 @@
     "layer": "M2",
     "terminal": "P5"
    },
-   "ring_run_um": 726.6,
-   "same_edge": true
+   "ring_run_um": 3644.1,
+   "same_edge": false
   },
   {
    "net": "rx_data[2]",
@@ -262,10 +262,10 @@
    "kind": "OUT",
    "from": {
     "what": "core",
-    "x": 797.7,
-    "y": 201.7,
-    "edge": "RIGHT",
-    "layer": "M1",
+    "x": -737.1,
+    "y": 789.5,
+    "edge": "TOP",
+    "layer": "M2",
     "port": "rx_data[2]"
    },
    "to": {
@@ -276,7 +276,7 @@
     "layer": "M2",
     "terminal": "OUT5"
    },
-   "ring_run_um": 3665.1,
+   "ring_run_um": 1286.3,
    "same_edge": false
   },
   {
@@ -310,10 +310,10 @@
    "kind": "P",
    "from": {
     "what": "core",
-    "x": 299.7,
-    "y": 833.7,
-    "edge": "TOP",
-    "layer": "M2",
+    "x": 797.7,
+    "y": 580.8,
+    "edge": "RIGHT",
+    "layer": "M1",
     "port": "tx_data[3]"
    },
    "to": {
@@ -324,7 +324,7 @@
     "layer": "M2",
     "terminal": "P6"
    },
-   "ring_run_um": 2673.1,
+   "ring_run_um": 3636.0,
    "same_edge": false
   },
   {
@@ -334,10 +334,10 @@
    "kind": "OUT",
    "from": {
     "what": "core",
-    "x": 797.7,
-    "y": 196.3,
-    "edge": "RIGHT",
-    "layer": "M1",
+    "x": -639.9,
+    "y": 789.5,
+    "edge": "TOP",
+    "layer": "M2",
     "port": "rx_data[3]"
    },
    "to": {
@@ -348,7 +348,7 @@
     "layer": "M2",
     "terminal": "OUT6"
    },
-   "ring_run_um": 3263.1,
+   "ring_run_um": 1823.5,
    "same_edge": false
   },
   {
@@ -455,7 +455,7 @@
    "from": {
     "what": "core",
     "x": 797.7,
-    "y": 318.6,
+    "y": 607.8,
     "edge": "RIGHT",
     "layer": "M1",
     "port": "tx_data[4]"
@@ -468,7 +468,7 @@
     "layer": "M2",
     "terminal": "P11"
    },
-   "ring_run_um": 848.6,
+   "ring_run_um": 1137.8,
    "same_edge": true
   },
   {
@@ -478,8 +478,8 @@
    "kind": "OUT",
    "from": {
     "what": "core",
-    "x": -650.7,
-    "y": 833.7,
+    "x": -542.7,
+    "y": 789.5,
     "edge": "TOP",
     "layer": "M2",
     "port": "rx_data[4]"
@@ -492,7 +492,7 @@
     "layer": "M2",
     "terminal": "OUT11"
    },
-   "ring_run_um": 3114.1,
+   "ring_run_um": 3006.1,
    "same_edge": false
   },
   {
@@ -526,9 +526,9 @@
    "kind": "P",
    "from": {
     "what": "core",
-    "x": -797.7,
-    "y": 451.2,
-    "edge": "LEFT",
+    "x": 797.7,
+    "y": 318.1,
+    "edge": "RIGHT",
     "layer": "M1",
     "port": "tx_data[5]"
    },
@@ -540,8 +540,8 @@
     "layer": "M2",
     "terminal": "P12"
    },
-   "ring_run_um": 3505.6,
-   "same_edge": false
+   "ring_run_um": 588.1,
+   "same_edge": true
   },
   {
    "net": "rx_data[5]",
@@ -551,7 +551,7 @@
    "from": {
     "what": "core",
     "x": -797.7,
-    "y": 499.8,
+    "y": -68.8,
     "edge": "LEFT",
     "layer": "M1",
     "port": "rx_data[5]"
@@ -564,7 +564,7 @@
     "layer": "M2",
     "terminal": "OUT12"
    },
-   "ring_run_um": 3367.0,
+   "ring_run_um": 3438.0,
    "same_edge": false
   },
   {
@@ -599,7 +599,7 @@
    "from": {
     "what": "core",
     "x": 797.7,
-    "y": 324.0,
+    "y": 269.5,
     "edge": "RIGHT",
     "layer": "M1",
     "port": "tx_data[6]"
@@ -612,7 +612,7 @@
     "layer": "M2",
     "terminal": "P13"
    },
-   "ring_run_um": 54.0,
+   "ring_run_um": 0.5,
    "same_edge": true
   },
   {
@@ -623,7 +623,7 @@
    "from": {
     "what": "core",
     "x": -797.7,
-    "y": 483.6,
+    "y": 435.7,
     "edge": "LEFT",
     "layer": "M1",
     "port": "rx_data[6]"
@@ -636,7 +636,7 @@
     "layer": "M2",
     "terminal": "OUT13"
    },
-   "ring_run_um": 3023.2,
+   "ring_run_um": 3071.1,
    "same_edge": false
   },
   {
@@ -671,7 +671,7 @@
    "from": {
     "what": "core",
     "x": 797.7,
-    "y": 297.0,
+    "y": 258.7,
     "edge": "RIGHT",
     "layer": "M1",
     "port": "tx_data[7]"
@@ -684,7 +684,7 @@
     "layer": "M2",
     "terminal": "P14"
    },
-   "ring_run_um": 233.0,
+   "ring_run_um": 271.3,
    "same_edge": true
   },
   {
@@ -694,9 +694,9 @@
    "kind": "OUT",
    "from": {
     "what": "core",
-    "x": 797.7,
-    "y": 437.4,
-    "edge": "RIGHT",
+    "x": -797.7,
+    "y": -63.4,
+    "edge": "LEFT",
     "layer": "M1",
     "port": "rx_data[7]"
    },
@@ -708,8 +708,8 @@
     "layer": "M2",
     "terminal": "OUT14"
    },
-   "ring_run_um": 182.6,
-   "same_edge": true
+   "ring_run_um": 3130.2,
+   "same_edge": false
   },
   {
    "net": "DIS",
@@ -742,8 +742,8 @@
    "kind": "P",
    "from": {
     "what": "core",
-    "x": 510.3,
-    "y": 833.7,
+    "x": 666.9,
+    "y": 789.5,
     "edge": "TOP",
     "layer": "M2",
     "port": "rst_n"
@@ -756,7 +756,7 @@
     "layer": "M2",
     "terminal": "P15"
    },
-   "ring_run_um": 19.7,
+   "ring_run_um": 136.9,
    "same_edge": true
   },
   {

@@ -203,8 +203,25 @@ def gather_pins(placement, ch_heights, row_h, resolver=None):
         _half = 0                       # 右へは 1 本も出さない
         print(f"  [top pins] 行幅 {_row_w} < コア幅 {_core_w} なので"
               f"右辺は使わない（中間行のポートは全部左へ）")
-    _right = [it for r in _mids[:_half] for it in by_row[r]]
-    _left = [it for r in _mids[_half:] for it in by_row[r]]
+    # --- I2C 移植 (12): 左右は**行ではなくピンの x** で決める -----------------
+    # 原本は「上半分の行は右へ、下半分の行は左へ」と**行単位**で振っていた。
+    # 4 行・下辺なし（`NO_BOTTOM_PORTS`）だと中間行が 3 本になり、行 0/1 の
+    # ポートが全部右へ回る。M1 トランクは x=ピン から行の端まで一直線なので、
+    # **左端に居るピンが右端まで 1400 µm 走る**ことになり、その間で他ネットの
+    # M2 ライザ（と via）を必ず踏む。実測: seed 4 で `rx_data[5]`（x=229.5）が
+    # x=1598.4 まで引かれ、`[CHECK] 経路が空いていない` と自己申告したうえで
+    # `scl_gated` と短絡した（step8 で発生、step10 まで残る）。
+    #
+    # ピンの x で近い方の辺へ出せば、走る距離は最大でも行幅の半分になる。
+    # `I2C_TOPPIN_SIDE_BY_X=0` で行単位（原本）に戻せる。
+    _by_x = _os.environ.get("I2C_TOPPIN_SIDE_BY_X", "1") != "0"
+    if _by_x and _right_ok and _row_w:
+        _mid_items = [it for r in _mids for it in by_row[r]]
+        _right = [it for it in _mid_items if it[4] >= _row_w / 2.0]
+        _left = [it for it in _mid_items if it[4] < _row_w / 2.0]
+    else:
+        _right = [it for r in _mids[:_half] for it in by_row[r]]
+        _left = [it for r in _mids[_half:] for it in by_row[r]]
     row0_ports = set() if _no_bottom else {item[0] for item in by_row[0]}
     row3_ports_all = {item[0] for item in by_row[_top]} if _top > 0 else set()
     vertical_ports = row0_ports | row3_ports_all

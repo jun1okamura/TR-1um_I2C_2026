@@ -149,10 +149,15 @@ _ch_env = os.environ.get("I2C_CH_HEIGHTS")
 if _ch_env:
     CH_HEIGHTS = [float(v) for v in _ch_env.split(",")]
 else:
-    CH_HEIGHTS = [131.6] + [700.0, 1000.0, 700.0][:max(N_ROWS - 1, 0)] \
-                 + [700.0] * max(N_ROWS - 4, 0) + [153.2]
+    # **上下の余白はトラック格子に乗せる。** V10 の 131.6 / 153.2 をそのまま
+    # 使うと、ch0 のいちばん上のトラックが row0 のセルの M1 に 1.2 µm まで
+    # 寄って **M1 間隔違反が 3 件出る**（実測: y 132.6 に幅 12.8 / 104.6 /
+    # 185.6 µm の 0.2 µm 隙間。step6 で発生し step10 まで残る）。
+    # 5.4 の倍数（140.4 = 26 トラック / 162.0 = 30 トラック）にすると 0 件になる。
+    CH_HEIGHTS = [140.4] + [700.0, 1000.0, 700.0][:max(N_ROWS - 1, 0)] \
+                 + [700.0] * max(N_ROWS - 4, 0) + [162.0]
     if len(CH_HEIGHTS) != N_ROWS + 1:          # N_ROWS を変えたとき用の埋め合わせ
-        CH_HEIGHTS = [131.6] + [700.0] * (N_ROWS - 1) + [153.2]
+        CH_HEIGHTS = [140.4] + [700.0] * (N_ROWS - 1) + [162.0]
 
 TAP_X = TAP_X_DEFAULT                        # 行ローカル。tap_positions() と一致
 ROUTE_CH_HEIGHTS = list(CH_HEIGHTS)          # 配線と配置で同じでなければならない
