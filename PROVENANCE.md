@@ -1,90 +1,82 @@
 # Provenance
 
-`src/tr_1um_i2c_slave_async.gds` / `src/tr_1um_i2c_slave_async.cir` in this
-repository are exported copies, not designed here. This file records where
-they came from and what was done to them on the way in.
+このリポジトリは **2026 MPW の提出リポジトリであり、同時に設計環境そのもの**。
+RTL・スクリプト・レイアウト・検証データがここに揃っていて、`src/` の 2 つの
+ファイルはこのリポジトリの中で作られる。
 
-## Source repository
+| `src/` | どこから | 作るコマンド |
+|---|---|---|
+| `tr_1um_jun1okamura_i2c.gds` | `layout/chip/step3_top_pins.gds` | `scripts/pnr/export_mpw.py` |
+| `tr_1um_jun1okamura_i2c.cir` | `layout/chip/simulation/tr_1um_jun1okamura_i2c.spice` | 同上 |
 
+`.spice` -> `.cir` の改名は `info.yaml` の `lvs.extension` に合わせるため。
+
+## 2025 年の V10 からの関係
+
+設計の出自は
 [jun1okamura/TR-1um_Async_I2C](https://github.com/jun1okamura/TR-1um_Async_I2C)
+（RTL 設計、MyHDL/iverilog 検証、Yosys 合成、独自ルータ、DRC/LVS、IRSIM、
+RING_OSC 統合までの全履歴と `design_notes.md`）。**同じ RTL・同じプロトコル**
+だが、2026 版は物理設計を全部やり直している。
 
-| This repo (`src/`) | Source repo |
+- **合成から作り直し**。`RSLATCH` を ngspice で特性化して `.lib` に入れ
+  （NLDM 7x7、`scripts/char/`）、RTL から直接インスタンス化して
+  `blackbox` で守る形にした。V10 は NOR2 のたすき掛けで書いていたが、
+  `synth -flatten` の後で ABC が NOR3/NAND3 の生ループに吸収してしまい、
+  組合せループが 4 個できていた。
+- **配置・配線を作り直し**。4 行構成、コア 1611.0 x 963.2 µm。
+  行割り当ての FM 分割にパッド近接の項を追加。
+- **`RING_OSC` を現行 STDCELL 世代で描き直し**（セル高 64.8 -> 59.4、
+  帯の高さ 244.8 -> 223.2 µm）。ネットリストは xschem の回路図から起こし、
+  レイアウトとの LVS が通ることを確認している。
+- **チップ配線を作り直し**。`DIS` を幹 1 本 + 端点ごとの足にまとめ、
+  電源は V10 と同じ 10 µm x 5 本のストリップで PAD へ。コアと `RING_OSC` の
+  両脇の M2 電源を M1 に落として `RING_OSC` の上下に M1 バスバーを足した
+  （V10 の構成では `RING_OSC` にチップ電源が来ていなかった）。
+- **検証をレイアウト抽出から**。LVS の照合に加えて、同じ抽出から ngspice 用の
+  ネットリストを起こして 14 項目回帰を流している。刺激（PWL）は V10 の
+  テストベンチをそのまま借りていて、`reference/v10/` に置いてある。
+
+ピン配置（どのパッドがどのビットか）は **V10 の Option2 と同じ**
+（物理パッド番号の昇順と bit 番号が単調対応、`P3`..`P6` = bit0-3、
+`P11`..`P14` = bit4-7）。V9 以前のピン表は使わないこと。現行の表は
+`README.md` の 1 節。
+
+## フレームについて
+
+実フレームのセルは元リポジトリでは `OSS_FRAME_GIO` という名前だが、この
+リポジトリでは `OSS_FRAME` に改名して取り込んでいる（テンプレートの
+`scripts/pre_check.py` の名前チェックに合わせるため）。
+
+## `reference/v10/`
+
+V10 の成果物のうち、2026 版の検証で**参照として使っているもの**だけを
+置いてある。
+
+| | 使い道 |
 |---|---|
-| `tr_1um_i2c_slave_async.gds` | `layout/step10/v10_chip_final.gds` |
-| `tr_1um_i2c_slave_async.cir` | `schematic/tr_1um_i2c_slave_async_v10_ringosc_lvs.spice` |
+| `tb_chip_i2c_batch14_v10.spice` | 14 項目回帰の**刺激**（PWL）を借りる |
+| `spice_batch14_v10_expected.json` | 14 項目の判定条件 |
+| `check_batch14_v10.py` | 判定スクリプトの元（`scripts/pnr/check_batch14.py`） |
+| `i2c_slave_async_net_v10_final.v` | セル数の比較用（`scripts/cmp_cells.py`） |
+| `tr_1um_i2c_slave_async.cir` | V10 のチップネットリスト（参照） |
 
-Exported via the source repo's own `script/export_to_mpw_submission_v10.py`
-(V10 counterpart of the original `export_to_mpw_submission.py`, same role
--- re-runnable there to refresh both files here plus this repo's
-`info.yaml`; see that script's own module docstring for exactly how it
-differs from the V9 version).
+`RING_OSC` の回路図（`RING_OSC.sch` / `INV3D.sch`）は元リポジトリの
+`ring_osc/` にあり、`scripts/pnr/mkringoscnet.py` がそれを読み下して
+LVS ソースを作る。
 
-**V10 supersedes the V9 export previously documented here.** V10 is not a
-different design -- same RTL, same protocol -- but a re-placed,
-re-routed build with a corrected GIO pad-to-signal assignment and a
-from-scratch chip-level power/signal routing pass (see source repo
-`design_notes.md` §108.52-108.72). **The physical pinout differs from
-the V9 export**: which bond pad (`P3`..`P14`) carries which `tx_data`/
-`rx_data` bit changed under V10's pad reassignment. The pad assignment
-went through two iterations before landing on the final one exported
-here: an initial lane-minimal assignment (§108.57), then -- per the
-source repo owner's explicit request to keep the mapping monotonic and
-readable -- a revised assignment ("Option2": physical pad number
-ascending order tracks bit number ascending order, `P3`..`P6` = bit0-3,
-`P11`..`P14` = bit4-7, §108.69), with a follow-up fix to a stale
-hardcoded reset-net routing coordinate that the reassignment had broken
-(§108.70). **Option2 is what's exported here.** See this repo's
-`README.md` §1 for the current (V10, Option2) pin table -- do not reuse
-any V9-era or §108.57-era pinout notes.
+## 検証の結果（2026-09-14）
 
-## What was done in the source repository
+| | |
+|---|---|
+| DRC（PDK デッキ、チップ） | 0 件 |
+| DRC（MDP 後の IP62 マスク） | 0 件 |
+| LVS（コア / RING_OSC / チップ） | いずれも Netlists match |
+| ngspice 14 項目（抽出から） | 14/14 PASS |
+| STA（OpenSTA、2 点法） | 49.104 ns = 20.36 MHz |
+| RING_OSC 発振（抽出から） | OUT 6.450 MHz / OUTD 1.790 MHz |
 
-- Async I2C slave core implemented as **clockless logic** (all state
-  transitions driven purely by SCL/SDA edges, no `clk` port) -- RTL design,
-  MyHDL/iverilog functional verification, Yosys synthesis onto the TR-1um
-  standard cell library, custom placement/routing, DRC/LVS closure, and
-  chip-level IRSIM transistor-level verification (WRITE/READ/NACK, matching
-  the Verilog testbench bit-for-bit). Full history in that repo's
-  `design_notes.md` (105+ numbered sections).
-- A ring oscillator (`RING_OSC`) test structure was subsequently integrated
-  onto the same chip, alongside the core, with its own power/signal
-  routing and LVS reference netlist; a standalone ngspice testbench
-  confirmed real oscillation (~6.5MHz and ~1.6MHz on its two rings).
-- An OpenSUSI logo was placed as DRC-clean M2 metal art in the leftover
-  space between the core and RING_OSC.
-- **V10 revision**: the core's DFF/latch cells were integrated as
-  synthesized MUXDFFRB/RSLATCH standard cells, the chip was fully
-  re-placed and re-routed (including a GIO pad-to-signal reassignment
-  and a from-scratch GIO-ring power/signal routing pass, using
-  ring-routing to work around `RING_OSC`'s footprint blocking the
-  straightforward routing corridors), and the resulting chip-level
-  netlist (RING_OSC excluded) was run through a real, locally-executed
-  ngspice transistor-level simulation of the project's standard 14-check
-  WRITE/READ/wrong-address-NACK regression -- confirmed **14/14 PASS**,
-  matching the RTL/gate-level-Verilog/IRSIM results obtained earlier for
-  the same protocol. A later regression run with different WRITE/READ
-  data values transiently showed 2/14 FAIL; a detailed transistor-level
-  investigation (measured, sub-10ns address-compare latch timing) traced
-  this to the testbench's SPICE solver time-resolution setting, not a
-  chip or pad-assignment defect -- tightening it resolved the failures,
-  and the production testbenches were also updated to dynamically gate
-  `DIS`/the tx-data sources (via a switch + 100kOhm series resistor)
-  to match the design's intended WRITE-time driver behavior (source repo
-  `design_notes.md` §108.71-108.72).
-- The full chip (core + RING_OSC + logo), V10 revision included, is
-  confirmed **DRC/LVS clean** under real KLayout.
-
-## Changes made specifically for this export (not present in the source)
-
-- The real frame cell, named `OSS_FRAME_GIO` in the source repo, was
-  renamed to `OSS_FRAME` in this copy only, to match this template's
-  `scripts/pre_check.py` naming check. The source repo keeps
-  `OSS_FRAME_GIO` (that name is used throughout its own scripts/docs).
-- A handful of dead, unreferenced standard-cell definitions left over from
-  synthesis (`AND3_X1`, `NAND4`, `DFF`, `TAP3`, `DFFS`, and -- new in the
-  V10 source GDS -- `DEL1`) were dropped so the GDS has exactly one
-  top-level cell, as this template requires. Each was individually
-  verified (klayout.db: zero parent cells AND zero child instances) to be
-  a genuine dead leftover before removal, leaving the actual design
-  geometry untouched.
-- `.spice` was renamed to `.cir` to match `info.yaml`'s `lvs.extension`.
+手元では KLayout 0.28.16 に `size_inside` / `steps` を使う行を書き換えた
+デッキで流している（`scripts/pnr/drc_pdk.py` / `lvs_pdk.py` の
+`--allow-old-klayout`）。**その分だけ検査は緩い**ので、最終判断は CI
+（KLayout 0.30.9）の結果で取ること。
