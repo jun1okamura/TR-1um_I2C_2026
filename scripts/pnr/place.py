@@ -61,6 +61,66 @@ LOOKAHEAD = 6                  # 区画詰めで先を見る本数（行内順�
 NO_MACRO = getattr(cfg, "MACRO_MODE", "landscape") == "none"
 
 
+# --- I2C 移植 (11): パッド近接を配置の評価に入れる -------------------------
+# **ポートのネットは今まで評価から完全に外れていた**（`cut_cost` は行をまたぐ
+# ネットしか数えず、`hpwl` は `is_port_net` を弾く）。そのため「どのポートが
+# どの辺に出るか」は**配置の副産物**でしかなく、パッドの位置とは無関係に決まる。
+# 実測（2026-09-14、STEP4a）: リング配線の回り込みが最大 3529 µm / 合計 56.9 mm、
+# 同じ辺に出ているものは 32 本中 5 本しかなかった（例: tx_data[5] は左辺に出る
+# のにパッドは右辺）。トラック数には収まるが、この配線長はそのまま寄生容量になる。
+#
+# ポートの出る辺は `route_top_pins_nrow_fm.py` の規約で**行から決まる**:
+#     row0 -> 下辺 / 最上行 -> 上辺 / row1 -> 右辺 / row2 -> 左辺
+# なので、パッドの辺から「入ってほしい行」が決まる。これを 2 か所に足す:
+#   * 行割当 (`cut_cost`)  ネットの最寄りセルが希望の行から何行離れているか
+#   * 行内順序 (`hpwl`)    パッドの x をアンカーにする（上下辺）／
+#                          行の端 x をアンカーにする（左右辺）
+# 重みは `I2C_PAD_WEIGHT`（0 で従来どおり）。
+PAD_WEIGHT = float(os.environ.get("I2C_PAD_WEIGHT", "1.0"))
+_EDGE_ROW = {"BOTTOM": 0, "TOP": -1, "RIGHT": 1, "LEFT": 2}
+
+
+def pad_prefs(n_rows):
+    """{net: (希望の行, アンカー x（コア座標）, パッドの辺)}。
+
+    コアはフレーム開口の中央に置かれ、native bbox は x -6.3…CORE_WIDTH+6.3 なので
+    **オフセットはちょうど -CORE_WIDTH/2**。配置の時点ではまだチップ GDS が無い
+    （`chip_geometry()` は最終コアを読む）が、x のオフセットだけはこの式で先に出る。
+    """
+    if PAD_WEIGHT <= 0:
+        return {}
+    try:
+        import frame_pins
+        import gen_top_routing_plan as gp
+    except Exception as e:                      # フレームや表が無い環境
+        print(f"  （パッド近接は使わない: {e}）")
+        return {}
+    pads = frame_pins.load()
+    ox = cfg.CORE_WIDTH_UM / 2.0                # チップ x -> コア x
+    out = {}
+    for pad, e in gp.PAD_MAP.items():
+        for key, term in (("P", f"P{pad}"), ("OUT", f"OUT{pad}"), ("HIZ", f"HIZ{pad}")):
+            v = e.get(key)
+            for net in (v if isinstance(v, list) else [v]):
+                if not net or net in SUPPLY or "." in net or net in gp.PAD_ONLY_NETS:
+                    continue
+                t = pads.get(term)
+                if t is None:
+                    continue
+                r = _EDGE_ROW.get(t["edge"])
+                if r is None:
+                    continue
+                r = n_rows - 1 if r < 0 else r
+                if not (0 <= r < n_rows):
+                    continue
+                if t["edge"] in ("BOTTOM", "TOP"):
+                    ax = min(max(t["x"] + ox, 0.0), cfg.ROW_WIDTH_UM)
+                else:
+                    ax = 0.0 if t["edge"] == "LEFT" else cfg.ROW_WIDTH_UM
+                out.setdefault(net, (r, round(ax, 2), t["edge"]))
+    return out
+
+
 # ---------------------------------------------------------------- ネット展開
 def expand(pin, expr):
     """`.ADD({ a, b, c, d })` を [(ADD[3], a), (ADD[2], b), ...] に開く。
@@ -131,12 +191,22 @@ def macro_pin_x(macro_pin):
 
 
 # ------------------------------------------------------------------ 行割当
-def cut_cost(assign, net_cells):
+def cut_cost(assign, net_cells, prefs=None, w=0.0):
     c = 0
     for cells in net_cells.values():
         rows = {assign[x] for x in cells if x in assign}
         if len(rows) > 1:
             c += max(rows) - min(rows)
+    if prefs and w:
+        # ポートは「いちばん希望の行に近いセル」から出ていく（route_top_pins は
+        # ネットのスタブがある行を選ぶ）ので min を取る。
+        for net, (pr, _ax, _e) in prefs.items():
+            cells = net_cells.get(net)
+            if not cells:
+                continue
+            rows = [assign[x] for x in cells if x in assign]
+            if rows:
+                c += w * min(abs(r - pr) for r in rows)
     return c
 
 
@@ -161,8 +231,11 @@ def balanced_init(names, width, n, rng, cap):
     return assign
 
 
-def refine(assign, width, net_cells, n, cap, fixed, passes=60):
-    best = cut_cost(assign, net_cells)
+def refine(assign, width, net_cells, n, cap, fixed, passes=60,
+           prefs=None, pad_w=0.0):
+    # **引数名に w を使わないこと。** この関数は行幅のリストを `w` という
+    # 名前で持っており、引数 w を足すと影に隠れて cut_cost にリストが渡る。
+    best = cut_cost(assign, net_cells, prefs, pad_w)
     for _ in range(passes):
         improved = False
         w = row_widths(assign, width, n)
@@ -174,7 +247,7 @@ def refine(assign, width, net_cells, n, cap, fixed, passes=60):
                 if r1 == r0 or w[r1] + width[x] > cap:
                     continue
                 assign[x] = r1
-                c = cut_cost(assign, net_cells)
+                c = cut_cost(assign, net_cells, prefs, pad_w)
                 if c < best:
                     best = c
                     w[r0] -= width[x]
@@ -188,7 +261,7 @@ def refine(assign, width, net_cells, n, cap, fixed, passes=60):
 
 
 def partition(names, width, net_cells, n, cap, macro_name, restarts, seed,
-              tol=0.02):
+              tol=0.02, prefs=None, w=0.0):
     """行を**均す**。上限を実効行幅そのものにすると、カット最小化が働いて
     セルが下の行に寄り、最後の行が空になる（充填率が上がりすぎて
     フィードスルーの隙間が無くなるうえ、TAP セグメントの端数で
@@ -212,7 +285,7 @@ def partition(names, width, net_cells, n, cap, macro_name, restarts, seed,
         a = balanced_init(names, width, n, rng, cap)
         if macro_name:
             a[macro_name] = MACRO_ROW
-        c = refine(a, width, net_cells, n, cap, fixed)
+        c = refine(a, width, net_cells, n, cap, fixed, prefs=prefs, pad_w=w)
         if best_c is None or c < best_c:
             best_a, best_c = dict(a), c
     return best_a, best_c
@@ -243,7 +316,7 @@ def is_port_net(net, ports):
 
 
 # ------------------------------------------------------------------ 行内順序
-def hpwl(order, width, net_cells, ports, rows_y, mpin):
+def hpwl(order, width, net_cells, ports, rows_y, mpin, prefs=None):
     cx, cy = {}, {}
     for r, seq in enumerate(order):
         x = 0.0
@@ -252,21 +325,25 @@ def hpwl(order, width, net_cells, ports, rows_y, mpin):
             cy[c] = rows_y[r] + cfg.ROW_HEIGHT_UM / 2.0
             x += width[c]
     total = 0.0
+    prefs = prefs or {}
     for net, cells in net_cells.items():
-        if is_port_net(net, ports):
+        pa = prefs.get(net)
+        if is_port_net(net, ports) and pa is None:
             continue
         xs = [cx[c] for c in cells if c in cx]
         ys = [cy[c] for c in cells if c in cy]
         if net in mpin:                       # マクロのピンは固定アンカー
             xs.append(mpin[net][0])
             ys.append(mpin[net][1])
+        if pa is not None:                    # パッドの x を固定アンカーに
+            xs.append(pa[1])
         if len(xs) > 1:
             total += (max(xs) - min(xs)) + (max(ys) - min(ys))
     return total
 
 
 def order_rows(assign, width, net_cells, ports, rows_y, n, mpin,
-               passes=40, seed=1):
+               passes=40, seed=1, prefs=None):
     rng = random.Random(seed)
     # マクロは `width` を持たない（行に置かない）。擬似行が実在の行番号に
     # なる縦置き `TD4_MACRO_ROW>=1` では、これを外さないと hpwl が
@@ -276,11 +353,12 @@ def order_rows(assign, width, net_cells, ports, rows_y, n, mpin,
     for seq in order:
         rng.shuffle(seq)
     best = [list(s) for s in order]
-    best_hp = hpwl(order, width, net_cells, ports, rows_y, mpin)
+    prefs = prefs or {}
+    best_hp = hpwl(order, width, net_cells, ports, rows_y, mpin, prefs)
 
     nets_of = defaultdict(list)
     for net, cells in net_cells.items():
-        if is_port_net(net, ports):
+        if is_port_net(net, ports) and net not in prefs:
             continue
         for c in cells:
             if c in width:
@@ -299,9 +377,10 @@ def order_rows(assign, width, net_cells, ports, rows_y, n, mpin,
                 xs = [cx[o] for net in nets_of[c] for o in net_cells[net]
                       if o in cx and o != c]
                 xs += [mpin[net][0] for net in nets_of[c] if net in mpin]
+                xs += [prefs[net][1] for net in nets_of[c] if net in prefs]
                 key[c] = sum(xs) / len(xs) if xs else cx[c]
             seq.sort(key=lambda c: (key[c], c))
-        hp = hpwl(order, width, net_cells, ports, rows_y, mpin)
+        hp = hpwl(order, width, net_cells, ports, rows_y, mpin, prefs)
         if hp < best_hp:
             best_hp, best = hp, [list(s) for s in order]
         elif p % 7 == 6:
@@ -657,9 +736,23 @@ def main(net_path=None, info_path=None, restarts=800, order_passes=40,
 
     rows_y, _ = cfg.row_y()
 
+    # パッド近接（I2C 移植 (11)）。ポートの出る辺は行で決まるので、
+    # パッドの辺から「入ってほしい行」を引いて行割当と行内順序に効かせる。
+    prefs = pad_prefs(n)
+    if prefs:
+        import collections as _c
+        print(f"  パッド近接: {len(prefs)} ネットに希望行を付ける"
+              f"（重み {PAD_WEIGHT}）  行ごと "
+              f"{dict(sorted(_c.Counter(v[0] for v in prefs.values()).items()))}")
+
     # ---- step1: 行割当
     assign, cut = partition(names, width, net_cells, n, usable, mname,
-                            restarts, seed, tol=tol)
+                            restarts, seed, tol=tol, prefs=prefs, w=PAD_WEIGHT)
+    if prefs:
+        hit = sum(1 for net, (pr, _ax, _e) in prefs.items()
+                  if net in net_cells and pr in {assign[x] for x in net_cells[net]
+                                                 if x in assign})
+        print(f"  パッド近接: 希望の行にセルが居るポート {hit} / {len(prefs)}")
     cross = crossings(assign, net_cells, ports, n)
     need = [c * cfg.TRACK_PITCH for c in cross]
     print(f"  行割当: チャネル交差 {cross} → 必要 "
@@ -671,7 +764,7 @@ def main(net_path=None, info_path=None, restarts=800, order_passes=40,
               f"増えるので i2c_config.CH_HEIGHTS を見直すこと）")
 
     order = [[c for c in names if assign[c] == r] for r in range(n)]
-    hp1 = hpwl(order, width, net_cells, ports, rows_y, mpin)
+    hp1 = hpwl(order, width, net_cells, ports, rows_y, mpin, prefs)
     rows = [pack_row(s, width, cellof, row_w, False, False)[0] for s in order]
     dump(1, "rows", rows, rows_y, mname, info,
          dict(assign=assign, cut=cut, channel_crossings=cross,
@@ -679,7 +772,7 @@ def main(net_path=None, info_path=None, restarts=800, order_passes=40,
 
     # ---- step2: 行内順序
     order, hp2 = order_rows(assign, width, net_cells, ports, rows_y, n, mpin,
-                            passes=order_passes, seed=seed)
+                            passes=order_passes, seed=seed, prefs=prefs)
     rows = [pack_row(s, width, cellof, row_w, False, False)[0] for s in order]
     print(f"  行内順序: HPWL {hp1:.0f} → {hp2:.0f} um "
           f"({(hp1-hp2)/hp1*100:.1f}% 改善)")

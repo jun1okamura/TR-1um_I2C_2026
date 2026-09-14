@@ -46,8 +46,8 @@ import i2c_config as cfg                                    # noqa: E402
 
 import klayout.db as db                                     # noqa: E402
 
-IN_GDS = os.path.join(cfg.CHIP, "step3_top_pins.gds")
-OUT_GDS = os.path.join(cfg.CHIP, "step4_final.gds")
+IN_GDS = os.path.join(cfg.CHIP, "step1b_ringosc.gds")
+OUT_GDS = os.path.join(cfg.CHIP, "step1c_logo.gds")
 BITMAP = os.path.join(cfg.ROOT, "lef", "opensusi_logo.txt")
 
 M2_LAYER = (20, 0)
@@ -56,10 +56,11 @@ PITCH = M2_WMIN + M2_SMIN        # 5.0 µm
 DOT = M2_WMIN                    # 3.0 µm
 LOGO_CELL = "OPENSUSI_LOGO"
 
-# チップでいちばん広い空き（`step3` に対する実測。最大長方形は
-# 380 x 210 µm）。マクロの下、行の右側、GND ライザ 2 本（x 405.45 と
-# 794.25）の間。
-AREA = (410.0, -680.0, 790.0, -470.0)
+# **置き場所は i2c_config が決める。** TD4 は「チップでいちばん広い空き」を
+# 実測して 380 x 210 µm に紋章だけ縮約して置いたが、I2C は V10 と同じく
+# コアと RING_OSC の間に**フルサイズの帯**を確保してあるので、そこへ等倍で置く。
+def area():
+    return cfg.logo_box()
 
 
 def read_bitmap(path):
@@ -126,13 +127,14 @@ def main():
     ap.add_argument("-i", "--in-gds", default=IN_GDS)
     ap.add_argument("-o", "--out", default=OUT_GDS)
     ap.add_argument("-b", "--bitmap", default=BITMAP)
-    ap.add_argument("--scale", type=int, default=2, help="k:1 に縮約（既定 2）")
-    ap.add_argument("--cols", default="0:64",
-                    help="切り出す列（既定 0:64 = 紋章。全部なら 0:316）")
+    ap.add_argument("--scale", type=int, default=1,
+                    help="k:1 に縮約（既定 1 = 等倍。V10 と同じ）")
+    ap.add_argument("--cols", default=None,
+                    help="切り出す列（既定は全部。紋章だけなら 0:64）")
     a = ap.parse_args()
 
-    c0, c1 = (int(v) for v in a.cols.split(":"))
     raw, rw, rh = read_bitmap(a.bitmap)
+    c0, c1 = ((int(v) for v in a.cols.split(":")) if a.cols else (0, rw - 1))
     rows, w, h = crop_scale(raw, rw, rh, c0, c1, a.scale)
     lw, lh = (w - 1) * PITCH + DOT, (h - 1) * PITCH + DOT
     print(f"ビットマップ {rw} x {rh} -> 列 {c0}..{c1} を {a.scale}:1 で "
@@ -153,7 +155,7 @@ def main():
     print("\nロゴ単体")
     bad = drc(db.Region(cell.begin_shapes_rec(m2)), ly.dbu, LOGO_CELL)
 
-    ax0, ay0, ax1, ay1 = AREA
+    ax0, ay0, ax1, ay1 = area()
     if lw > ax1 - ax0 or lh > ay1 - ay0:
         raise SystemExit(f"ロゴ {lw:.1f} x {lh:.1f} µm が空き "
                          f"{ax1-ax0:.1f} x {ay1-ay0:.1f} µm に入らない")
@@ -163,7 +165,7 @@ def main():
                                 db.Trans(db.Vector(int(round(x / ly.dbu)),
                                                    int(round(y / ly.dbu))))))
     print(f"\n置いた場所 ({x:.1f}, {y:.1f}) - ({x+lw:.1f}, {y+lh:.1f})"
-          f"   空き {AREA}")
+          f"   確保した帯 {area()}")
 
     # 置いたあと、チップ全体で**新しい**違反が出ていないこと
     after = db.Region(top.begin_shapes_rec(m2)).merged()

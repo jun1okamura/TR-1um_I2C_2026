@@ -159,8 +159,12 @@ ROUTE_CH_HEIGHTS = list(CH_HEIGHTS)          # 配線と配置で同じでなけ
 
 # 信号ピンが 1 辺にしか出ていないインスタンス（TD4 の `MEMPORT` 用）。無し。
 DOWN_FACING_INSTS = set()
-# コアの下に帯が無いので、トップピンは下辺にも出してよい。
-NO_BOTTOM_PORTS = False
+# **コアの下辺にはポートを出さない。**
+# チップではコアの下に OpenSUSI のロゴ（1595 x 325、M2 の独立ドット 319x65）と
+# RING_OSC を積むので、下辺から真下に降りる配線はロゴの帯を横切ってしまう。
+# `route_top_pins_nrow_fm.py` の「TD4 移植 (8)」がこのフラグを見て、row0 も
+# 中間行と同じ扱い（左右へ逃がす）にする。上辺は従来どおり使う。
+NO_BOTTOM_PORTS = os.environ.get("I2C_NO_BOTTOM_PORTS", "1") != "0"
 
 
 # ---- 派生値 --------------------------------------------------------------
@@ -266,6 +270,64 @@ RING_OSC_CELL = "RING_OSC"
 # RING_OSC (…-770) とは干渉しない。
 RING_OSC_ORIGIN = (float(os.environ.get("I2C_RINGOSC_X", "-810.0")),
                    float(os.environ.get("I2C_RINGOSC_Y", "-650.0")))
+
+
+# ---- OpenSUSI ロゴ -------------------------------------------------------
+# V10 と同じフルサイズ（等倍）。`lef/opensusi_logo.txt` を
+# ピッチ 5.0 µm で描くので **1583.0 x 313.0 µm**。各 ON セルは 3.0 µm 角の
+# 独立した M2 ドット（幅 3.0 = M2 最小幅ちょうど、隣との隙間 2.0 = 最小間隔
+# ちょうど、斜めは 2.83 µm）。塗り潰しではなくドットなので斜め接触が原理的に無い。
+LOGO_PITCH = 5.0
+LOGO_DOT = 3.0
+LOGO_BITMAP = os.path.join(ROOT, "lef", "opensusi_logo.txt")
+
+
+def logo_size():
+    """ビットマップから実寸 (幅, 高さ) を出す。**決め打ちにしない。**
+    `lef/opensusi_logo.txt` は V10 の 319 x 65 から空の縁を落として 317 x 63
+    になっており、等倍なら (317-1)*5+3 = 1583.0 x (63-1)*5+3 = 313.0 µm。"""
+    rows = [l.rstrip("\n") for l in open(LOGO_BITMAP, encoding="utf-8")
+            if not l.startswith("%") and l.strip()]
+    w, h = max(len(r) for r in rows), len(rows)
+    return (round((w - 1) * LOGO_PITCH + LOGO_DOT, 3),
+            round((h - 1) * LOGO_PITCH + LOGO_DOT, 3))
+
+# ---- チップの縦積み ------------------------------------------------------
+# 下から RING_OSC / ロゴ / コア。V10 と同じ順序で、コアは**中央ではなく上寄せ**。
+#
+#   壁 -920 ── 下辺のリングレーン ── RING_OSC -770…-525.2 ── ロゴ ── コア ── 壁 +920
+#
+# 隙間は 20 µm ずつ。コア高 970.3 µm（重み 16 / seed 4）で計算すると
+#   ロゴ  -505.2 … -180.2
+#   コア  -160.2 … +810.1
+#   上チャネル 109.9 µm（20 トラック。上辺のリングレーンは 4〜6 本）
+# コア高が変わればコアの上端と上チャネルが動く（下は固定）。
+LOGO_GAP = float(os.environ.get("I2C_LOGO_GAP", "20.0"))      # RING_OSC <-> ロゴ
+CORE_LOGO_GAP = float(os.environ.get("I2C_CORE_LOGO_GAP", "20.0"))  # ロゴ <-> コア
+
+
+def ringosc_box():
+    """RING_OSC の絶対フットプリント (x0, y0, x1, y1)。GDS の bbox を実測。"""
+    import klayout.db as db
+    ly = db.Layout()
+    ly.read(RING_OSC_GDS)
+    c = ly.cell(RING_OSC_CELL)
+    b, u = c.bbox(), ly.dbu
+    ox, oy = RING_OSC_ORIGIN
+    return (ox + b.left * u, oy + b.bottom * u,
+            ox + b.right * u, oy + b.top * u)
+
+
+def logo_box():
+    """ロゴの帯 (x0, y0, x1, y1)。RING_OSC の上に LOGO_GAP 空けて、x は中央寄せ。"""
+    w, h = logo_size()
+    y0 = round(ringosc_box()[3] + LOGO_GAP, 3)
+    return (round(-w / 2, 3), y0, round(w / 2, 3), round(y0 + h, 3))
+
+
+def core_bottom_y():
+    """コアの下端（チップ座標）。ロゴの上に CORE_LOGO_GAP 空ける。"""
+    return round(logo_box()[3] + CORE_LOGO_GAP, 3)
 PTECT_LAYER = (63, 1)
 
 
@@ -418,7 +480,13 @@ def chip_geometry(gds=None, cell=None):
     """
     l, b, r, t = core_bbox_um(gds or CHIP_CORE_GDS, cell)
     ox = round(-(l + r) / 2.0, 3)
-    oy = round(-(b + t) / 2.0, 3)
+    # **縦は中央ではない。** コアの下に OpenSUSI ロゴと RING_OSC を積むので、
+    # コアの下端を `core_bottom_y()` に合わせて上寄せにする（V10 と同じ順序）。
+    # `I2C_CORE_CENTER=1` で従来どおりの中央寄せに戻せる。
+    if os.environ.get("I2C_CORE_CENTER") == "1":
+        oy = round(-(b + t) / 2.0, 3)
+    else:
+        oy = round(core_bottom_y() - b, 3)
     box = (round(l + ox, 3), round(b + oy, 3), round(r + ox, 3), round(t + oy, 3))
     die = frame_obs_rects()[0]
     # 壁は**実ジオメトリ**で測る。LEF の OBS は四隅を 360x360 の矩形で粗く
