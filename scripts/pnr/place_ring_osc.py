@@ -60,17 +60,47 @@ def main():
     src.read(cfg.RING_OSC_GDS)
     if src.cell(cfg.RING_OSC_CELL) is None:
         raise SystemExit(f"{cfg.RING_OSC_CELL} が {cfg.RING_OSC_GDS} に無い")
-    for c in src.each_cell():
-        c.name = "RO_" + c.name
-    clash = sorted({c.name[3:] for c in src.each_cell()}
-                   & {c.name for c in ly.each_cell()})
+
+    # 同名のセルが**中身まで同じか**を見る。同じなら共有してよい（RING_OSC を
+    # 現行ライブラリで組み直したときはこちら）。違うなら別物なので改名する。
+    def fingerprint(layout, cell):
+        u = layout.dbu
+        sig = []
+        for li in layout.layer_indexes():
+            r = db.Region(cell.begin_shapes_rec(li))
+            r.merge()
+            if r.is_empty():
+                continue
+            b = r.bbox()
+            info = layout.get_info(li)
+            sig.append((info.layer, info.datatype, r.count(), round(r.area() * u * u, 3),
+                        b.left, b.bottom, b.right, b.top))
+        return tuple(sorted(sig))
+
+    same, diff = [], []
+    for c in list(src.each_cell()):
+        ex = ly.cell(c.name)
+        if ex is None:
+            continue
+        (same if fingerprint(src, c) == fingerprint(ly, ex) else diff).append(c.name)
+    if diff:
+        print(f"  ** 同じ名前で中身が違うセルが {len(diff)} 個ある: {', '.join(sorted(diff))}")
+        print(f"     そのまま読み込むとコア側のセルが上書きされる（2026-09-14 に実際に起き、"
+              f"チップの DRC が 8,449 件になった）。RO_ を付けて別物として取り込む。")
+        for c in src.each_cell():
+            c.name = "RO_" + c.name
+        root = "RO_" + cfg.RING_OSC_CELL
+    else:
+        if same:
+            print(f"  同名セル {len(same)} 個は中身も同じなので共有する: "
+                  f"{', '.join(sorted(same)[:8])}"
+                  + (" …" if len(same) > 8 else ""))
+        src.cell(cfg.RING_OSC_CELL).name = "__RO_ROOT__"
+        root = "__RO_ROOT__"
     before = {c.name for c in ly.each_cell()}
     ro = ly.create_cell(cfg.RING_OSC_CELL)
-    ro.copy_tree(src.cell("RO_" + cfg.RING_OSC_CELL))
+    ro.copy_tree(src.cell(root))
     added = sorted({c.name for c in ly.each_cell()} - before)
-    if clash:
-        print(f"  名前が衝突するセル {len(clash)} 個を RO_ 付きで取り込んだ: "
-              f"{', '.join(clash)}")
 
     ox, oy = cfg.RING_OSC_ORIGIN
     top.insert(db.CellInstArray(ro.cell_index(),
