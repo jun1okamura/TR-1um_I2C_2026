@@ -102,6 +102,25 @@ def main():
     ro.copy_tree(src.cell(root))
     added = sorted({c.name for c in ly.each_cell()} - before)
 
+    # --- I2C 移植 (13): copy_tree が作った同内容の重複セルを畳む -------------
+    # `same` に入っていたセル（コア側と中身まで一致）でも copy_tree は名前衝突を
+    # 避けて `AND2_X1$1` のような複製を作ってしまう。ジオメトリは同じなので
+    # インスタンスを元のセルに差し替えて複製を消す。
+    for name in list(added):
+        base = name.split("$")[0]
+        if base == name or base not in same:
+            continue
+        dup, orig = ly.cell(name), ly.cell(base)
+        if dup is None or orig is None:
+            continue
+        for c in ly.each_cell():
+            for inst in [i for i in c.each_inst() if i.cell_index == dup.cell_index()]:
+                ia = inst.cell_inst
+                ia.cell_index = orig.cell_index()
+                c.replace(inst, ia)
+        ly.delete_cell(dup.cell_index())
+        added.remove(name)
+
     ox, oy = cfg.RING_OSC_ORIGIN
     top.insert(db.CellInstArray(ro.cell_index(),
                                 db.Trans(db.Vector(int(round(ox / u)),
