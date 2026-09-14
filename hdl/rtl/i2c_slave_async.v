@@ -307,8 +307,26 @@ module i2c_slave_async #(
     AND2_X1 u_sda_r (.A(sda_target_n), .B(sda_lat_en), .Y(r_in), .VDD(VDD), .GND(GND));
 
     wire sda_d, qn_sda;
-    NOR2 u_sda_q  (.A(r_in), .B(qn_sda), .Y(sda_d),  .VDD(VDD), .GND(GND));
-    NOR2 u_sda_qn (.A(s_in), .B(sda_d),  .Y(qn_sda), .VDD(VDD), .GND(GND));
+
+    // v11 (2026-09-14, TR-1um_I2C_2026): クロス結合 NOR2 対 -> RSLATCH 1 個。
+    //
+    // V10 まではここを NOR2 2 個で書き、合成後に
+    // merge_muxdffrb_rslatch.py がパターンを見つけて RSLATCH に畳んでいた。
+    // .lib を作り直した今の ABC は**この NOR2 対を入力ゲートごと吸収して
+    // NOR3 / NAND3 の生ループに変えてしまう**（実測: ループ 4 本、RSLATCH 0 個）。
+    // 論理としては等価だが、(1) ラッチの帰還ネットをルータが引くことになり、
+    // (2) OpenSTA がループを勝手に 1 箇所切る。
+    //
+    // RSLATCH は scripts/char/run_rslatch.sh で ngspice 特性化して .lib に
+    // 入れた（preset/clear アーク + 最小 High パルス幅 1.85ns）ので、
+    // **最初から RSLATCH としてインスタンスする**。yosys へは syn.sh が
+    // `blackbox RSLATCH` で渡すので、セルのまま残る。
+    // 実測: RSLATCH 3 個（V10 と同数）、組合せループ 0 本。
+    //
+    // 置き換え前（V10 まで）:
+    //   NOR2 u_sda_q  (.A(r_in), .B(qn_sda), .Y(sda_d),  .VDD(VDD), .GND(GND));
+    //   NOR2 u_sda_qn (.A(s_in), .B(sda_d),  .Y(qn_sda), .VDD(VDD), .GND(GND));
+    RSLATCH u_sda_lat (.S(s_in), .R(r_in), .Q(sda_d), .QB(qn_sda), .VDD(VDD), .GND(GND));
 
     wire start_pulse = scl &  sda_d & ~sda_in;   // SDA 1->0 while SCL=1
     wire stop_pulse  = scl & ~sda_d &  sda_in;   // SDA 0->1 while SCL=1
@@ -316,8 +334,26 @@ module i2c_slave_async #(
     // ---- busy latch: NOR2 cross-coupled SR latch -------------------------
     wire busy_clr = stop_pulse | ~rst_n;
     wire qn;
-    NOR2 u_lat_q  (.A(busy_clr),    .B(qn),   .Y(busy), .VDD(VDD), .GND(GND));
-    NOR2 u_lat_qn (.A(start_pulse), .B(busy), .Y(qn),   .VDD(VDD), .GND(GND));
+
+    // v11 (2026-09-14, TR-1um_I2C_2026): クロス結合 NOR2 対 -> RSLATCH 1 個。
+    //
+    // V10 まではここを NOR2 2 個で書き、合成後に
+    // merge_muxdffrb_rslatch.py がパターンを見つけて RSLATCH に畳んでいた。
+    // .lib を作り直した今の ABC は**この NOR2 対を入力ゲートごと吸収して
+    // NOR3 / NAND3 の生ループに変えてしまう**（実測: ループ 4 本、RSLATCH 0 個）。
+    // 論理としては等価だが、(1) ラッチの帰還ネットをルータが引くことになり、
+    // (2) OpenSTA がループを勝手に 1 箇所切る。
+    //
+    // RSLATCH は scripts/char/run_rslatch.sh で ngspice 特性化して .lib に
+    // 入れた（preset/clear アーク + 最小 High パルス幅 1.85ns）ので、
+    // **最初から RSLATCH としてインスタンスする**。yosys へは syn.sh が
+    // `blackbox RSLATCH` で渡すので、セルのまま残る。
+    // 実測: RSLATCH 3 個（V10 と同数）、組合せループ 0 本。
+    //
+    // 置き換え前（V10 まで）:
+    //   NOR2 u_lat_q  (.A(busy_clr),    .B(qn),   .Y(busy), .VDD(VDD), .GND(GND));
+    //   NOR2 u_lat_qn (.A(start_pulse), .B(busy), .Y(qn),   .VDD(VDD), .GND(GND));
+    RSLATCH u_busy_lat (.S(start_pulse), .R(busy_clr), .Q(busy), .QB(qn), .VDD(VDD), .GND(GND));
 
     // ---- SCL(posedge)-domain registers: phase/bit_cnt/shreg/addr/rw ------
     //
@@ -358,8 +394,27 @@ module i2c_slave_async #(
     wire rst_stretch_clr    = (~rst_scl_domain_raw) & (~scl);
     wire rst_stretch_qn;
     wire rst_scl_domain_held;
-    NOR2 u_rst_stretch_q  (.A(rst_stretch_clr),    .B(rst_stretch_qn),      .Y(rst_scl_domain_held), .VDD(VDD), .GND(GND));
-    NOR2 u_rst_stretch_qn (.A(rst_scl_domain_raw), .B(rst_scl_domain_held), .Y(rst_stretch_qn),      .VDD(VDD), .GND(GND));
+
+    // v11 (2026-09-14, TR-1um_I2C_2026): クロス結合 NOR2 対 -> RSLATCH 1 個。
+    //
+    // V10 まではここを NOR2 2 個で書き、合成後に
+    // merge_muxdffrb_rslatch.py がパターンを見つけて RSLATCH に畳んでいた。
+    // .lib を作り直した今の ABC は**この NOR2 対を入力ゲートごと吸収して
+    // NOR3 / NAND3 の生ループに変えてしまう**（実測: ループ 4 本、RSLATCH 0 個）。
+    // 論理としては等価だが、(1) ラッチの帰還ネットをルータが引くことになり、
+    // (2) OpenSTA がループを勝手に 1 箇所切る。
+    //
+    // RSLATCH は scripts/char/run_rslatch.sh で ngspice 特性化して .lib に
+    // 入れた（preset/clear アーク + 最小 High パルス幅 1.85ns）ので、
+    // **最初から RSLATCH としてインスタンスする**。yosys へは syn.sh が
+    // `blackbox RSLATCH` で渡すので、セルのまま残る。
+    // 実測: RSLATCH 3 個（V10 と同数）、組合せループ 0 本。
+    //
+    // 置き換え前（V10 まで）:
+    //   NOR2 u_rst_stretch_q  (.A(rst_stretch_clr),    .B(rst_stretch_qn),      .Y(rst_scl_domain_held), .VDD(VDD), .GND(GND));
+    //   NOR2 u_rst_stretch_qn (.A(rst_scl_domain_raw), .B(rst_scl_domain_held), .Y(rst_stretch_qn),      .VDD(VDD), .GND(GND));
+    RSLATCH u_rst_stretch (.S(rst_scl_domain_raw), .R(rst_stretch_clr),
+                           .Q(rst_scl_domain_held), .QB(rst_stretch_qn), .VDD(VDD), .GND(GND));
     // (SET=rst_scl_domain_raw, CLR=rst_stretch_clr are mutually exclusive
     // by construction -- CLR requires raw=0, SET requires raw=1 -- so this
     // SR latch never sees both active at once, same safety property as

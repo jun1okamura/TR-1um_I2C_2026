@@ -1,36 +1,32 @@
 #!/bin/sh
-# TD4 / TR-1um: 合成 → 実セルへのマッピング → 等価性検証 → 面積
-# usage: sh scripts/syn.sh [top ...]   (リポジトリルートで)
+# Async I2C / TR-1um: 合成 → 実セルへのマッピング → 後処理 → 検証 → 面積 → STA
+# usage: sh scripts/syn.sh          (リポジトリルートで)
 #
-# **`abc -g simple` から `.lib` での実マッピングに切り替えた。**
-#   旧: 抽象ゲート（$_AND_ など）に落として area_estimate.py で面積を**概算**。
-#       ライブラリに無い $_ANDNOT_ / $_ORNOT_ が出ても読み替えでごまかせた。
-#   新: `dfflibmap` + `abc -liberty` で**実セルのネットリスト**を作る。
-#       これがそのまま P&R の入力になるので、面積は概算ではなく実数になり、
-#       代わりに「RTL と本当に同じか」を確かめる必要が出た（段 3・段 4）。
+# TR-1um_TD4 の scripts/syn.sh を I2C 用に書き換えたもの。TD4 との違い:
 #
-# 検証の鎖:
-#   RTL  ≡ マップ後ネットリスト   段 3（形式等価）と段 4（ゲートレベル TB）
-#   セルモデル ≡ レイアウト        scripts/char/check_comb.py ほか（ngspice）
-#   どちらも出どころは scripts/char/cellspec.py の 1 箇所。
+#   * RTL が**セルを直接インスタンス化している**（NOR2 でクロス結合の SR ラッチ、
+#     MUX2、NAND2、INV_X1、AND2_X1）。`.VDD`/`.GND` まで繋いで書いてあるので、
+#     セルモデルは `--power` 付きで生成する。SR ラッチのループを iverilog で
+#     収束させるため `--delay 1` も要る。
+#   * **合成後に 2 段の後処理が入る**（TR-1um_Async_I2C から移植）:
+#       dedup_gates.py             ABC が撒いた重複ゲートを 1 個にまとめる
+#       merge_muxdffrb_rslatch.py  MUX2+DFFRB -> MUXDFFRB、
+#                                  クロス結合 NOR2 対 -> RSLATCH
+#     どちらも V10 で実績のある変換。dedup は**必ず最初に**通すこと
+#     （design_notes 108.37: 飛ばすと配線が詰まる真の原因になる）。
+#   * TD4 のメモリマクロ差し替え（mem_wrap.py）と面積比較（mem_array_estimate.py）
+#     は無い。
+#   * 行バッファ挿入（insert_row_buffers.py）はここには入れない。**配置と
+#     結びついている**ので P&R 側（STEP 3）で扱う。
 set -e
 LIB=lef/tr1um_typ_5v0_25c.lib
-# ABC に駆動元と負荷を教えるファイル。**これが無いと ABC はタイミングを見ない。**
-# Yosys の abc パスは -constr があるときだけ ABC のスクリプトを
-#   ... &nf {D}; &put; buffer; upsize {D}; dnsize {D}; stime -p
-# というゲートサイジング付きの版に切り替える。付けないと buffer/upsize/dnsize が
-# 走らず、面積だけで貼った netlist になる。td4_soc_arr の reg->reg 所要周期で
-# 85.0ns -> 63.9ns（-25%）、面積は +3.3%。OpenSTA で実測（scripts/sta/）。
 CONSTR=scripts/abc.constr
 CELLS=hdl/rtl/tr1um_cells.v
-RTL="hdl/rtl/td4_core.v hdl/rtl/td4_mem.v hdl/rtl/td4_soc_rom.v \
-     hdl/rtl/td4_soc_ff.v hdl/rtl/td4_soc_arr.v"
-TOPS=${*:-"td4_core td4_soc_rom td4_soc_ff td4_soc_arr"}
+RTL="hdl/rtl/i2c_slave_async.v"
+TOP=i2c_slave_async
+PER=${PER:-2500}          # STA の周期 [ns]。既定は I2C Fast-mode 400 kHz
 mkdir -p out
 
-# 実行ログを out/SYN_RESULTS.txt に残す。**手で tee するのを忘れると、
-# out/*.v と out/SYN_RESULTS.txt が別々の実行のものになる。**
-# 実際に一度そうなり、td4_core が 102 セルと 94 セルで食い違って見えた。
 LOG=out/SYN_RESULTS.txt
 if [ -z "${SYN_TEE:-}" ]; then
   SYN_TEE=1; export SYN_TEE
@@ -41,12 +37,11 @@ if [ -z "${SYN_TEE:-}" ]; then
 fi
 
 [ -f "$LIB" ] || { echo "$LIB が無い。scripts/char/RUN.md の手順で作ってください" >&2; exit 1; }
-[ -f "$CONSTR" ] || { echo "$CONSTR が無い" >&2; exit 1; }
+grep -q "cell (RSLATCH)" "$LIB" || {
+  echo "** $LIB に RSLATCH が無い。scripts/char/run_rslatch.sh を先に流してください" >&2
+  exit 1; }
 
-# --- Yosys を探す -----------------------------------------------------------
-# `sh scripts/syn.sh` は対話シェルの設定（.zshrc など）を読まないので、
-# pip --user や pipx で入れた yowasp-yosys が PATH に無いことがある。
-# 実行ファイルが見つからなければ Python モジュールから直接呼ぶ。
+# --- Yosys を探す（TD4 の syn.sh と同じ） -----------------------------------
 find_yosys() {
   for c in $YOSYS yowasp-yosys yosys; do
     [ -n "$c" ] && command -v "$c" >/dev/null 2>&1 && { echo "$c"; return 0; }
@@ -58,7 +53,7 @@ find_yosys() {
     done
   done
   if python3 -c "import yowasp_yosys" >/dev/null 2>&1; then
-    W="${TMPDIR:-/tmp}/tr1um-yowasp-yosys"      # リポジトリの外に置く
+    W="${TMPDIR:-/tmp}/tr1um-yowasp-yosys"
     printf '#!/bin/sh\nexec python3 -c %s "$@"\n' \
       "'import sys,yowasp_yosys; sys.exit(yowasp_yosys.run_yosys(sys.argv[1:]))'" > "$W"
     chmod +x "$W"
@@ -70,113 +65,92 @@ YS=$(find_yosys) || {
   echo "Yosys が見つからない。次のどれかをしてください:" >&2
   echo "  pip3 install yowasp-yosys        (または brew install yosys)" >&2
   echo "  YOSYS=/path/to/yosys sh scripts/syn.sh" >&2
-  exit 1
-}
+  exit 1; }
 echo "Yosys: $YS  ($($YS -V 2>&1 | head -1))"
-command -v iverilog >/dev/null 2>&1 || echo "** iverilog が無いので段 1 と段 4 を飛ばします"
-
+command -v iverilog >/dev/null 2>&1 || echo "** iverilog が無いので段 1 と段 5 を飛ばします"
 echo "ABC 制約: $(tr '\n' ' ' < $CONSTR)"
+
 echo
 echo "##################### 0. セルの Verilog モデルを生成"
 # cellspec.py（ngspice で実レイアウトと突き合わせ済み）から起こす。
-python3 scripts/char/mkcellverilog.py -o $CELLS
+#   --power  RTL が .VDD/.GND まで繋いでいるので電源ピンを持たせる
+#   --delay  クロス結合 NOR2 を iverilog で収束させる単位遅延
+python3 scripts/char/mkcellverilog.py --power --delay 1 -o $CELLS
 
 echo
 echo "##################### 1. RTL の機能検証"
 if command -v iverilog >/dev/null 2>&1; then
-  iverilog -g2012 -o /tmp/td4_tb1.vvp hdl/tb/tb_td4_core.v hdl/rtl/td4_core.v
-  vvp /tmp/td4_tb1.vvp | tail -2
-  iverilog -g2012 -o /tmp/td4_tb2.vvp hdl/tb/tb_td4_soc_arr.v \
-           hdl/rtl/td4_soc_arr.v hdl/rtl/td4_mem.v hdl/rtl/td4_core.v
-  vvp /tmp/td4_tb2.vvp | tail -2
+  iverilog -g2012 -o /tmp/i2c_tb_rtl.vvp hdl/tb/tb_i2c_slave_async.v $RTL $CELLS
+  vvp /tmp/i2c_tb_rtl.vvp | grep -E "PASS|FAIL|OK:|NG:" | tail -5
 else
   echo "  iverilog が無いので飛ばす"
 fi
 
 echo
 echo "##################### 2. 合成 → 実セルへマッピング"
-for T in $TOPS; do
-  # dfflibmap が FF を、abc -liberty が組合せ論理を、それぞれ .lib のセルに割り当てる。
-  # .lib の dont_use（FILL / TAP）は ABC 側で自動的に外れる。
-  $YS -p "read_verilog $RTL; hierarchy -check -top $T; synth -top $T -flatten; \
-          dfflibmap -liberty $LIB; abc -liberty $LIB -constr $CONSTR; opt_clean; \
-          write_verilog -noattr out/$T.v; tee -o out/$T.stat stat -liberty $LIB" \
-      > out/$T.synlog 2>&1 || { echo "** $T: 合成に失敗"; tail -20 out/$T.synlog; exit 1; }
-  # ライブラリに無いセル（$_ で始まる Yosys 内部セル）が残っていないか
-  if grep -qE '^\s+\$_[A-Z]' out/$T.stat; then
-    echo "** $T: マップできていないセルが残っている"; grep -E '^\s+\$_[A-Z]' out/$T.stat
-  fi
-  # セル数と面積はネットリストから数える（Yosys の stat の書式はバージョンで変わる）
-  # 定数に繋がったセル入力があれば TIEHI / TIELO が要る
-  NT=$(grep -cE "\.[A-Z]+\(1'[hb][01]\)" out/$T.v || true)
-  python3 scripts/syn_report.py $T --brief
-  [ "$NT" = 0 ] || echo "    ** 定数に繋がったセル入力ピンが $NT 個ある（TIEHI/TIELO が要る）"
-done
+# セルモデルは **ライブラリ (-lib) ではなく普通の Verilog として**読む。
+# RTL のクロス結合 NOR2 を論理まで展開し、ABC に貼り直させるため。
+# -lib で読むとブラックボックスのまま残り、後段の merge が効かない。
+# `blackbox RSLATCH` は RSLATCH を**セルのまま残す**ための指定。これが無いと
+# tr1um_cells.v の振る舞いモデルが展開され、ABC が入力ゲートごと吸収して
+# NOR3/NAND3 の生ループに化ける（RTL が RSLATCH を使っていない場合は無害）。
+$YS -p "read_verilog $CELLS $RTL; blackbox RSLATCH; hierarchy -check -top $TOP; \
+        synth -top $TOP -flatten; \
+        dfflibmap -liberty $LIB; abc -liberty $LIB -constr $CONSTR; opt_clean; \
+        write_verilog -noattr out/$TOP.v; tee -o out/$TOP.stat stat -liberty $LIB" \
+    > out/$TOP.synlog 2>&1 || { echo "** 合成に失敗"; tail -30 out/$TOP.synlog; exit 1; }
+grep -iE "combinational loop|warning: found" out/$TOP.synlog | sort -u | head -5
+if grep -qE '^\s+\$_[A-Z]' out/$TOP.stat; then
+  echo "** マップできていないセルが残っている"; grep -E '^\s+\$_[A-Z]' out/$TOP.stat
+fi
+NT=$(grep -cE "\.[A-Z]+\(1'[hb][01]\)" out/$TOP.v || true)
+python3 scripts/syn_report.py $TOP --brief
+[ "$NT" = 0 ] || echo "    ** 定数に繋がったセル入力ピンが $NT 個ある（TIEHI/TIELO が要る）"
 
 echo
-echo "##################### 3. 形式等価（RTL ⇔ マップ後）"
-for T in $TOPS; do
-  YOSYS=$YS python3 scripts/syn_equiv.py $T -r "$RTL" || true
-done
+echo "##################### 3. 重複ゲートの整理（dedup_gates.py）"
+# **必ずここで通す。** ABC は同じ入力に繋がった同じセルを何個も撒くことがあり、
+# それが配線の混雑と短絡の真の原因になる（design_notes 108.37）。
+python3 scripts/dedup_gates.py out/$TOP.v out/${TOP}_dedup.v
 
 echo
-echo "##################### 4. マップ後ネットリストでの TB"
+echo "##################### 4. MUXDFFRB / RSLATCH への畳み込み"
+#   MUX2 -> DFFRB.D（単一ファンアウト）      -> MUXDFFRB 1 個
+#   クロス結合 NOR2 対                        -> RSLATCH 1 個
+python3 scripts/merge_muxdffrb_rslatch.py --in out/${TOP}_dedup.v --out out/${TOP}_merged.v
+
+echo
+echo "##################### 5. ゲートレベル TB（畳み込み後）"
 if command -v iverilog >/dev/null 2>&1; then
-  for P in "tb_td4_core td4_core" "tb_td4_soc_arr td4_soc_arr"; do
-    set -- $P
-    if [ -f out/$2.v ]; then
-      iverilog -g2012 -o /tmp/g_$2.vvp hdl/tb/$1.v out/$2.v $CELLS
-      echo "  $2: $(vvp /tmp/g_$2.vvp | grep -E 'PASSED|FAIL' | tail -1)"
-    fi
-  done
+  iverilog -g2012 -o /tmp/i2c_tb_net.vvp hdl/tb/tb_i2c_slave_async_net.v \
+           out/${TOP}_merged.v $CELLS
+  vvp /tmp/i2c_tb_net.vvp | grep -E "PASS|FAIL|OK:|NG:" | tail -5
+else
+  echo "  iverilog が無いので飛ばす"
 fi
 
 echo
-echo "##################### 5. 面積と使用率"
-for T in $TOPS; do
-  python3 scripts/syn_report.py $T
-  echo
-done
-
-echo "##################### 6. td4_mem をブラックボックス化した周辺ロジック"
-$YS -p "read_verilog $RTL; blackbox td4_mem; hierarchy -check -top td4_soc_arr; \
-        synth -top td4_soc_arr -flatten; dfflibmap -liberty $LIB; abc -liberty $LIB -constr $CONSTR; \
-        opt_clean; write_verilog -noattr out/td4_soc_arr_bb.v; \
-        tee -o out/td4_soc_arr_bb.stat stat -liberty $LIB" > out/arr_bb.synlog 2>&1 \
-  || { echo "** ブラックボックス版の合成に失敗"; tail -20 out/arr_bb.synlog; exit 1; }
-python3 scripts/syn_report.py td4_soc_arr_bb -n out/td4_soc_arr_bb.v
-
-echo
-echo "##################### 6.5 REG8x16 マクロへの差し替え（P&R 入力）"
-# RTL の td4_mem と実物の REG8x16 はピン互換ではない。グルーを入れて差し替える。
-python3 scripts/mem_wrap.py out/td4_soc_arr_bb.v -o out/td4_soc_arr_mw.v
-
-# 外部入力 9 本をシュミット (BUFTH) で受ける。OSS_ESD_5V_DIO には入力バッファが
-# 入っておらず、PAD の 4.8 pF を外部ドライバが直接振る。鈍った波形をそのまま
-# 各段に配ると貫通電流が増え、CLK/RSTN にチャタリングが乗れば誤動作する。
+echo "##################### 6. BUFTH で外部入力を受ける"
+# OSS_ESD_5V_DIO には入力バッファが無く、PAD の 4.8 pF を外部ドライバが直接振る。
+# I2C は 10k の外部プルアップで受動的に立ち上がるので縁が特に鈍い（実測 15-20ns）。
 # BUFTH は立上り 3.71V / 立下り 1.20V（ヒステリシス 2.51V）。
-python3 scripts/insert_bufth.py out/td4_soc_arr_mw.v out/td4_soc_arr_pnr.v
-python3 scripts/syn_report.py td4_soc_arr -n out/td4_soc_arr_pnr.v --brief
-if command -v iverilog >/dev/null 2>&1; then
-  iverilog -g2012 -o /tmp/g_pnr.vvp hdl/tb/tb_td4_soc_arr.v out/td4_soc_arr_pnr.v \
-           $CELLS hdl/rtl/reg8x16.v
-  echo "  差し替え後の TB: $(vvp /tmp/g_pnr.vvp | grep -E 'PASSED|FAIL' | tail -1)"
-fi
+python3 scripts/insert_bufth.py out/${TOP}_merged.v out/${TOP}_pnr.v --nets scl,sda_in
+python3 scripts/syn_report.py $TOP -n out/${TOP}_pnr.v --brief
 
 echo
-echo "##################### 7. 命令メモリ カスタムアレイ化の効果"
-python3 scripts/mem_array_estimate.py
+echo "##################### 7. 面積と使用率"
+python3 scripts/syn_report.py $TOP -n out/${TOP}_pnr.v
 
 echo
-echo "##################### 8. STA（OpenSTA があれば）"
+echo "##################### 8. V10（テープアウト実績）との突き合わせ"
+python3 scripts/cmp_cells.py reference/v10/i2c_slave_async_net_v10_final.v out/${TOP}_pnr.v
+
+echo
+echo "##################### 9. STA"
 if command -v "${STA:-sta}" >/dev/null 2>&1; then
-  for T in $TOPS; do
-    sh scripts/sta/sta.sh out/$T.v $T 100 2>&1 | grep -vE "Warning (1210|503)"
-  done
-  # P&R に入れるのはこれ。REG8x16 を通るパスが見える唯一の版
-  [ -f out/td4_soc_arr_pnr.v ] && \
-    sh scripts/sta/sta.sh out/td4_soc_arr_pnr.v td4_soc_arr 100 2>&1 \
-      | grep -vE "Warning (1210|503)"
+  # **必ず merge 後のネットリストに当てる。** 畳み込み前は NOR2 のクロス結合が
+  # 生のループとして残っていて、OpenSTA が勝手にアークを 1 本切る。
+  sh scripts/sta/sta.sh out/${TOP}_pnr.v $TOP $PER 2>&1 | grep -vE "Warning (1210|503)"
 else
   echo "  OpenSTA が無いので飛ばす（scripts/sta/README.md にビルド手順）"
 fi
