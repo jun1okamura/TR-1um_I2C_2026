@@ -392,7 +392,12 @@ def main():
     top_ports = []
     for name in v["port_order"]:
         top_ports += expand_port(name, v["widths"][name])
-    top_ports += list(PWR)
+    # --- I2C 移植 (25): RTL が VDD/GND を明示ポートに持つ ------------------
+    # TD4 の RTL には電源ポートが無いので、ここで PWR を足すだけでよかった。
+    # I2C は RSLATCH を手で挿すために `module i2c_slave_async(..., VDD, GND)`
+    # と宣言してあるので、そのまま足すとポートが 2 本ダブって 28 本になる
+    # （レイアウト側は 26 本なので LVS がグラフマッチに入れない）。
+    top_ports += [p for p in PWR if p not in top_ports]
 
     dangling = [0]
     body = []

@@ -28,3 +28,6 @@ lef/*.lib.bak
 # PDK DRC のレポート（drc_pdk.py が作る生成物）
 *_drc.lyrdb
 DRC_error.lyrdb
+
+# LVS レポート（再生成できる。KLayout で開く用）
+*.lvsdb
