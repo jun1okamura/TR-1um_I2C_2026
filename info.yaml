@@ -11,7 +11,7 @@ project:
   title: "Async I2C Slave + RING_OSC (2026 MPW)"        # Project title (e.g. "Simple CPU", "PLL", "ADC")
   author: "jun1okamura"       # Your name
   discord: ""      # Optional: Discord username (for support / communication)
-  description: "Clockless (SCL/SDA edge-driven) I2C slave core (V10: MUXDFFRB/RSLATCH synthesized-cell integration + full re-placement/re-routing), with an on-die ring-oscillator test structure. Chip-level DRC/LVS clean and SPICE transistor-level 14/14 PASS (WRITE/READ/NACK regression)"  # Short one-line description
+  description: "Clockless (SCL/SDA edge-driven) I2C slave core, re-synthesized with a ngspice-characterized RSLATCH and fully re-placed/re-routed for the 2026 MPW, plus a redrawn on-die ring-oscillator test structure. Chip DRC 0 / LVS match / MDP mask DRC 0, and 14/14 PASS on the WRITE/READ/NACK regression run on the netlist extracted from the layout"  # Short one-line description
 
 # ======================================================
 # Layout (GDS) configuration

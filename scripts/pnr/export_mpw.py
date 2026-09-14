@@ -33,7 +33,9 @@ import i2c_config as cfg                                    # noqa: E402
 
 import klayout.db as db                                     # noqa: E402
 
-FINAL_CHIP_GDS = os.path.join(cfg.CHIP, "step4_final.gds")
+# I2C に step4 は無い。`add_top_pins.py` が打ったピン入りの step3 が最終形で、
+# DRC / LVS / MDP + IP62 マスク DRC を通したのもこれ（2026-09-14、いずれも 0 件）。
+FINAL_CHIP_GDS = os.path.join(cfg.CHIP, "step3_top_pins.gds")
 SRC = os.path.join(cfg.ROOT, "src")
 INFO = os.path.join(cfg.ROOT, "info.yaml")
 

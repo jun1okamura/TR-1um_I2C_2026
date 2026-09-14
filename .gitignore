@@ -35,3 +35,9 @@ DRC_error.lyrdb
 # ngspice の中間・ログ（再生成できる）
 layout/chip/simulation/*_extracted.spice
 layout/chip/simulation/*.log
+
+# CI が src/ に吐くもの（再生成できる）
+src/*.lyrdb
+src/*.lvsdb
+src/*.extracted
+mdp/

@@ -55,25 +55,57 @@ def klayout_version(exe):
 
 
 def patched_deck(src_dir):
-    """0.28 用に `size_inside` を使う行を外した写しを作る。"""
+    """0.28 で流せるように `size_inside` / `steps` を使う行を書き換えた写し。
+
+    どちらも KLayout 0.29 で入った。**外し方を間違えると結果が変わる**ので
+    3 通りに分ける。
+
+      1. ルール行（`.output(...)` を含む）は**丸ごとコメントアウト**する。
+         引数だけ外すと `size_inside` の制約が消えて別物の検査になる。
+         実際、`M1P.PE`（パッドの引き出し）で引数だけ外したら、金属の
+         外まで太ってしまって**偽の違反が 36 件**出た（2026-09-14）。
+         -> その分だけ検査は緩い。最終判断は 0.29 以上で。
+      2. `BG_CO_coverage` は代入だが使っているのも同じルール 1 行だけなので、
+         両方コメントアウトする。
+      3. `RPSD`（`run_mdp.drc`）は代入で、後ろの 195 行目で使われている。
+         コメントアウトすると `NameError` になるので**中身を差し替える**:
+
+             RPSD = RR - (CO & RR).sized(4.2-1.0, size_inside(SG.holes), …)
+                 -> RPSD = RR
+
+         これは抵抗まわりの P+ ブロック領域で、`RR` は抵抗の活性層
+         `AR`(3,3) から作る。**この設計には抵抗が無い**（GDS に 3/3・3/4・
+         8/2 が 1 個も入っていない）ので `RR` は空。空から何を引いても空
+         なので、この置き換えで出来上がるマスクは変わらない。
+    """
     d = tempfile.mkdtemp(prefix="tr1um_drc_")
     shutil.copytree(src_dir, d, dirs_exist_ok=True)
     n = 0
-    for f in ("02_Device.drc", "run.drc"):
+    for f in ("02_Device.drc", "run.drc", "run_mdp.drc", "run_IP62.drc"):
         p = os.path.join(d, f)
         if not os.path.exists(p):
             continue
         out = []
         for ln in open(p):
             ln = ln.rstrip("\n")
-            if "size_inside" in ln and not ln.lstrip().startswith("#"):
-                out.append("# [旧 KLayout のため外した] " + ln); n += 1
-            elif "BG_CO_coverage" in ln and not ln.lstrip().startswith("#"):
-                out.append("# [同上] " + ln); n += 1
-            else:
+            bare = ln.lstrip()
+            if bare.startswith("#") or ("size_inside" not in ln
+                                        and "BG_CO_coverage" not in ln):
                 out.append(ln)
+                continue
+            n += 1
+            if "BG_CO_coverage" in ln or ".output(" in ln:
+                out.append("# [旧 KLayout のため外した] " + ln)
+            elif re.match(r"\s*RPSD\s*=", ln):
+                out.append("RPSD = RR   # [旧 KLayout: この設計に抵抗は無いので"
+                           " RR は空。元は RR - (CO & RR).sized(…size_inside…)]")
+            else:
+                raise SystemExit(
+                    f"{f} に知らない `size_inside` の使い方がある。外し方を"
+                    f"決めずに流すと結果が変わるので止める:\n    {ln}")
         open(p, "w").write("\n".join(out) + "\n")
-    print(f"  ** KLayout が古いので `size_inside` を使う {n} 行を外した写しで流す。"
+    print(f"  ** KLayout が古いので `size_inside` / `steps` を使う {n} 行を"
+          f"書き換えた写しで流す。ルール行はコメントアウトしているので"
           f"その分だけ検査は緩い。")
     return d
 

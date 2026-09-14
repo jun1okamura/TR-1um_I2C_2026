@@ -1,11 +1,18 @@
 # TR-1um I2C Asynchronous Slave
 
-[![check](https://github.com/OpenSUSI/TR-1um_MPW_template/actions/workflows/check.yml/badge.svg?branch=main)](../../actions)
+[![check](https://github.com/jun1okamura/TR-1um_I2C_2026/actions/workflows/check.yml/badge.svg)](../../actions)
 
 Clockless (no `clk` port — every state transition is driven purely by
 SCL/SDA bus edges) I2C slave core implemented on the OpenSUSI TR-1um
 process, together with an on-die ring-oscillator (`RING_OSC`) test
 structure sharing the chip's reset pin.
+
+**This repository is the 2026 MPW submission.** The core was
+re-synthesized from RTL with a characterized `RSLATCH`, re-placed and
+re-routed from scratch, and `RING_OSC` was redrawn on the current
+standard-cell generation. Chip DRC 0 / LVS match / MDP mask DRC 0, and
+the 14-check WRITE/READ/NACK regression passes 14/14 **on the netlist
+extracted from the layout**. See §2 for what changed.
 
 Design source, full history and design notes:
 [jun1okamura/TR-1um_Async_I2C](https://github.com/jun1okamura/TR-1um_Async_I2C)
@@ -38,8 +45,8 @@ Also see below series of design note in Japanese.
 | P6 | `tx_data[3]` / `rx_data[3]` | 双方向 | 汎用データピン、ビット3 |
 | P7 | `DIS` | 入力 | P3/P4/P5/P6/P11/P12/P13/P14の8本共有の方向制御。動作中はダイナミックに切り替わる——WRITE中はLow（チップ自身の出力ドライバが有効化され、各ピンは`rx_data`を出力）、READ中・アイドル中はHigh（Hi-Z、各ピンは`tx_data`入力として動作）。 |
 | VSS | `VSS` | 接地 | 0V |
-| P9 | `RING_OSC.OUTD` | 出力（常時駆動） | RING_OSC 低速リング出力（INV3Dベース、実測約1.558MHz） |
-| P10 | `RING_OSC.OUT` | 出力（常時駆動） | RING_OSC 高速リング出力（INV_X1ベース、実測約6.508MHz） |
+| P9 | `RING_OSC.OUTD` | 出力（常時駆動） | RING_OSC 低速リング出力（INV3Dベース、2026 版の実測 1.790 MHz） |
+| P10 | `RING_OSC.OUT` | 出力（常時駆動） | RING_OSC 高速リング出力（INV_X1ベース、2026 版の実測 6.450 MHz） |
 | P11 | `tx_data[4]` / `rx_data[4]` | 双方向 | 汎用データピン、ビット4 |
 | P12 | `tx_data[5]` / `rx_data[5]` | 双方向 | 汎用データピン、ビット5 |
 | P13 | `tx_data[6]` / `rx_data[6]` | 双方向 | 汎用データピン、ビット6 |
@@ -65,21 +72,26 @@ rx（コアからの読み出し）が同一物理パッドを共有し、`DIS`�
   （コアとRING_OSCの間の空きスペースに、M2の3um角ドットでデジタイズ配置）
 - 実機KLayoutでチップ全体の**DRC/LVSクリーン**を確認済み
 
-**V10改訂**（現在この`src/`にエクスポートされているのはこのV10版）:
-コア内DFF/ラッチをMUXDFFRB/RSLATCH合成セルとして統合、GIOパッド
-割り当てを見直した上でチップ全体を再配置・再配線（`RING_OSC`が
-ダイ内部の素直な配線コリドーを塞ぐ問題を、リング状迂回配線で解決）。
-パッド割り当ては物理パッド番号昇順とbit番号が単調対応する構成
-（Option2）で確定し、上記1節のピン表はこの最終版を反映したもの
-（設計元`design_notes.md`§108.69）。DRC/LVSクリーンに加え、V10の
-レイアウト抽出netlist（RING_OSC除く）に対する実機ngspice
-トランジスタレベルシミュレーションで、本プロジェクト標準の
-WRITE/READ/誤アドレスNACK・14項目チェックが**14/14 PASS**することを
-確認済み（6節IRSIM検証と同一プロトコル・同一チェック項目）。検証
-過程で一時的にDATA値依存の2件FAILが発生したことがあったが、実測の
-結果チップ・パッド割り当て自体には欠陥が無く、原因はテストベンチの
-SPICEソルバー時間分解能設定だったと特定・解消済み（詳細は設計元
-リポジトリ`design_notes.md`§108.52〜108.72）。
+**2026 MPW 改訂**（`src/` にあるのはこの版）: V10 から次を作り直した。
+
+- **RSLATCH を特性化してセルとして使う**。V10 は NOR2 のたすき掛けで
+  ラッチを作っていたが、`synth -flatten` の後で ABC が NOR3/NAND3 の
+  生ループに吸収してしまい組合せループが 4 個できていた。ngspice で
+  `RSLATCH` を特性化して `.lib` に入れ（NLDM 7x7、`scripts/char/`）、
+  RTL から直接インスタンス化して `blackbox` で守る形に変えた。
+- **合成・配置・配線をゼロからやり直し**。4 行構成、コア 1611.0 x 963.2 µm、
+  コア単体で DRC 0 / 短絡 0。
+- **`RING_OSC` を現行の STDCELL 世代で描き直し**（セル高 64.8 -> 59.4、
+  帯の高さ 244.8 -> 223.2 µm）。旧世代のセルが同名でコア側のセルを
+  上書きして DRC が 8,449 件になる事故があり、取り込み方も直した。
+- **チップ配線を作り直し**。`DIS` は P7 から 8 個のデータパッドへ配る
+  1 ネットなので、幹 1 本 + 端点ごとの足にまとめた（32 本 -> 23 群、
+  レーン 14 -> 10、総長 58,626 -> 47,511 µm）。電源バー <-> 電源 PAD は
+  V10 と同じ幅 10 µm x 5 本。コアと `RING_OSC` の両脇の M2 電源を M1 に
+  落として、`RING_OSC` の上下に M1 バスバーを足した（V10 の構成では
+  `RING_OSC` にチップ電源が来ていなかった）。
+- **検証を抽出ネットリストで**。LVS の照合に加えて、同じ抽出から
+  ngspice 用のネットリストを起こして 14 項目を流している（5〜7 節）。
 
 ## 3. 回路設計
 
@@ -132,19 +144,54 @@ SCL/SDA_INの行またぎ分配用）によるスタンダードセルベース�
   構築も同じ独自ルータ体系で実施。パッド割り当ての変更（SCL/SDAの
   隣接パッド化等）にも同じ枠組みで対応済み。
 
+### 4.1 2026 版で変えたところ
+
+- **合成**: yosys。`RSLATCH` は `blackbox` で守り、`dfflibmap` +
+  `abc -liberty -constr` でマッピング。`RSLATCH` の Liberty は ngspice
+  特性化で作った（NLDM 7x7、SLEW 0.1〜16 ns / LOAD 10〜800 fF、
+  area 1603.8、S->Q 2.676 ns、R->Q 1.242 ns、最小パルス幅 1.8501 ns）。
+- **配置**: 4 行。行割り当ての FM 分割に**パッド近接の項**を足した
+  （重み 16 / seed 4）。
+- **配線**: コア 1611.0 x 963.2 µm、DRC 0 / 短絡 0。途中で見つけた
+  ルータの実バグ 3 件（step10 の圧縮が step7/8 の配線を知らずに
+  トラックを潰す / ch0 の高さが 5.4 グリッドに乗っていない / トップ
+  ピンの左右振り分けが行単位）を直している。
+- **チップ**: パッドリングのレーンは 10 本（`DIS` を幹 1 本にまとめる前は
+  14 本）、リングは GND 884 / VDD 902。フレームの金属は四辺とも実測
+  きっかり 920.0 までしか来ていない。
+
 ## 5. DRC/LVS
 
-- **DRC**: M1/M2の幅・スペース、V1（ビア）関連ルールを独自DRCチェッカー
-  で検証（Union-Findによる短絡・未接続検出も別途）。実機KLayoutの実DRC
-  デックでも独立に確認し、チップ全体で**DRC 0違反**を達成。
-- **LVS**: LVSの「スキーマティック側」参照ネットリスト（SPICE）は、
-  手書きではなく**検証済みのゲートレベルNET**（3節の`i2c_slave_async_
-  net_v9_rowbuf.v`）とGIO⇔コア結線マップから直接・機械的に生成——
-  つまりLVSが参照する回路は、3節で機能的に検証されたのと**同一の
-  NET**であることが構造的に保証されている。RING_OSC統合後は
-  RING_OSC自身のSPICEサブサーキットも合成。実機KLayoutで、レイアウト
-  抽出ネットリストとのLVS比較を実行し、コアセル単体・チップ全体
-  （RING_OSC・パッド再割り当て後の構成含む）とも**LVSクリーン**を確認。
+PDK の本物のデッキ（`TR-1um/libs.tech/klayout/tech/`）を当てている。
+自前の軽いチェッカ（`drc_check_nrow_fm.py`、M1/M2/V1 の幅と間隔だけ）は
+ルータの検算用で、最終判断には使わない——旧世代 STDCELL の混入で
+DRC が 8,449 件になったとき、自前チェッカは 0 件のまま素通りした。
+
+**DRC**（`run.drc` = 00_Layers + 01_Basics + 02_Device + 03_Electrical）
+
+| | 違反 |
+|---|---|
+| コア単体 `i2c_slave_async_nrow_fm` | 0 |
+| `RING_OSC` 単体 | 0 |
+| チップ `tr_1um_jun1okamura_i2c` | **0** |
+| MDP 後のマスク（`run_mdp.drc` -> `run_IP62.drc`） | **0** |
+
+**LVS**（`run.lvs`）。ソース側は 3 階層とも**レイアウトを見ずに**
+組み立てている（`layout/chip/simulation/README.md` に手順）。
+
+| トップ | 素子 / 網 / ピン | 結果 |
+|---|---|---|
+| `i2c_slave_async_nrow_fm` | 1852 / 737 / 26 | Netlists match |
+| `RING_OSC` | 808 / 201 / 5 | Netlists match |
+| `tr_1um_jun1okamura_i2c` | 3288 / 1050 / 16 | Netlists match |
+
+- コアのソースは合成後ネットリスト + セル単体の `.spice` + 配置 JSON の
+  物理セル（FILL/TAP）から機械的に組み立てる。
+- `RING_OSC` のソースは **xschem の回路図から**起こす（RTL が無いため）。
+  1 リング 95 段 + AND 1 段が 2 本。レイアウトの実体数（INV_X1 97 /
+  INV3D 95 / AND2_X1 2 / FILL2 206）が回路図とぴったり一致する。
+- チップのソースは上の 2 つ + フレームの素子レベル `.spice` +
+  `layout/chip/gio_connections.json` の接続表。
 
 ## 6. IRSIM
 
@@ -172,6 +219,55 @@ Verilog版と完全一致する**`All 14 checks PASSED`**を確認済み。DFFRB
 両ラッチ）を非同期リセット時にクロックHIGH側で強制する実行時手法を
 確立し、READトランザクション側で当初見つかった不具合も解消済み。
 
+### 6.1 ngspice（2026 版、**レイアウト抽出から**）
+
+IRSIM と**同じ 3 シナリオ・14 項目**を、レイアウト抽出ネットリストに
+対して ngspice で流す。LVS に使う `.extracted` は比較のために平坦化して
+あって網が番号になるので、`klayout_extract.py` で階層とラベルを残した
+まま抽出し直し、ngspice 用に 5 点だけ直している（`\$123` のエスケープ名、
+角括弧、ダイオードの `A=`/`P=`、モデル名 `NMOSE`->`MNE`、素子を持たない
+セル）。**W/L も AS/AD/PS/PD も抽出した実物の寸法**なので、拡散容量は
+設計値ではなくレイアウトの実測。
+
+`.tran 50n 544u 0 10n`、SCL=100 kHz、約 5 分:
+
+```
+[t=9500ns]   OK: busy asserted after START                      (5.000V)
+[t=99500ns]  OK: slave ACKed matching address (write)           (0.044V)
+[t=101800ns] OK: addr_match asserted                            (5.000V)
+[t=101800ns] OK: rw indicates WRITE                             (-0.000V)
+[t=189500ns] OK: slave ACKed data byte                          (0.044V)
+[t=194000ns] OK: rx_data == 0xA5                     (got 0xA5, expected 0xA5)
+[t=209000ns] OK: busy cleared after STOP                        (0.000V)
+[t=309500ns] OK: slave ACKed matching address (read)            (0.044V)
+[t=311800ns] OK: rw indicates READ                              (5.000V)
+[t=319500ns] OK: read byte == 0x3C                   (got 0x3C, expected 0x3C)
+[t=419000ns] OK: busy cleared after final STOP                  (0.000V)
+[t=519500ns] OK: unmatched address -> NACK (no slave ack)       (4.950V)
+[t=521800ns] OK: addr_match not asserted for foreign address    (0.000V)
+[t=539000ns] OK: busy cleared after STOP following NACK         (0.000V)
+---- RESULT ----  All 14 checks PASSED
+```
+
+刺激は V10 のテストベンチ（`reference/v10/`）をそのまま借りている。
+パッド割り当てが同じなので `.measure` の時刻も流用できる。差し替えたのは
+網の名前だけ。`RING_OSC` は外して流す（`ENB` = `RSTN` なので入れたままだと
+544 µs のあいだ発振し続けて刻みが潰れる）。
+
+### 6.2 STA（OpenSTA）
+
+このコアにクロックは無く、最悪パスは `scl_n` <-> `scl_gated` の**半サイクル
+パス**なので、`周期 - slack` では正しく出ない（最初その式で「Fmax 0.78 MHz」
+という値が出た）。周期を 2 点振って `slack(T) = a*T + b` を解く方法に変えた。
+
+| | |
+|---|---|
+| 周期係数 a | 0.50（= 半サイクルパス） |
+| reg->reg が要求する最小周期 | **49.104 ns（20.36 MHz）** |
+| パス遅延 | 24.552 ns |
+
+I2C は Fast-mode+ でも 1 MHz なので 20 倍以上の余裕がある。
+
 ## 7. RING_OSCの説明
 
 チップ上のテスト構造として、コア横に独立したリング発振器
@@ -188,13 +284,23 @@ Verilog版と完全一致する**`All 14 checks PASSED`**を確認済み。DFFRB
 `ENB`はチップの`RSTN`（P15）と共有——リセット解除（RSTN=High）と
 同時にRING_OSCのループが閉じ発振を開始する。
 
-**ngspice実測結果**（LVSクリーン確認済みのレイアウト抽出netlist、
-`.tran`3us、VDD=5.0V、RSTNは0Vから10ns保持後5Vへ立ち上がり）:
+**ngspice 実測**（2026 版。LVS クリーンのレイアウト抽出 netlist、
+`.tran 100p 12u 0 500p uic`、VDD=5.0 V、RSTN は 0.5 µs で立ち上げ、
+出力パッドに 10 pF）:
 
-| リング | 周期 | 周波数 |
-|---|---|---|
-| `OUT`（P10） | 153.661 ns | 6.50783 MHz |
-| `OUTD`（P9） | 641.844 ns | 1.55801 MHz |
+| リング | 周期 | 周波数 | 振幅 | 1 段あたり |
+|---|---|---|---|---|
+| `OUT`（P10） | 155.04 ns | **6.450 MHz** | −0.046 … 5.047 V | 0.808 ns |
+| `OUTD`（P9） | 558.60 ns | **1.790 MHz** | −0.046 … 5.047 V | 2.910 ns |
+
+（V10 は 6.508 / 1.558 MHz。RING_OSC を現行 STDCELL 世代で描き直した
+ぶん少し変わっている。）
+
+`INV3D` は `INV_X1` と **W/L が同じ**（PMOS 10.2/1.0、NMOS 3.4/1.0）で、
+違うのはレイアウトだけ。抽出した拡散面積が `AS=539.5p` 対 `14.6p` と
+桁違いなので、接合容量で 3.60 倍遅くなる。**回路図から作ったネットリスト
+では両者は同じ回路になるので、この差は出てこない**——抽出から流している
+意味がここに出る。
 
 `OUTD`が`OUT`よりおよそ4.2倍遅いのは、`INV3D`のアンテナダイオード
 拡散が出力（スイッチング）ノード側に直接ロードとして乗るため
