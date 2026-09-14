@@ -117,7 +117,7 @@ sudo cp build/sta /usr/local/bin/     # PATH に置く
 export STA="$PWD/build/sta"           # か、sta.sh / syn.sh に環境変数で渡す
 ```
 
-動作確認:
+動作確認（この手順で **OpenSTA 3.1.0** が建つことを確認済み。2026-09-14）:
 
 ```sh
 cd ~/Dropbox/98_LSI_Design/TR-1um_I2C_2026
