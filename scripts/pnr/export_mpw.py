@@ -25,7 +25,8 @@ import re
 import shutil
 import sys
 
-os.environ.setdefault("TD4_MACRO_MODE", "portrait")
+# （TD4 版はここで TD4_MACRO_MODE=portrait を固定していた。I2C の
+#   i2c_config はマクロを持たないので不要。）
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import i2c_config as cfg                                    # noqa: E402

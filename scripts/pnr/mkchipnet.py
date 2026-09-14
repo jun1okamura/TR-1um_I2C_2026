@@ -43,8 +43,8 @@ import os
 import re
 import sys
 
-# **チップ組み立ては縦置き専用。**（理由は assemble_top.py の同じ注記）
-os.environ.setdefault("TD4_MACRO_MODE", "portrait")
+# （TD4 版はここで TD4_MACRO_MODE=portrait を固定していた。I2C の
+#   i2c_config はマクロを持たないので不要。）
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import i2c_config as cfg                                    # noqa: E402

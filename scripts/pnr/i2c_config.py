@@ -249,6 +249,23 @@ CHIP_CORE_GDS = FINAL_GDS
 # LVS のソース側（mkchipnet.py）も同じ名前に合わせる。
 FRAME_CELL_CHIP = "OSS_FRAME"
 GIO_PIN_RADIUS = 921.7         # P/HIZ/OUT 端子の半径（ダイ中心から）
+
+# ---- RING_OSC（チップ側に置くテスト構造） --------------------------------
+# `TR-1um_Async_I2C/ring_osc/RING_OSC.gds` をそのまま持ってきたもの。
+# 97 段リングが 2 本（INV_X1 ベースの高速 OUT と INV3D ベースの低速 OUTD）。
+# セル 1620.0 x 244.8、bbox は原点基準で x -6.3…1626.3 / y -120.0…124.8。
+# ENB は RSTN と共有（リセット解除で発振開始）。
+RING_OSC_GDS = os.path.join(ROOT, "lef", "RING_OSC.gds")
+RING_OSC_LEF = os.path.join(ROOT, "lef", "RING_OSC.lef")
+RING_OSC_CELL = "RING_OSC"
+# 置く原点（ダイ中心基準）。**V10 と同じ (-810, -650)。**
+# 絶対フットプリントは x -816.3…816.3 / y -770.0…-525.2 になる。
+# V10 のコアは上寄せ（下端 -140）で下チャネルが広かったが、こちらはコアを
+# 開口の中央に置くので下端は -490.8。RING_OSC の上端 -525.2 との隙間は 34.6 µm。
+# リング配線のレーンは R 847…880（= 下辺では y -880…-847）を通るので、
+# RING_OSC (…-770) とは干渉しない。
+RING_OSC_ORIGIN = (float(os.environ.get("I2C_RINGOSC_X", "-810.0")),
+                   float(os.environ.get("I2C_RINGOSC_Y", "-650.0")))
 PTECT_LAYER = (63, 1)
 
 

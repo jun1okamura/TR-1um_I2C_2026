@@ -1,0 +1,870 @@
+{
+ "core_offset": [
+  -799.2,
+  -490.8
+ ],
+ "core_chip_bbox": [
+  -805.5,
+  -490.8,
+  805.5,
+  490.8
+ ],
+ "ring_osc_origin": [
+  -810.0,
+  -650.0
+ ],
+ "pin_radius": 921.7,
+ "signals": [
+  {
+   "net": "scl",
+   "role": "SCL",
+   "pad": 1,
+   "kind": "P",
+   "from": {
+    "what": "core",
+    "x": 797.7,
+    "y": 66.0,
+    "edge": "RIGHT",
+    "layer": "M1",
+    "port": "scl"
+   },
+   "to": {
+    "what": "pad",
+    "x": -270.0,
+    "y": 921.7,
+    "edge": "TOP",
+    "layer": "M2",
+    "terminal": "P1"
+   },
+   "ring_run_um": 2047.4,
+   "same_edge": false
+  },
+  {
+   "net": "sda_in",
+   "role": "SDA",
+   "pad": 2,
+   "kind": "P",
+   "from": {
+    "what": "core",
+    "x": -105.3,
+    "y": 489.3,
+    "edge": "TOP",
+    "layer": "M2",
+    "port": "sda_in"
+   },
+   "to": {
+    "what": "pad",
+    "x": -530.0,
+    "y": 921.7,
+    "edge": "TOP",
+    "layer": "M2",
+    "terminal": "P2"
+   },
+   "ring_run_um": 424.7,
+   "same_edge": true
+  },
+  {
+   "net": "sda_oe",
+   "role": "SDA",
+   "pad": 2,
+   "kind": "HIZ",
+   "from": {
+    "what": "core",
+    "x": -720.9,
+    "y": 489.3,
+    "edge": "TOP",
+    "layer": "M2",
+    "port": "sda_oe"
+   },
+   "to": {
+    "what": "pad",
+    "x": -580.0,
+    "y": 921.7,
+    "edge": "TOP",
+    "layer": "M2",
+    "terminal": "HIZ2"
+   },
+   "ring_run_um": 774.1,
+   "same_edge": true
+  },
+  {
+   "net": "tx_data[0]",
+   "role": "D0",
+   "pad": 3,
+   "kind": "P",
+   "from": {
+    "what": "core",
+    "x": -769.5,
+    "y": -489.3,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "port": "tx_data[0]"
+   },
+   "to": {
+    "what": "pad",
+    "x": -921.7,
+    "y": 530.0,
+    "edge": "LEFT",
+    "layer": "M2",
+    "terminal": "P3"
+   },
+   "ring_run_um": 1019.3,
+   "same_edge": false
+  },
+  {
+   "net": "rx_data[0]",
+   "role": "D0",
+   "pad": 3,
+   "kind": "OUT",
+   "from": {
+    "what": "core",
+    "x": 321.3,
+    "y": -489.3,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "port": "rx_data[0]"
+   },
+   "to": {
+    "what": "pad",
+    "x": -921.7,
+    "y": 620.0,
+    "edge": "LEFT",
+    "layer": "M2",
+    "terminal": "OUT3"
+   },
+   "ring_run_um": 2784.7,
+   "same_edge": false
+  },
+  {
+   "net": "DIS",
+   "role": "D0",
+   "pad": 3,
+   "kind": "HIZ",
+   "from": {
+    "what": "pad",
+    "x": -530.0,
+    "y": -921.7,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "terminal": "P7"
+   },
+   "to": {
+    "what": "pad",
+    "x": -921.7,
+    "y": 580.0,
+    "edge": "LEFT",
+    "layer": "M2",
+    "terminal": "HIZ3"
+   },
+   "ring_run_um": 1893.4,
+   "same_edge": false
+  },
+  {
+   "net": "tx_data[1]",
+   "role": "D1",
+   "pad": 4,
+   "kind": "P",
+   "from": {
+    "what": "core",
+    "x": -797.7,
+    "y": 117.6,
+    "edge": "LEFT",
+    "layer": "M1",
+    "port": "tx_data[1]"
+   },
+   "to": {
+    "what": "pad",
+    "x": -921.7,
+    "y": 270.0,
+    "edge": "LEFT",
+    "layer": "M2",
+    "terminal": "P4"
+   },
+   "ring_run_um": 152.4,
+   "same_edge": true
+  },
+  {
+   "net": "rx_data[1]",
+   "role": "D1",
+   "pad": 4,
+   "kind": "OUT",
+   "from": {
+    "what": "core",
+    "x": 418.5,
+    "y": -489.3,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "port": "rx_data[1]"
+   },
+   "to": {
+    "what": "pad",
+    "x": -921.7,
+    "y": 180.0,
+    "edge": "LEFT",
+    "layer": "M2",
+    "terminal": "OUT4"
+   },
+   "ring_run_um": 2441.9,
+   "same_edge": false
+  },
+  {
+   "net": "DIS",
+   "role": "D1",
+   "pad": 4,
+   "kind": "HIZ",
+   "from": {
+    "what": "pad",
+    "x": -530.0,
+    "y": -921.7,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "terminal": "P7"
+   },
+   "to": {
+    "what": "pad",
+    "x": -921.7,
+    "y": 220.0,
+    "edge": "LEFT",
+    "layer": "M2",
+    "terminal": "HIZ4"
+   },
+   "ring_run_um": 1533.4,
+   "same_edge": false
+  },
+  {
+   "net": "tx_data[2]",
+   "role": "D2",
+   "pad": 5,
+   "kind": "P",
+   "from": {
+    "what": "core",
+    "x": -704.7,
+    "y": 489.3,
+    "edge": "TOP",
+    "layer": "M2",
+    "port": "tx_data[2]"
+   },
+   "to": {
+    "what": "pad",
+    "x": -921.7,
+    "y": -270.0,
+    "edge": "LEFT",
+    "layer": "M2",
+    "terminal": "P5"
+   },
+   "ring_run_um": 759.3,
+   "same_edge": false
+  },
+  {
+   "net": "rx_data[2]",
+   "role": "D2",
+   "pad": 5,
+   "kind": "OUT",
+   "from": {
+    "what": "core",
+    "x": 321.3,
+    "y": 489.3,
+    "edge": "TOP",
+    "layer": "M2",
+    "port": "rx_data[2]"
+   },
+   "to": {
+    "what": "pad",
+    "x": -921.7,
+    "y": -180.0,
+    "edge": "LEFT",
+    "layer": "M2",
+    "terminal": "OUT5"
+   },
+   "ring_run_um": 2344.7,
+   "same_edge": false
+  },
+  {
+   "net": "DIS",
+   "role": "D2",
+   "pad": 5,
+   "kind": "HIZ",
+   "from": {
+    "what": "pad",
+    "x": -530.0,
+    "y": -921.7,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "terminal": "P7"
+   },
+   "to": {
+    "what": "pad",
+    "x": -921.7,
+    "y": -220.0,
+    "edge": "LEFT",
+    "layer": "M2",
+    "terminal": "HIZ5"
+   },
+   "ring_run_um": 1093.4,
+   "same_edge": false
+  },
+  {
+   "net": "tx_data[3]",
+   "role": "D3",
+   "pad": 6,
+   "kind": "P",
+   "from": {
+    "what": "core",
+    "x": 797.7,
+    "y": 60.6,
+    "edge": "RIGHT",
+    "layer": "M1",
+    "port": "tx_data[3]"
+   },
+   "to": {
+    "what": "pad",
+    "x": -921.7,
+    "y": -530.0,
+    "edge": "LEFT",
+    "layer": "M2",
+    "terminal": "P6"
+   },
+   "ring_run_um": 3217.4,
+   "same_edge": false
+  },
+  {
+   "net": "rx_data[3]",
+   "role": "D3",
+   "pad": 6,
+   "kind": "OUT",
+   "from": {
+    "what": "core",
+    "x": 797.7,
+    "y": -36.6,
+    "edge": "RIGHT",
+    "layer": "M1",
+    "port": "rx_data[3]"
+   },
+   "to": {
+    "what": "pad",
+    "x": -921.7,
+    "y": -620.0,
+    "edge": "LEFT",
+    "layer": "M2",
+    "terminal": "OUT6"
+   },
+   "ring_run_um": 3030.2,
+   "same_edge": false
+  },
+  {
+   "net": "DIS",
+   "role": "D3",
+   "pad": 6,
+   "kind": "HIZ",
+   "from": {
+    "what": "pad",
+    "x": -530.0,
+    "y": -921.7,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "terminal": "P7"
+   },
+   "to": {
+    "what": "pad",
+    "x": -921.7,
+    "y": -580.0,
+    "edge": "LEFT",
+    "layer": "M2",
+    "terminal": "HIZ6"
+   },
+   "ring_run_um": 733.4,
+   "same_edge": false
+  },
+  {
+   "net": "DIS",
+   "role": "DIS",
+   "pad": 7,
+   "kind": "P",
+   "from": {
+    "what": "pad",
+    "x": -530.0,
+    "y": -921.7,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "terminal": "P7"
+   },
+   "to": {
+    "what": "pad",
+    "x": -530.0,
+    "y": -921.7,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "terminal": "P7"
+   },
+   "ring_run_um": 0.0,
+   "same_edge": true
+  },
+  {
+   "net": "RING_OSC.OUTD",
+   "role": "OSCD",
+   "pad": 9,
+   "kind": "OUT",
+   "from": {
+    "what": "ringosc",
+    "x": 808.3,
+    "y": -674.9,
+    "edge": "RIGHT",
+    "layer": "M1",
+    "port": "RING_OSC.OUTD"
+   },
+   "to": {
+    "what": "pad",
+    "x": 180.0,
+    "y": -921.7,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "terminal": "OUT9"
+   },
+   "ring_run_um": 988.5,
+   "same_edge": false
+  },
+  {
+   "net": "RING_OSC.OUT",
+   "role": "OSC",
+   "pad": 10,
+   "kind": "OUT",
+   "from": {
+    "what": "ringosc",
+    "x": 808.3,
+    "y": -620.3,
+    "edge": "RIGHT",
+    "layer": "M1",
+    "port": "RING_OSC.OUT"
+   },
+   "to": {
+    "what": "pad",
+    "x": 620.0,
+    "y": -921.7,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "terminal": "OUT10"
+   },
+   "ring_run_um": 603.1,
+   "same_edge": false
+  },
+  {
+   "net": "tx_data[4]",
+   "role": "D4",
+   "pad": 11,
+   "kind": "P",
+   "from": {
+    "what": "core",
+    "x": -797.7,
+    "y": 106.8,
+    "edge": "LEFT",
+    "layer": "M1",
+    "port": "tx_data[4]"
+   },
+   "to": {
+    "what": "pad",
+    "x": 921.7,
+    "y": -530.0,
+    "edge": "RIGHT",
+    "layer": "M2",
+    "terminal": "P11"
+   },
+   "ring_run_um": 3263.6,
+   "same_edge": false
+  },
+  {
+   "net": "rx_data[4]",
+   "role": "D4",
+   "pad": 11,
+   "kind": "OUT",
+   "from": {
+    "what": "core",
+    "x": 94.5,
+    "y": -489.3,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "port": "rx_data[4]"
+   },
+   "to": {
+    "what": "pad",
+    "x": 921.7,
+    "y": -620.0,
+    "edge": "RIGHT",
+    "layer": "M2",
+    "terminal": "OUT11"
+   },
+   "ring_run_um": 1128.9,
+   "same_edge": false
+  },
+  {
+   "net": "DIS",
+   "role": "D4",
+   "pad": 11,
+   "kind": "HIZ",
+   "from": {
+    "what": "pad",
+    "x": -530.0,
+    "y": -921.7,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "terminal": "P7"
+   },
+   "to": {
+    "what": "pad",
+    "x": 921.7,
+    "y": -580.0,
+    "edge": "RIGHT",
+    "layer": "M2",
+    "terminal": "HIZ11"
+   },
+   "ring_run_um": 1793.4,
+   "same_edge": false
+  },
+  {
+   "net": "tx_data[5]",
+   "role": "D5",
+   "pad": 12,
+   "kind": "P",
+   "from": {
+    "what": "core",
+    "x": -797.7,
+    "y": 112.2,
+    "edge": "LEFT",
+    "layer": "M1",
+    "port": "tx_data[5]"
+   },
+   "to": {
+    "what": "pad",
+    "x": 921.7,
+    "y": -270.0,
+    "edge": "RIGHT",
+    "layer": "M2",
+    "terminal": "P12"
+   },
+   "ring_run_um": 3529.0,
+   "same_edge": false
+  },
+  {
+   "net": "rx_data[5]",
+   "role": "D5",
+   "pad": 12,
+   "kind": "OUT",
+   "from": {
+    "what": "core",
+    "x": 797.7,
+    "y": -42.0,
+    "edge": "RIGHT",
+    "layer": "M1",
+    "port": "rx_data[5]"
+   },
+   "to": {
+    "what": "pad",
+    "x": 921.7,
+    "y": -180.0,
+    "edge": "RIGHT",
+    "layer": "M2",
+    "terminal": "OUT12"
+   },
+   "ring_run_um": 138.0,
+   "same_edge": true
+  },
+  {
+   "net": "DIS",
+   "role": "D5",
+   "pad": 12,
+   "kind": "HIZ",
+   "from": {
+    "what": "pad",
+    "x": -530.0,
+    "y": -921.7,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "terminal": "P7"
+   },
+   "to": {
+    "what": "pad",
+    "x": 921.7,
+    "y": -220.0,
+    "edge": "RIGHT",
+    "layer": "M2",
+    "terminal": "HIZ12"
+   },
+   "ring_run_um": 2153.4,
+   "same_edge": false
+  },
+  {
+   "net": "tx_data[6]",
+   "role": "D6",
+   "pad": 13,
+   "kind": "P",
+   "from": {
+    "what": "core",
+    "x": -672.3,
+    "y": -489.3,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "port": "tx_data[6]"
+   },
+   "to": {
+    "what": "pad",
+    "x": 921.7,
+    "y": 270.0,
+    "edge": "RIGHT",
+    "layer": "M2",
+    "terminal": "P13"
+   },
+   "ring_run_um": 3467.5,
+   "same_edge": false
+  },
+  {
+   "net": "rx_data[6]",
+   "role": "D6",
+   "pad": 13,
+   "kind": "OUT",
+   "from": {
+    "what": "core",
+    "x": -797.7,
+    "y": 85.2,
+    "edge": "LEFT",
+    "layer": "M1",
+    "port": "rx_data[6]"
+   },
+   "to": {
+    "what": "pad",
+    "x": 921.7,
+    "y": 180.0,
+    "edge": "RIGHT",
+    "layer": "M2",
+    "terminal": "OUT13"
+   },
+   "ring_run_um": 3421.6,
+   "same_edge": false
+  },
+  {
+   "net": "DIS",
+   "role": "D6",
+   "pad": 13,
+   "kind": "HIZ",
+   "from": {
+    "what": "pad",
+    "x": -530.0,
+    "y": -921.7,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "terminal": "P7"
+   },
+   "to": {
+    "what": "pad",
+    "x": 921.7,
+    "y": 220.0,
+    "edge": "RIGHT",
+    "layer": "M2",
+    "terminal": "HIZ13"
+   },
+   "ring_run_um": 2593.4,
+   "same_edge": false
+  },
+  {
+   "net": "tx_data[7]",
+   "role": "D7",
+   "pad": 14,
+   "kind": "P",
+   "from": {
+    "what": "core",
+    "x": 639.9,
+    "y": 489.3,
+    "edge": "TOP",
+    "layer": "M2",
+    "port": "tx_data[7]"
+   },
+   "to": {
+    "what": "pad",
+    "x": 921.7,
+    "y": 530.0,
+    "edge": "RIGHT",
+    "layer": "M2",
+    "terminal": "P14"
+   },
+   "ring_run_um": 40.7,
+   "same_edge": false
+  },
+  {
+   "net": "rx_data[7]",
+   "role": "D7",
+   "pad": 14,
+   "kind": "OUT",
+   "from": {
+    "what": "core",
+    "x": 515.7,
+    "y": -489.3,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "port": "rx_data[7]"
+   },
+   "to": {
+    "what": "pad",
+    "x": 921.7,
+    "y": 620.0,
+    "edge": "RIGHT",
+    "layer": "M2",
+    "terminal": "OUT14"
+   },
+   "ring_run_um": 1109.3,
+   "same_edge": false
+  },
+  {
+   "net": "DIS",
+   "role": "D7",
+   "pad": 14,
+   "kind": "HIZ",
+   "from": {
+    "what": "pad",
+    "x": -530.0,
+    "y": -921.7,
+    "edge": "BOTTOM",
+    "layer": "M2",
+    "terminal": "P7"
+   },
+   "to": {
+    "what": "pad",
+    "x": 921.7,
+    "y": 580.0,
+    "edge": "RIGHT",
+    "layer": "M2",
+    "terminal": "HIZ14"
+   },
+   "ring_run_um": 2953.4,
+   "same_edge": false
+  },
+  {
+   "net": "rst_n",
+   "role": "RSTN",
+   "pad": 15,
+   "kind": "P",
+   "from": {
+    "what": "core",
+    "x": -797.7,
+    "y": 90.6,
+    "edge": "LEFT",
+    "layer": "M1",
+    "port": "rst_n"
+   },
+   "to": {
+    "what": "pad",
+    "x": 530.0,
+    "y": 921.7,
+    "edge": "TOP",
+    "layer": "M2",
+    "terminal": "P15"
+   },
+   "ring_run_um": 2282.8,
+   "same_edge": false
+  },
+  {
+   "net": "RING_OSC.ENB",
+   "role": "RSTN",
+   "pad": 15,
+   "kind": "P",
+   "from": {
+    "what": "ringosc",
+    "x": -796.5,
+    "y": -767.2,
+    "edge": "LEFT",
+    "layer": "M2",
+    "port": "RING_OSC.ENB"
+   },
+   "to": {
+    "what": "pad",
+    "x": 530.0,
+    "y": 921.7,
+    "edge": "TOP",
+    "layer": "M2",
+    "terminal": "P15"
+   },
+   "ring_run_um": 3140.6,
+   "same_edge": false
+  }
+ ],
+ "ties": [
+  {
+   "pad": 1,
+   "terminal": "HIZ1",
+   "tie": "VDD",
+   "why": "常時 Hi-Z（入力専用）",
+   "x": -220.0,
+   "y": 921.7,
+   "edge": "TOP"
+  },
+  {
+   "pad": 2,
+   "terminal": "OUT2",
+   "tie": "GND",
+   "why": "オープンドレイン（Low だけ駆動する）",
+   "x": -620.0,
+   "y": 921.7,
+   "edge": "TOP"
+  },
+  {
+   "pad": 7,
+   "terminal": "HIZ7",
+   "tie": "VDD",
+   "why": "常時 Hi-Z（入力専用）",
+   "x": -580.0,
+   "y": -921.7,
+   "edge": "BOTTOM"
+  },
+  {
+   "pad": 9,
+   "terminal": "HIZ9",
+   "tie": "GND",
+   "why": "常時ドライブ（出力専用）",
+   "x": 220.0,
+   "y": -921.7,
+   "edge": "BOTTOM"
+  },
+  {
+   "pad": 10,
+   "terminal": "HIZ10",
+   "tie": "GND",
+   "why": "常時ドライブ（出力専用）",
+   "x": 580.0,
+   "y": -921.7,
+   "edge": "BOTTOM"
+  },
+  {
+   "pad": 15,
+   "terminal": "HIZ15",
+   "tie": "VDD",
+   "why": "常時 Hi-Z（入力専用）",
+   "x": 580.0,
+   "y": 921.7,
+   "edge": "TOP"
+  },
+  {
+   "pad": 1,
+   "terminal": "OUT1",
+   "tie": "GND",
+   "why": "入力専用パッドの浮いたドライバ入力",
+   "x": -180.0,
+   "y": 921.7,
+   "edge": "TOP"
+  },
+  {
+   "pad": 7,
+   "terminal": "OUT7",
+   "tie": "GND",
+   "why": "入力専用パッドの浮いたドライバ入力",
+   "x": -620.0,
+   "y": -921.7,
+   "edge": "BOTTOM"
+  },
+  {
+   "pad": 15,
+   "terminal": "OUT15",
+   "tie": "GND",
+   "why": "入力専用パッドの浮いたドライバ入力",
+   "x": 620.0,
+   "y": 921.7,
+   "edge": "TOP"
+  }
+ ]
+}

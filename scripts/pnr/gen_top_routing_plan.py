@@ -4,24 +4,30 @@
   -> layout/chip/gio_connections.json      何と何を繋ぐか（論理）
   -> layout/chip/signal_routing_plan.json  その端点がどこにあるか（幾何）
 
-移植元（SCLK_SPI / I2C）と同じ二段構え。**手で書くのは `PAD_MAP` だけ**で、
-それは設計判断（`reference/05_pin_io_plan.md` §5 案A の確定表）。ほかは全部
-実ファイルから読む:
+移植元（SCLK_SPI / TD4）と同じ二段構え。**手で書くのは `PAD_MAP` だけ**で、
+それは設計判断（V10 の確定ピン配置 = README のピン表）。ほかは全部実ファイルから読む:
 
   * パッド端子の座標   `lef/TR-1um_frame_25x25.gds`（`frame_pins.py`）
   * コアピンの座標     配置配線済みコアのラベル + `chip_geometry()` のオフセット
-  * ポート一覧         合成後ネットリスト
+  * RING_OSC の座標    `lef/RING_OSC.lef` + `i2c_config.RING_OSC_ORIGIN`
 
-## `OSS_ESD_5V_DIO` の挙動（`reference/05_pin_io_plan.md` §2）
+## `OSS_ESD_5V_DIO` の挙動
 
     HIZ = 1  -> ドライバを放す。パッドは Hi-Z（入力専用）
     HIZ = 0  -> ドライバ ON。パッドは OUT の値を出す（非反転）
 
-TD4 は 14 本すべて**方向が固定**なので、`HIZ` はレールに直結する
-（入力は VDD、出力は GND）。`TIEHI`/`TIELO` はライブラリに無い。
+**TD4 と決定的に違うのはここ。** TD4 は 14 本すべて方向が固定なので `HIZ` を
+レールに直結できた。I2C のチップは 2 種類の**動的な** HIZ を使う:
 
-入力パッドはコアのピンを **`P<n>`（パッド内側のスタブ）** に繋ぐ。
-出力パッドはコアが **`OUT<n>`** を駆動する（`P<n>` には繋がない）。
+  * `SDA`（P2）は**オープンドレイン**。`OUT2` は GND に直結し、コアの
+    `sda_oe` が `HIZ2` を叩く。`sda_oe=0` で Low を駆動、`1` で放す
+    （外部プルアップが High を作る）。RTL の極性がそのままパッドに合う。
+  * 8 本のデータパッド（P3…P6 / P11…P14）は `DIS`（P7）1 本で方向を一括制御。
+    `DIS=0` で出力（`rx_data[i]` を出す）、`DIS=1` で Hi-Z（`tx_data[i]` を受ける）。
+    **DIS の鎖はパッド端子どうしの配線**でコアを通らない。
+
+`addr_match` / `busy` / `rw` / `rx_valid` は V7/V9/V10 と同じく**未ボンド**。
+16 本のパッドに収まらないため。`UNBONDED` に挙げてある。
 
   usage: python3 scripts/pnr/gen_top_routing_plan.py
 """
@@ -32,11 +38,8 @@ import json
 import os
 import sys
 
-# **チップ組み立ては縦置き専用。** `TD4_MACRO_MODE` の既定は landscape で、
-# 付け忘れると `FINAL_GDS` が step10 を指し、`MACRO_CELL` も MEMPORT になる
-# （2026-09-14: マクロ電源の入っていないコアを載せたチップを作ってしまった）。
-# ここで固定する。コア側を landscape で作り直したいときはコア側のスクリプトで。
-os.environ.setdefault("TD4_MACRO_MODE", "portrait")
+# （TD4 版はここで TD4_MACRO_MODE=portrait を固定していた。I2C の
+#   i2c_config はマクロを持たないので不要。）
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import i2c_config as cfg                                    # noqa: E402
@@ -47,24 +50,36 @@ import klayout.db as db                                     # noqa: E402
 OUT_CONN = os.path.join(cfg.CHIP, "gio_connections.json")
 OUT_PLAN = os.path.join(cfg.CHIP, "signal_routing_plan.json")
 
-# `reference/05_pin_io_plan.md` §5 案A の確定表。P8=VSS / P16=VDD はフレーム固定。
-# パッケージは上から下が MSB->LSB（P4=D[3] / P13=OUT[3]）。
+# V10 の確定ピン表（README のピン配置表）。P8=VSS / P16=VDD はフレーム固定。
+# 物理パッド番号の昇順と bit 番号が単調対応する（P3…P6 = bit0-3、P11…P14 = bit4-7）。
+#
+#   P     パッドの入力センス線 -> コアの入力ネット
+#   OUT   コア（か RING_OSC）の出力ネット -> パッドのドライバ入力
+#         "GND" と書いたらレール直結（SDA のオープンドレイン）
+#   HIZ   "VDD" / "GND" はレール直結。それ以外は**ネット名**で、動的制御
 PAD_MAP = {
-    1:  {"role": "CLK",    "dir": "in",  "P": "clk",         "HIZ": "VDD"},
-    2:  {"role": "WR",     "dir": "in",  "P": "wr",          "HIZ": "VDD"},
-    3:  {"role": "NIBSEL", "dir": "in",  "P": "nibsel",      "HIZ": "VDD"},
-    4:  {"role": "D[3]",   "dir": "in",  "P": "d[3]",        "HIZ": "VDD"},
-    5:  {"role": "D[2]",   "dir": "in",  "P": "d[2]",        "HIZ": "VDD"},
-    6:  {"role": "D[1]",   "dir": "in",  "P": "d[1]",        "HIZ": "VDD"},
-    7:  {"role": "D[0]",   "dir": "in",  "P": "d[0]",        "HIZ": "VDD"},
-    9:  {"role": "RSTN",   "dir": "in",  "P": "rst_n",       "HIZ": "VDD"},
-    10: {"role": "OUT[0]", "dir": "out", "OUT": "out_port[0]", "HIZ": "GND"},
-    11: {"role": "OUT[1]", "dir": "out", "OUT": "out_port[1]", "HIZ": "GND"},
-    12: {"role": "OUT[2]", "dir": "out", "OUT": "out_port[2]", "HIZ": "GND"},
-    13: {"role": "OUT[3]", "dir": "out", "OUT": "out_port[3]", "HIZ": "GND"},
-    14: {"role": "EXEC",   "dir": "in",  "P": "exec",        "HIZ": "VDD"},
-    15: {"role": "CF",     "dir": "out", "OUT": "cflag_o",   "HIZ": "GND"},
+    1:  {"role": "SCL",   "P": "scl",                                  "HIZ": "VDD"},
+    2:  {"role": "SDA",   "P": "sda_in",    "OUT": "GND",              "HIZ": "sda_oe"},
+    3:  {"role": "D0",    "P": "tx_data[0]", "OUT": "rx_data[0]",      "HIZ": "DIS"},
+    4:  {"role": "D1",    "P": "tx_data[1]", "OUT": "rx_data[1]",      "HIZ": "DIS"},
+    5:  {"role": "D2",    "P": "tx_data[2]", "OUT": "rx_data[2]",      "HIZ": "DIS"},
+    6:  {"role": "D3",    "P": "tx_data[3]", "OUT": "rx_data[3]",      "HIZ": "DIS"},
+    7:  {"role": "DIS",   "P": "DIS",                                  "HIZ": "VDD"},
+    9:  {"role": "OSCD",  "OUT": "RING_OSC.OUTD",                      "HIZ": "GND"},
+    10: {"role": "OSC",   "OUT": "RING_OSC.OUT",                       "HIZ": "GND"},
+    11: {"role": "D4",    "P": "tx_data[4]", "OUT": "rx_data[4]",      "HIZ": "DIS"},
+    12: {"role": "D5",    "P": "tx_data[5]", "OUT": "rx_data[5]",      "HIZ": "DIS"},
+    13: {"role": "D6",    "P": "tx_data[6]", "OUT": "rx_data[6]",      "HIZ": "DIS"},
+    14: {"role": "D7",    "P": "tx_data[7]", "OUT": "rx_data[7]",      "HIZ": "DIS"},
+    15: {"role": "RSTN",  "P": ["rst_n", "RING_OSC.ENB"],              "HIZ": "VDD"},
 }
+
+# パッドに出さないコアの出力。16 パッドに収まらないので V7/V9/V10 と同じく落とす。
+UNBONDED = {"addr_match", "busy", "rw", "rx_valid"}
+
+# パッド端子どうしで閉じるネット（コアを通らない）。
+#   DIS: P7 のセンス線 -> 8 本のデータパッドの HIZ
+PAD_ONLY_NETS = {"DIS": "P7"}
 
 POWER_NETS = {"VDD", "GND"}
 SITE = 5.4                      # リングのトラック間隔（コア内と同じ）
@@ -116,6 +131,37 @@ def core_pins(gds, cell):
     return out
 
 
+def ringosc_pins():
+    """{pin: {x,y,edge,layer}}（**チップ座標**）。LEF の RECT を実測して置き場所を足す。
+
+    RING_OSC は帯状（1620 x 244.8）で、`OUT` / `OUTD` は右端の M1、`ENB` は
+    左下の M2。辺は「ダイ中心から見てどちら側に近いか」ではなく、**帯そのものの
+    どの辺に出ているか**で決める（リング配線は帯の端から出発するため）。
+    """
+    import re
+    txt = open(cfg.RING_OSC_LEF).read()
+    body = re.search(rf"MACRO {cfg.RING_OSC_CELL}(.*?)END {cfg.RING_OSC_CELL}",
+                     txt, re.S).group(1)
+    ox, oy = cfg.RING_OSC_ORIGIN
+    out = {}
+    for m in re.finditer(r"PIN (\w+)(.*?)END \1", body, re.S):
+        name = m.group(1)
+        if name in POWER_NETS or name in ("VSS",):
+            continue
+        lay = (re.search(r"LAYER (\w+)", m.group(2)) or [None, "M1"])[1] \
+            if re.search(r"LAYER (\w+)", m.group(2)) else "M1"
+        r = [tuple(float(v) for v in q) for q in re.findall(
+            r"RECT\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)", m.group(2))]
+        if not r:
+            continue
+        x0, y0, x1, y1 = r[0]
+        cx, cy = ox + (x0 + x1) / 2, oy + (y0 + y1) / 2
+        edge = "RIGHT" if x0 > 810 else ("LEFT" if x1 < 810 else "BOTTOM")
+        out[f"{cfg.RING_OSC_CELL}.{name}"] = {
+            "x": round(cx, 2), "y": round(cy, 2), "edge": edge, "layer": lay}
+    return out
+
+
 def ring_s(x, y, r):
     """半径 r の正方形リング上の周長座標（右下角から反時計回り、0…8r）。
 
@@ -146,93 +192,129 @@ def main():
     pins = core_pins(core_gds, cfg.TOP_CELL_NAME)
     r = cfg.GIO_PIN_RADIUS
 
+    # --- 端点をひとつの辞書に集める -------------------------------------
+    #   コアのピン（コア座標 -> チップ座標）、RING_OSC のピン（すでにチップ座標）、
+    #   パッド端子どうしで閉じるネット（DIS）。
+    src = {}
+    for n, c in pins.items():
+        src[n] = {"what": "core", "x": round(c["x"] + dx, 2),
+                  "y": round(c["y"] + dy, 2), "edge": c["edge"],
+                  "layer": c["layer"], "port": n}
+    for n, c in ringosc_pins().items():
+        src[n] = {"what": "ringosc", "x": c["x"], "y": c["y"],
+                  "edge": c["edge"], "layer": c["layer"], "port": n}
+    for n, term in PAD_ONLY_NETS.items():
+        t = pads[term]
+        src[n] = {"what": "pad", "x": t["x"], "y": t["y"], "edge": t["edge"],
+                  "layer": t["layer"], "terminal": term}
+
     # --- 突き合わせ -------------------------------------------------------
     want = set()
-    for p in PAD_MAP.values():
-        for k in ("P", "OUT"):
-            if p.get(k) and p[k] not in POWER_NETS:
-                want.add(p[k])
-    missing = sorted(want - set(pins))
-    extra = sorted(set(pins) - want)
+    for e in PAD_MAP.values():
+        for k in ("P", "OUT", "HIZ"):
+            v = e.get(k)
+            for n in (v if isinstance(v, list) else [v]):
+                if n and n not in POWER_NETS and n not in ("VSS",):
+                    want.add(n)
+    missing = sorted(n for n in want if n not in src)
+    extra = sorted(set(pins) - want - UNBONDED)
     if missing:
-        raise SystemExit(f"PAD_MAP が要求するコアピンがレイアウトに無い: {missing}")
+        raise SystemExit(f"PAD_MAP が要求するネットが見つからない: {missing}")
     if extra:
-        raise SystemExit(f"コアに PAD_MAP が使っていないピンがある: {extra}")
+        raise SystemExit(f"コアに PAD_MAP も UNBONDED も知らないピンがある: {extra}")
 
-    conns, plan, rows = [], [], []
+    conns, plan, rows, ties = [], [], [], []
+
+    def add(net, pad, role, term, kind):
+        """net -> 端子 term の 1 本を plan / rows に足す。"""
+        a_ = src[net]
+        t = pads[term]
+        gap = round(ring_gap(ring_s(t["x"], t["y"], r),
+                             ring_s(a_["x"], a_["y"], r), r), 1)
+        plan.append({"net": net, "role": role, "pad": pad, "kind": kind,
+                     "from": {k: v for k, v in a_.items()},
+                     "to": {"what": "pad", "x": t["x"], "y": t["y"],
+                            "edge": t["edge"], "layer": t["layer"],
+                            "terminal": term},
+                     "ring_run_um": gap,
+                     "same_edge": t["edge"] == a_["edge"]})
+        rows.append((pad, role, kind, net, a_["what"], a_["edge"], a_["x"], a_["y"],
+                     t["edge"], t["x"], t["y"], gap))
+
     for pad in sorted(PAD_MAP):
         e = PAD_MAP[pad]
-        term = "P" if e["dir"] == "in" else "OUT"
-        net = e[term]
-        t = pads[f"{term}{pad}"]
-        c = pins[net]
-        cx, cy = round(c["x"] + dx, 2), round(c["y"] + dy, 2)
-        s_pad, s_pin = ring_s(t["x"], t["y"], r), ring_s(cx, cy, r)
-        gap = round(ring_gap(s_pad, s_pin, r), 1)
-        same = t["edge"] == c["edge"]
-        conns.append({
-            "pad": pad, "role": e["role"], "dir": e["dir"], "net": net,
-            "terminal": f"{term}{pad}", "hiz": e["HIZ"],
-            "note": ("パッドはコアの入力を受ける（HIZ=1 で Hi-Z）" if e["dir"] == "in"
-                     else "コアが OUT を駆動（HIZ=0 でドライバ ON）"),
-        })
-        plan.append({
-            "net": net, "role": e["role"], "pad": pad,
-            "from": {"what": "core", "x": cx, "y": cy,
-                     "edge": c["edge"], "layer": c["layer"], "port": net},
-            "to": {"what": "pad", "x": t["x"], "y": t["y"],
-                   "edge": t["edge"], "layer": t["layer"], "terminal": f"{term}{pad}"},
-            "ring_run_um": gap, "same_edge": same,
-        })
-        rows.append((pad, e["role"], net, c["edge"], cx, cy,
-                     t["edge"], t["x"], t["y"], gap, same))
+        role = e["role"]
+        d_in = bool(e.get("P"))
+        d_out = bool(e.get("OUT")) and e["OUT"] not in POWER_NETS
+        e_dir = "bidir" if d_in and d_out else ("in" if d_in else "out")
+        for n in (e["P"] if isinstance(e.get("P"), list) else [e.get("P")]):
+            if n:
+                add(n, pad, role, f"P{pad}", "P")
+        if e.get("OUT"):
+            if e["OUT"] in POWER_NETS or e["OUT"] == "VSS":
+                ties.append({"pad": pad, "terminal": f"OUT{pad}", "tie": e["OUT"],
+                             "why": "オープンドレイン（Low だけ駆動する）",
+                             "x": pads[f"OUT{pad}"]["x"], "y": pads[f"OUT{pad}"]["y"],
+                             "edge": pads[f"OUT{pad}"]["edge"]})
+            else:
+                add(e["OUT"], pad, role, f"OUT{pad}", "OUT")
+        h = e["HIZ"]
+        if h in POWER_NETS or h == "VSS":
+            ties.append({"pad": pad, "terminal": f"HIZ{pad}", "tie": h,
+                         "why": ("常時 Hi-Z（入力専用）" if h == "VDD"
+                                 else "常時ドライブ（出力専用）"),
+                         "x": pads[f"HIZ{pad}"]["x"], "y": pads[f"HIZ{pad}"]["y"],
+                         "edge": pads[f"HIZ{pad}"]["edge"]})
+        else:
+            add(h, pad, role, f"HIZ{pad}", "HIZ")
+        conns.append({"pad": pad, "role": role, "dir": e_dir,
+                      "P": e.get("P"), "OUT": e.get("OUT"), "HIZ": h})
 
-    # HIZ はレール直結（ネットではなく電源）
-    hiz = [{"pad": pad, "terminal": f"HIZ{pad}", "tie": PAD_MAP[pad]["HIZ"],
-            "x": pads[f"HIZ{pad}"]["x"], "y": pads[f"HIZ{pad}"]["y"],
-            "edge": pads[f"HIZ{pad}"]["edge"]} for pad in sorted(PAD_MAP)]
-
-    # 入力パッドの `OUT` は**浮いたゲート入力**。HIZ=1 でドライバは放している
-    # ので論理には効かないが、ゲートが浮いたままなのは実チップとして良くない
-    # （LVS も「どこにも繋がらない端子」を数える）。GND に落とす。
-    # 出力パッドの `P` はボンドパッドそのものなので何もしない。
-    floats = [{"pad": pad, "terminal": f"OUT{pad}", "tie": "GND",
-               "x": pads[f"OUT{pad}"]["x"], "y": pads[f"OUT{pad}"]["y"],
-               "edge": pads[f"OUT{pad}"]["edge"]}
-              for pad in sorted(PAD_MAP) if PAD_MAP[pad]["dir"] == "in"]
+    # 入力専用パッドの `OUT` は浮いたゲート入力。GND に落とす（LVS 対策）。
+    for pad in sorted(PAD_MAP):
+        e = PAD_MAP[pad]
+        if e.get("OUT") is None and f"OUT{pad}" in pads:
+            ties.append({"pad": pad, "terminal": f"OUT{pad}", "tie": "GND",
+                         "why": "入力専用パッドの浮いたドライバ入力",
+                         "x": pads[f"OUT{pad}"]["x"], "y": pads[f"OUT{pad}"]["y"],
+                         "edge": pads[f"OUT{pad}"]["edge"]})
 
     os.makedirs(cfg.CHIP, exist_ok=True)
     json.dump({"pad_cell": "OSS_ESD_5V_DIO",
                "pad_cell_behavior": {"HIZ=1": "Hi-Z（入力専用）",
                                      "HIZ=0": "PAD = OUT（非反転）"},
                "power_pads": {"P8": "VSS", "P16": "VDD"},
-               "signals": conns, "hiz_ties": hiz, "float_ties": floats},
+               "unbonded": sorted(UNBONDED),
+               "signals": conns, "ties": ties},
               open(a.conn, "w"), ensure_ascii=False, indent=1)
     json.dump({"core_offset": geom["core_offset"],
                "core_chip_bbox": geom["core_chip_bbox"],
-               "pin_radius": r, "signals": plan, "hiz_ties": hiz,
-               "float_ties": floats},
+               "ring_osc_origin": list(cfg.RING_OSC_ORIGIN),
+               "pin_radius": r, "signals": plan, "ties": ties},
               open(a.plan, "w"), ensure_ascii=False, indent=1)
 
-    print(f"=== パッド <-> コアピン（コアのオフセット {geom['core_offset']}）")
-    print(f"{'pad':>4} {'role':8s} {'net':13s} "
-          f"{'コアピン':16s}   {'パッド端子':16s}  リング周 同辺")
-    for (pad, role, net, ce, cx, cy, te, tx, ty, gap, same) in rows:
-        print(f"P{pad:<3d} {role:8s} {net:13s} "
+    print(f"=== パッド <-> ネット（コアのオフセット {geom['core_offset']}）")
+    print(f"{'pad':>4} {'role':5s} {'kind':4s} {'net':15s} {'出どころ':8s}"
+          f"{'端点':22s}   {'パッド端子':20s} リング周 同辺")
+    for (pad, role, kind, net, what, ce, cx, cy, te, tx, ty, gap) in rows:
+        print(f"P{pad:<3d} {role:5s} {kind:4s} {net:15s} {what:8s}"
               f"{ce:6s}({cx:8.1f},{cy:7.1f})   {te:6s}({tx:7.1f},{ty:7.1f})"
-              f" {gap:8.1f}  {'✓' if same else ''}")
+              f" {gap:8.1f}  {'✓' if te == ce else ''}")
+    for t in ties:
+        print(f"P{t['pad']:<3d} {'':5s} tie  {t['terminal']:15s} -> {t['tie']:6s}"
+              f"  {t['why']}")
+
     # --- リングのどこで何本が重なるか（= その位置で要るトラック数）---------
-    # 距離より**こちら**が効く。回り込みが長くても、同じ場所で重なる本数が
-    # チャネルのトラック数に収まっていれば引ける。
     P = 8 * r
     segs = []
-    for (pad, role, net, ce, cx, cy, te, tx, ty, gap, same) in rows:
+    for (pad, role, kind, net, what, ce, cx, cy, te, tx, ty, gap) in rows:
         sa, sb = ring_s(cx, cy, r), ring_s(tx, ty, r)
         d = (sb - sa) % P
         segs.append((role, sa, d) if d <= P / 2 else (role, sb, P - d))
     sides = {"RIGHT": (0, 2 * r), "TOP": (2 * r, 4 * r),
              "LEFT": (4 * r, 6 * r), "BOTTOM": (6 * r, 8 * r)}
     print("\n  リングの混み具合（最大何本が同じ場所で重なるか / チャネルのトラック数）:")
+    worst = []
     for nm, (lo, hi) in sides.items():
         mx, x = 0, lo
         while x < hi:
@@ -240,19 +322,22 @@ def main():
             mx = max(mx, n)
             x += 2.0
         ch = geom["channel_" + nm.lower()][0]
-        print(f"    {nm:6s} {mx:2d} 本 / {int(ch // SITE):2d} トラック"
-              f"（チャネル {ch:.1f} µm）")
+        ntr = int(ch // SITE)
+        worst.append((nm, mx, ntr))
+        print(f"    {nm:6s} {mx:2d} 本 / {ntr:2d} トラック"
+              f"（チャネル {ch:.1f} µm）{'   ** 足りない' if mx > ntr else ''}")
 
-    n_same = sum(1 for r_ in rows if r_[10])
+    n_same = sum(1 for r_ in rows if r_[8] == r_[5])
     print(f"\n  同じ辺に出ているもの {n_same} / {len(rows)}、"
-          f"リング周の回り込み 最大 {max(r_[9] for r_ in rows):.1f} µm / "
-          f"合計 {sum(r_[9] for r_ in rows):.1f} µm")
+          f"リング周の回り込み 最大 {max(r_[11] for r_ in rows):.1f} µm / "
+          f"合計 {sum(r_[11] for r_ in rows):.1f} µm")
     import collections
-    print("  コアピンの辺:", dict(collections.Counter(r_[3] for r_ in rows)))
-    print("  パッドの辺  :", dict(collections.Counter(r_[6] for r_ in rows)))
+    print("  端点の辺:", dict(collections.Counter(r_[5] for r_ in rows)))
+    print("  パッドの辺:", dict(collections.Counter(r_[8] for r_ in rows)))
+    print(f"  未ボンド: {', '.join(sorted(UNBONDED))}")
     print(f"\nwrote {os.path.relpath(a.conn, cfg.ROOT)}")
     print(f"wrote {os.path.relpath(a.plan, cfg.ROOT)}")
-    return 0
+    return 1 if any(m > n for _s, m, n in worst) else 0
 
 
 if __name__ == "__main__":
