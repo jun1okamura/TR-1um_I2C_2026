@@ -53,4 +53,13 @@ LAYOUT = os.path.join(ROOT, "layout")
 # ---- 配線の名指し（設計固有）--------------------------------------------
 PER_ROW_LOCAL_NETS = set()            # 旧版は route.py が配置 JSON から作る
 
+# ---- 配置の再現（★ 提出した配置を作った値）------------------------------
+# **引数も環境変数も無しで `place.py` を回して提出物が再現する**こと。
+# 2026-09-15、`APR_PAD_WEIGHT=16` を export し忘れた 1 回が別の配置
+# （cut 131 -> 88 / HPWL 142,391 -> 121,867 um）になった。数字としては
+# 「良い」方へ動くので、**出力を見ても間違いだと気づけない**。
+# 掃引したいときは環境変数（`APR_PAD_WEIGHT` / `APR_PLACE_SEED`）で上書きする。
+PAD_WEIGHT = 16.0                     # パッド近接の重み（docs/21_flow_place.md §6）
+PLACE_SEED = 4                        # 提出時の種
+
 finalize(globals())
