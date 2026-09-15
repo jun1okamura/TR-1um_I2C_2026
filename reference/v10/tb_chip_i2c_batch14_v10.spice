@@ -15,7 +15,7 @@
 *   READ  : S, ADDR+R(0xA1), ACK, DATA=0x3C (slave-driven), NACK, P
 *   NEG   : S, ADDR+W(0x22, wrong addr 0x11), expect NACK, P
 
-.include '~/Dropbox/91_OpenPDK/TR-1um/libs.tech/spice/models/ip62_models'
+.include '~/HogeHoge/OpenPDK/TR-1um/libs.tech/spice/models/ip62_models'
 .include '../tr_1um_i2c_slave_async_v10_sim_ready.spice'
 
 .param vdd=5.0
