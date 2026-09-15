@@ -53,6 +53,33 @@ LAYOUT = os.path.join(ROOT, "layout")
 # ---- 配線の名指し（設計固有）--------------------------------------------
 PER_ROW_LOCAL_NETS = set()            # 旧版は route.py が配置 JSON から作る
 
+# ---- ボンドパッドの表（設計固有。U20 で config.py へ移した）--------------
+# V10 の確定ピン表（README のピン配置表）。P8=VSS / P16=VDD はフレーム固定。
+# 物理パッド番号の昇順と bit 番号が単調対応する（P3…P6 = bit0-3、P11…P14 = bit4-7）。
+#
+#   P     パッドの入力センス線 -> コアの入力ネット
+#   OUT   コア（か RING_OSC）の出力ネット -> パッドのドライバ入力
+#         "GND" と書いたらレール直結（SDA のオープンドレイン）
+#   HIZ   "VDD" / "GND" はレール直結。それ以外は**ネット名**で、動的制御
+PAD_MAP = {
+    1:  {"role": "SCL",   "P": "scl",                                  "HIZ": "VDD"},
+    2:  {"role": "SDA",   "P": "sda_in",    "OUT": "GND",              "HIZ": "sda_oe"},
+    3:  {"role": "D0",    "P": "tx_data[0]", "OUT": "rx_data[0]",      "HIZ": "DIS"},
+    4:  {"role": "D1",    "P": "tx_data[1]", "OUT": "rx_data[1]",      "HIZ": "DIS"},
+    5:  {"role": "D2",    "P": "tx_data[2]", "OUT": "rx_data[2]",      "HIZ": "DIS"},
+    6:  {"role": "D3",    "P": "tx_data[3]", "OUT": "rx_data[3]",      "HIZ": "DIS"},
+    7:  {"role": "DIS",   "P": "DIS",                                  "HIZ": "VDD"},
+    9:  {"role": "OSCD",  "OUT": "RING_OSC.OUTD",                      "HIZ": "GND"},
+    10: {"role": "OSC",   "OUT": "RING_OSC.OUT",                       "HIZ": "GND"},
+    11: {"role": "D4",    "P": "tx_data[4]", "OUT": "rx_data[4]",      "HIZ": "DIS"},
+    12: {"role": "D5",    "P": "tx_data[5]", "OUT": "rx_data[5]",      "HIZ": "DIS"},
+    13: {"role": "D6",    "P": "tx_data[6]", "OUT": "rx_data[6]",      "HIZ": "DIS"},
+    14: {"role": "D7",    "P": "tx_data[7]", "OUT": "rx_data[7]",      "HIZ": "DIS"},
+    15: {"role": "RSTN",  "P": ["rst_n", "RING_OSC.ENB"],              "HIZ": "VDD"},
+}
+# コアには出ているがパッドに繋がないもの（16 本に収まらない）
+UNBONDED = {"addr_match", "busy", "rw", "rx_valid"}
+
 # ---- 配置の再現（★ 提出した配置を作った値）------------------------------
 # **引数も環境変数も無しで `place.py` を回して提出物が再現する**こと。
 # 2026-09-15、`APR_PAD_WEIGHT=16` を export し忘れた 1 回が別の配置
