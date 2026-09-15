@@ -2,11 +2,11 @@
 * scripts/pnr/mklvsnet.py が生成。手で編集しないこと。
 *
 *   論理セル : out/i2c_slave_async_pnr.v
-*   物理セル : layout/placement_nrow_fm.json (FILL2 x13, FILL3 x100, TAP2 x16)
-*   セル定義 : lef/simulation/*.spice
+*   物理セル : layout/placement.json (FILL2 x13, FILL3 x100, TAP2 x16)
+*   セル定義 : ../apr_root/stdcell/v59_4/simulation/*.spice
 *
 * デバイスを持たない物理セルは出していない: TAP2
-* 電源はトップの VDD / GND を全インスタンスへ配っている。
+* 電源はトップの vdd / vss を全インスタンスへ配っている。
 
 .subckt AND2_X1 Y A B vdd vss
 MP0 n0 A vdd vdd PMOS W=10.2u L=1.0u
@@ -290,240 +290,240 @@ MN3 n2 A vss vss NMOS W=3.4u L=1.0u
 MN4 n2 B n1 vss NMOS W=3.4u L=1.0u
 .ends XNOR2
 
-.subckt i2c_slave_async_nrow_fm VDD GND rst_n scl sda_in sda_oe tx_data[7] tx_data[6] tx_data[5] tx_data[4] tx_data[3] tx_data[2] tx_data[1] tx_data[0] rx_data[7] rx_data[6] rx_data[5] rx_data[4] rx_data[3] rx_data[2] rx_data[1] rx_data[0] rx_valid addr_match rw busy
-X_158_ _014_ _091_ _092_ VDD GND AND2_X1
-Xu_muxdffrb_1 _015_ tx_data[6] txreg[6] _094_ _014_ _151_ txreg[6] VDD GND MUXDFFRB
-Xu_muxdffrb_2 scl_gated sda_in_buf rx_data[0] _072_ _010_ _152_ rx_data[0] VDD GND MUXDFFRB
-Xu_muxdffrb_3 scl_gated shreg[0] rx_data[1] _072_ _010_ _153_ rx_data[1] VDD GND MUXDFFRB
-Xu_muxdffrb_4 scl_gated shreg[1] rx_data[2] _072_ _010_ _154_ rx_data[2] VDD GND MUXDFFRB
-Xu_muxdffrb_5 scl_gated shreg[2] rx_data[3] _072_ _010_ _155_ rx_data[3] VDD GND MUXDFFRB
-Xu_muxdffrb_6 scl_gated shreg[3] rx_data[4] _072_ _009_ _156_ rx_data[4] VDD GND MUXDFFRB
-X_165_ _095_ phase[4] rw addr_match VDD GND NAND3
-X_166_ is_last_bit _096_ VDD GND INV_X1
-X_167_ _096_ _097_ phase[1] VDD GND NAND2
-X_168_ sda_in_buf _098_ VDD GND INV_X1
-X_169_ _098_ _099_ phase[5] VDD GND NAND2
-X_170_ _006_ _099_ _095_ _097_ VDD GND NAND3
-X_171_ _004_ is_last_bit phase[1] VDD GND AND2_X1
-X_172_ _002_ _096_ phase[0] VDD GND AND2_X1
-X_173_ rx_valid _100_ VDD GND INV_X1
-X_174_ addr_match _101_ phase[4] VDD GND NAND2
-X_175_ _102_ rw _101_ VDD GND OR2
-X_176_ _096_ _103_ phase[2] VDD GND NAND2
-X_177_ _007_ _103_ _100_ _102_ VDD GND NAND3
-X_178_ _104_ txreg[4] bit_cnt[0] bit_cnt[1] VDD GND NAND3
-X_179_ _089_ _105_ txreg[6] VDD GND NAND2
-X_180_ _088_ _106_ txreg[5] VDD GND NAND2
-X_181_ _107_ _105_ _106_ _090_ _104_ VDD GND NAND4
-X_182_ _108_ tx_data[7] _090_ VDD GND OR2
-X_183_ _109_ _108_ _078_ _107_ VDD GND NAND3
-X_184_ _110_ txreg[2] bit_cnt[0] _089_ VDD GND NAND3
-X_185_ txreg[3] _111_ _093_ VDD GND NAND2
-X_186_ _112_ txreg[1] _088_ bit_cnt[1] VDD GND NAND3
-X_187_ _113_ txreg[0] bit_cnt[0] bit_cnt[1] VDD GND NAND3
-X_188_ _114_ _112_ _113_ _110_ _111_ VDD GND NAND4
-X_189_ bit_cnt[2] _115_ _114_ VDD GND NAND2
-X_190_ _116_ _115_ phase[1] _109_ VDD GND NAND3
-X_191_ _001_ _116_ _100_ _101_ VDD GND NAND3
-X_192_ _000_ _089_ _078_ bit_cnt[0] VDD GND NOR3
-X_193_ scl_buf _117_ VDD GND BUF_X2
-X_194_ start_pulse sda_d _098_ _117_ VDD GND AND3_X1
-X_195_ _092_ _118_ VDD GND INV_X1
-X_196_ _119_ _118_ start_pulse VDD GND OR2
-X_197_ _119_ rst_scl_domain_raw VDD GND BUF_X2
-X_198_ rst_scl_domain_held _009_ _119_ VDD GND NOR2
-X_199_ _009_ rst_scl_domain VDD GND INV_X1
-X_200_ _117_ _015_ VDD GND INV_X1
-X_201_ _015_ scl_gated rst_scl_domain VDD GND NOR2
-X_202_ _118_ rst_stretch_clr _117_ VDD GND NOR2
-X_203_ _120_ sda_d _098_ _015_ VDD GND NOR3
-X_204_ busy_clr _118_ _120_ VDD GND OR2
-X_205_ r_in _015_ _098_ _091_ VDD GND AND3_X1
-X_206_ sda_in_buf _121_ _015_ VDD GND NAND2
-X_207_ _091_ s_in _121_ VDD GND NAND2
-X_208_ rst_scl_domain_held _122_ VDD GND BUF_X2
-X_209_ _122_ _010_ rst_scl_domain_raw VDD GND NOR2
-X_224_ _119_ _123_ VDD GND BUF_X2
-X_225_ _122_ _034_ _123_ VDD GND NOR2
-X_226_ rst_scl_domain_held _124_ VDD GND BUF_X2
-X_227_ _124_ _035_ _123_ VDD GND NOR2
-X_236_ _124_ _044_ _119_ VDD GND NOR2
-X_243_ is_last_bit _071_ phase[2] VDD GND NAND2
-X_244_ _071_ _072_ VDD GND BUF_X2
-X_245_ _072_ _005_ VDD GND INV_X1
-Xu_muxdffrb_7 scl_gated shreg[4] rx_data[5] _072_ _009_ _125_ rx_data[5] VDD GND MUXDFFRB
-Xu_muxdffrb_8 scl_gated shreg[5] rx_data[6] _072_ _009_ _127_ rx_data[6] VDD GND MUXDFFRB
-X_248_ is_last_bit _073_ phase[0] VDD GND NAND2
-X_249_ _073_ _003_ VDD GND INV_X1
-Xu_muxdffrb_9 scl_gated sda_in_buf rw _073_ _009_ _129_ rw VDD GND MUXDFFRB
-X_251_ _074_ phase[5] phase[4] rx_valid VDD GND OR3
-X_252_ _075_ phase[2] _074_ phase[1] phase[0] VDD GND NOR4
-X_253_ is_last_bit _076_ _074_ VDD GND NOR2
-X_254_ _077_ _076_ phase[1] _075_ VDD GND OR3
-X_255_ bit_cnt[2] _078_ VDD GND INV_X1
-X_256_ bit_cnt[0] _079_ bit_cnt[1] VDD GND NAND2
-X_257_ _075_ _080_ _079_ VDD GND NOR2
-X_258_ _078_ _080_ _081_ VDD GND XNOR2
-X_259_ _067_ _077_ _081_ VDD GND AND2_X1
-X_260_ shreg[5] _082_ VDD GND INV_X1
-X_261_ shreg[0] _083_ VDD GND INV_X1
-X_262_ _084_ shreg[6] _083_ shreg[4] _082_ VDD GND NAND4
-X_263_ _085_ shreg[3] _084_ shreg[1] shreg[2] VDD GND NOR4
-Xu_muxdffrb_10 scl_gated addr_match _085_ _003_ _035_ _135_ addr_match VDD GND MUXDFFRB
-X_265_ _008_ bit_cnt[0] _086_ _075_ VDD GND MUX2
-X_266_ _065_ _077_ _086_ VDD GND AND2_X1
-X_267_ _079_ bit_cnt[1] _087_ _075_ VDD GND MUX2
-X_268_ bit_cnt[0] _088_ VDD GND INV_X1
-X_269_ bit_cnt[1] _089_ VDD GND INV_X1
-X_270_ _088_ _090_ _089_ VDD GND NAND2
-X_271_ _064_ _090_ _077_ _087_ VDD GND AND3_X1
-X_272_ busy _091_ VDD GND BUF_X2
-X_273_ rst_n _092_ VDD GND BUF_X1
-X_275_ bit_cnt[0] _093_ bit_cnt[1] VDD GND NOR2
-X_276_ _094_ _093_ _078_ phase[1] VDD GND NAND3
-Xu_muxdffrb_11 _015_ tx_data[0] txreg[0] _094_ _014_ _141_ txreg[0] VDD GND MUXDFFRB
-Xu_muxdffrb_12 _015_ tx_data[1] txreg[1] _094_ _014_ _144_ txreg[1] VDD GND MUXDFFRB
-Xu_muxdffrb_13 scl_gated shreg[6] rx_data[7] _072_ _010_ _146_ rx_data[7] VDD GND MUXDFFRB
-Xu_muxdffrb_14 _015_ tx_data[2] txreg[2] _094_ _014_ _147_ txreg[2] VDD GND MUXDFFRB
-Xu_muxdffrb_15 _015_ tx_data[3] txreg[3] _094_ _014_ _148_ txreg[3] VDD GND MUXDFFRB
-Xu_muxdffrb_16 _015_ tx_data[4] txreg[4] _094_ _014_ _149_ txreg[4] VDD GND MUXDFFRB
-Xu_muxdffrb_17 _015_ tx_data[5] txreg[5] _094_ _014_ _150_ txreg[5] VDD GND MUXDFFRB
-X_291_ scl_gated _035_ _065_ _008_ bit_cnt[0] VDD GND DFFRB
-X_292_ scl_gated _035_ _064_ _139_ bit_cnt[1] VDD GND DFFRB
-X_293_ scl_gated _035_ _067_ _132_ bit_cnt[2] VDD GND DFFRB
-X_310_ scl_gated rst_scl_domain _002_ _138_ phase[0] VDD GND DFFS
-X_311_ scl_gated _035_ _006_ _157_ phase[1] VDD GND DFFRB
-X_312_ scl_gated _009_ _007_ _130_ phase[2] VDD GND DFFRB
-X_313_ scl_gated _035_ _003_ _133_ phase[4] VDD GND DFFRB
-X_314_ scl_gated _044_ _004_ _131_ phase[5] VDD GND DFFRB
-X_315_ scl_gated _034_ _005_ _140_ rx_valid VDD GND DFFRB
-X_316_ _015_ _014_ _001_ sda_oe sda_oe_r VDD GND DFFRB
-X_317_ scl_gated _010_ _000_ _142_ is_last_bit VDD GND DFFRB
-X_318_ scl_gated _035_ sda_in_buf _136_ shreg[0] VDD GND DFFRB
-X_319_ scl_gated _009_ shreg[0] _128_ shreg[1] VDD GND DFFRB
-X_320_ scl_gated _035_ shreg[1] _137_ shreg[2] VDD GND DFFRB
-X_321_ scl_gated _035_ shreg[2] _134_ shreg[3] VDD GND DFFRB
-X_322_ scl_gated _010_ shreg[3] _143_ shreg[4] VDD GND DFFRB
-X_323_ scl_gated _010_ shreg[4] _145_ shreg[5] VDD GND DFFRB
-X_324_ scl_gated _010_ shreg[5] _126_ shreg[6] VDD GND DFFRB
-Xu_busy_lat qn busy_clr start_pulse busy VDD GND RSLATCH
-Xu_rst_stretch rst_stretch_qn rst_stretch_clr rst_scl_domain_raw rst_scl_domain_held VDD GND RSLATCH
-Xu_sda_lat qn_sda r_in s_in sda_d VDD GND RSLATCH
-Xu_bufth_scl scl scl_buf VDD GND BUFTH
-Xu_bufth_sda_in sda_in sda_in_buf VDD GND BUFTH
+.subckt i2c_slave_async_nrow_fm vdd vss rst_n scl sda_in sda_oe tx_data[7] tx_data[6] tx_data[5] tx_data[4] tx_data[3] tx_data[2] tx_data[1] tx_data[0] rx_data[7] rx_data[6] rx_data[5] rx_data[4] rx_data[3] rx_data[2] rx_data[1] rx_data[0] rx_valid addr_match rw busy
+X_158_ _014_ _091_ _092_ vdd vss AND2_X1
+Xu_muxdffrb_1 _015_ tx_data[6] txreg[6] _094_ _014_ _151_ txreg[6] vdd vss MUXDFFRB
+Xu_muxdffrb_2 scl_gated sda_in_buf rx_data[0] _072_ _010_ _152_ rx_data[0] vdd vss MUXDFFRB
+Xu_muxdffrb_3 scl_gated shreg[0] rx_data[1] _072_ _010_ _153_ rx_data[1] vdd vss MUXDFFRB
+Xu_muxdffrb_4 scl_gated shreg[1] rx_data[2] _072_ _010_ _154_ rx_data[2] vdd vss MUXDFFRB
+Xu_muxdffrb_5 scl_gated shreg[2] rx_data[3] _072_ _010_ _155_ rx_data[3] vdd vss MUXDFFRB
+Xu_muxdffrb_6 scl_gated shreg[3] rx_data[4] _072_ _009_ _156_ rx_data[4] vdd vss MUXDFFRB
+X_165_ _095_ phase[4] rw addr_match vdd vss NAND3
+X_166_ is_last_bit _096_ vdd vss INV_X1
+X_167_ _096_ _097_ phase[1] vdd vss NAND2
+X_168_ sda_in_buf _098_ vdd vss INV_X1
+X_169_ _098_ _099_ phase[5] vdd vss NAND2
+X_170_ _006_ _099_ _095_ _097_ vdd vss NAND3
+X_171_ _004_ is_last_bit phase[1] vdd vss AND2_X1
+X_172_ _002_ _096_ phase[0] vdd vss AND2_X1
+X_173_ rx_valid _100_ vdd vss INV_X1
+X_174_ addr_match _101_ phase[4] vdd vss NAND2
+X_175_ _102_ rw _101_ vdd vss OR2
+X_176_ _096_ _103_ phase[2] vdd vss NAND2
+X_177_ _007_ _103_ _100_ _102_ vdd vss NAND3
+X_178_ _104_ txreg[4] bit_cnt[0] bit_cnt[1] vdd vss NAND3
+X_179_ _089_ _105_ txreg[6] vdd vss NAND2
+X_180_ _088_ _106_ txreg[5] vdd vss NAND2
+X_181_ _107_ _105_ _106_ _090_ _104_ vdd vss NAND4
+X_182_ _108_ tx_data[7] _090_ vdd vss OR2
+X_183_ _109_ _108_ _078_ _107_ vdd vss NAND3
+X_184_ _110_ txreg[2] bit_cnt[0] _089_ vdd vss NAND3
+X_185_ txreg[3] _111_ _093_ vdd vss NAND2
+X_186_ _112_ txreg[1] _088_ bit_cnt[1] vdd vss NAND3
+X_187_ _113_ txreg[0] bit_cnt[0] bit_cnt[1] vdd vss NAND3
+X_188_ _114_ _112_ _113_ _110_ _111_ vdd vss NAND4
+X_189_ bit_cnt[2] _115_ _114_ vdd vss NAND2
+X_190_ _116_ _115_ phase[1] _109_ vdd vss NAND3
+X_191_ _001_ _116_ _100_ _101_ vdd vss NAND3
+X_192_ _000_ _089_ _078_ bit_cnt[0] vdd vss NOR3
+X_193_ scl_buf _117_ vdd vss BUF_X2
+X_194_ start_pulse sda_d _098_ _117_ vdd vss AND3_X1
+X_195_ _092_ _118_ vdd vss INV_X1
+X_196_ _119_ _118_ start_pulse vdd vss OR2
+X_197_ _119_ rst_scl_domain_raw vdd vss BUF_X2
+X_198_ rst_scl_domain_held _009_ _119_ vdd vss NOR2
+X_199_ _009_ rst_scl_domain vdd vss INV_X1
+X_200_ _117_ _015_ vdd vss INV_X1
+X_201_ _015_ scl_gated rst_scl_domain vdd vss NOR2
+X_202_ _118_ rst_stretch_clr _117_ vdd vss NOR2
+X_203_ _120_ sda_d _098_ _015_ vdd vss NOR3
+X_204_ busy_clr _118_ _120_ vdd vss OR2
+X_205_ r_in _015_ _098_ _091_ vdd vss AND3_X1
+X_206_ sda_in_buf _121_ _015_ vdd vss NAND2
+X_207_ _091_ s_in _121_ vdd vss NAND2
+X_208_ rst_scl_domain_held _122_ vdd vss BUF_X2
+X_209_ _122_ _010_ rst_scl_domain_raw vdd vss NOR2
+X_224_ _119_ _123_ vdd vss BUF_X2
+X_225_ _122_ _034_ _123_ vdd vss NOR2
+X_226_ rst_scl_domain_held _124_ vdd vss BUF_X2
+X_227_ _124_ _035_ _123_ vdd vss NOR2
+X_236_ _124_ _044_ _119_ vdd vss NOR2
+X_243_ is_last_bit _071_ phase[2] vdd vss NAND2
+X_244_ _071_ _072_ vdd vss BUF_X2
+X_245_ _072_ _005_ vdd vss INV_X1
+Xu_muxdffrb_7 scl_gated shreg[4] rx_data[5] _072_ _009_ _125_ rx_data[5] vdd vss MUXDFFRB
+Xu_muxdffrb_8 scl_gated shreg[5] rx_data[6] _072_ _009_ _127_ rx_data[6] vdd vss MUXDFFRB
+X_248_ is_last_bit _073_ phase[0] vdd vss NAND2
+X_249_ _073_ _003_ vdd vss INV_X1
+Xu_muxdffrb_9 scl_gated sda_in_buf rw _073_ _009_ _129_ rw vdd vss MUXDFFRB
+X_251_ _074_ phase[5] phase[4] rx_valid vdd vss OR3
+X_252_ _075_ phase[2] _074_ phase[1] phase[0] vdd vss NOR4
+X_253_ is_last_bit _076_ _074_ vdd vss NOR2
+X_254_ _077_ _076_ phase[1] _075_ vdd vss OR3
+X_255_ bit_cnt[2] _078_ vdd vss INV_X1
+X_256_ bit_cnt[0] _079_ bit_cnt[1] vdd vss NAND2
+X_257_ _075_ _080_ _079_ vdd vss NOR2
+X_258_ _078_ _080_ _081_ vdd vss XNOR2
+X_259_ _067_ _077_ _081_ vdd vss AND2_X1
+X_260_ shreg[5] _082_ vdd vss INV_X1
+X_261_ shreg[0] _083_ vdd vss INV_X1
+X_262_ _084_ shreg[6] _083_ shreg[4] _082_ vdd vss NAND4
+X_263_ _085_ shreg[3] _084_ shreg[1] shreg[2] vdd vss NOR4
+Xu_muxdffrb_10 scl_gated addr_match _085_ _003_ _035_ _135_ addr_match vdd vss MUXDFFRB
+X_265_ _008_ bit_cnt[0] _086_ _075_ vdd vss MUX2
+X_266_ _065_ _077_ _086_ vdd vss AND2_X1
+X_267_ _079_ bit_cnt[1] _087_ _075_ vdd vss MUX2
+X_268_ bit_cnt[0] _088_ vdd vss INV_X1
+X_269_ bit_cnt[1] _089_ vdd vss INV_X1
+X_270_ _088_ _090_ _089_ vdd vss NAND2
+X_271_ _064_ _090_ _077_ _087_ vdd vss AND3_X1
+X_272_ busy _091_ vdd vss BUF_X2
+X_273_ rst_n _092_ vdd vss BUF_X1
+X_275_ bit_cnt[0] _093_ bit_cnt[1] vdd vss NOR2
+X_276_ _094_ _093_ _078_ phase[1] vdd vss NAND3
+Xu_muxdffrb_11 _015_ tx_data[0] txreg[0] _094_ _014_ _141_ txreg[0] vdd vss MUXDFFRB
+Xu_muxdffrb_12 _015_ tx_data[1] txreg[1] _094_ _014_ _144_ txreg[1] vdd vss MUXDFFRB
+Xu_muxdffrb_13 scl_gated shreg[6] rx_data[7] _072_ _010_ _146_ rx_data[7] vdd vss MUXDFFRB
+Xu_muxdffrb_14 _015_ tx_data[2] txreg[2] _094_ _014_ _147_ txreg[2] vdd vss MUXDFFRB
+Xu_muxdffrb_15 _015_ tx_data[3] txreg[3] _094_ _014_ _148_ txreg[3] vdd vss MUXDFFRB
+Xu_muxdffrb_16 _015_ tx_data[4] txreg[4] _094_ _014_ _149_ txreg[4] vdd vss MUXDFFRB
+Xu_muxdffrb_17 _015_ tx_data[5] txreg[5] _094_ _014_ _150_ txreg[5] vdd vss MUXDFFRB
+X_291_ scl_gated _035_ _065_ _008_ bit_cnt[0] vdd vss DFFRB
+X_292_ scl_gated _035_ _064_ _139_ bit_cnt[1] vdd vss DFFRB
+X_293_ scl_gated _035_ _067_ _132_ bit_cnt[2] vdd vss DFFRB
+X_310_ scl_gated rst_scl_domain _002_ _138_ phase[0] vdd vss DFFS
+X_311_ scl_gated _035_ _006_ _157_ phase[1] vdd vss DFFRB
+X_312_ scl_gated _009_ _007_ _130_ phase[2] vdd vss DFFRB
+X_313_ scl_gated _035_ _003_ _133_ phase[4] vdd vss DFFRB
+X_314_ scl_gated _044_ _004_ _131_ phase[5] vdd vss DFFRB
+X_315_ scl_gated _034_ _005_ _140_ rx_valid vdd vss DFFRB
+X_316_ _015_ _014_ _001_ sda_oe sda_oe_r vdd vss DFFRB
+X_317_ scl_gated _010_ _000_ _142_ is_last_bit vdd vss DFFRB
+X_318_ scl_gated _035_ sda_in_buf _136_ shreg[0] vdd vss DFFRB
+X_319_ scl_gated _009_ shreg[0] _128_ shreg[1] vdd vss DFFRB
+X_320_ scl_gated _035_ shreg[1] _137_ shreg[2] vdd vss DFFRB
+X_321_ scl_gated _035_ shreg[2] _134_ shreg[3] vdd vss DFFRB
+X_322_ scl_gated _010_ shreg[3] _143_ shreg[4] vdd vss DFFRB
+X_323_ scl_gated _010_ shreg[4] _145_ shreg[5] vdd vss DFFRB
+X_324_ scl_gated _010_ shreg[5] _126_ shreg[6] vdd vss DFFRB
+Xu_busy_lat qn busy_clr start_pulse busy vdd vss RSLATCH
+Xu_rst_stretch rst_stretch_qn rst_stretch_clr rst_scl_domain_raw rst_scl_domain_held vdd vss RSLATCH
+Xu_sda_lat qn_sda r_in s_in sda_d vdd vss RSLATCH
+Xu_bufth_scl scl scl_buf vdd vss BUFTH
+Xu_bufth_sda_in sda_in sda_in_buf vdd vss BUFTH
 
 * --- フィラー（デキャップ）---
-XFILLPRI_r0_0 VDD GND FILL3
-XFILL_r0_8 VDD GND FILL3
-XFILL_r0_9 VDD GND FILL3
-XFILL_r0_10 VDD GND FILL3
-XFILL_r0_11 VDD GND FILL3
-XFILL_r0_12 VDD GND FILL3
-XFILL_r0_13 VDD GND FILL3
-XFILL_r0_14 VDD GND FILL3
-XFILL_r0_15 VDD GND FILL3
-XFILLPRI_r0_1 VDD GND FILL3
-XFILLPRI_r0_2 VDD GND FILL3
-XFILL_r0_19 VDD GND FILL3
-XFILL_r0_20 VDD GND FILL3
-XFILL_r0_21 VDD GND FILL3
-XFILL_r0_22 VDD GND FILL3
-XFILL_r0_23 VDD GND FILL3
-XFILL_r0_24 VDD GND FILL3
-XFILL_r0_25 VDD GND FILL3
-XFILL_r0_26 VDD GND FILL2
-XFILL_r0_27 VDD GND FILL2
-XFILLPRI_r0_3 VDD GND FILL3
-XFILLPRI_r0_4 VDD GND FILL3
-XFILL_r0_54 VDD GND FILL3
-XFILL_r0_55 VDD GND FILL3
-XFILL_r0_56 VDD GND FILL3
-XFILL_r0_57 VDD GND FILL3
-XFILL_r0_58 VDD GND FILL3
-XFILL_r0_59 VDD GND FILL3
-XFILL_r0_60 VDD GND FILL2
-XFILL_r0_61 VDD GND FILL2
-XFILLPRI_r0_5 VDD GND FILL3
-XFILLPRI_r1_6 VDD GND FILL3
-XFILL_r1_11 VDD GND FILL3
-XFILL_r1_12 VDD GND FILL3
-XFILL_r1_13 VDD GND FILL3
-XFILL_r1_14 VDD GND FILL3
-XFILL_r1_15 VDD GND FILL3
-XFILL_r1_16 VDD GND FILL3
-XFILL_r1_17 VDD GND FILL3
-XFILL_r1_18 VDD GND FILL3
-XFILLPRI_r1_7 VDD GND FILL3
-XFILLPRI_r1_8 VDD GND FILL3
-XFILL_r1_22 VDD GND FILL3
-XFILL_r1_23 VDD GND FILL3
-XFILL_r1_24 VDD GND FILL3
-XFILL_r1_25 VDD GND FILL3
-XFILL_r1_26 VDD GND FILL3
-XFILL_r1_27 VDD GND FILL3
-XFILL_r1_28 VDD GND FILL2
-XFILLPRI_r1_9 VDD GND FILL3
-XFILLPRI_r1_10 VDD GND FILL3
-XFILL_r1_48 VDD GND FILL3
-XFILL_r1_49 VDD GND FILL3
-XFILL_r1_50 VDD GND FILL3
-XFILL_r1_51 VDD GND FILL3
-XFILL_r1_52 VDD GND FILL2
-XFILL_r1_53 VDD GND FILL2
-XFILLPRI_r1_11 VDD GND FILL3
-XFILLPRI_r2_12 VDD GND FILL3
-XFILL_r2_12 VDD GND FILL3
-XFILL_r2_13 VDD GND FILL3
-XFILL_r2_14 VDD GND FILL3
-XFILL_r2_15 VDD GND FILL3
-XFILL_r2_16 VDD GND FILL3
-XFILL_r2_17 VDD GND FILL3
-XFILL_r2_18 VDD GND FILL3
-XFILL_r2_19 VDD GND FILL2
-XFILLPRI_r2_13 VDD GND FILL3
-XFILLPRI_r2_14 VDD GND FILL3
-XFILL_r2_23 VDD GND FILL3
-XFILL_r2_24 VDD GND FILL3
-XFILL_r2_25 VDD GND FILL3
-XFILL_r2_26 VDD GND FILL3
-XFILL_r2_27 VDD GND FILL3
-XFILL_r2_28 VDD GND FILL3
-XFILL_r2_29 VDD GND FILL3
-XFILLPRI_r2_15 VDD GND FILL3
-XFILLPRI_r2_16 VDD GND FILL3
-XFILL_r2_57 VDD GND FILL3
-XFILL_r2_58 VDD GND FILL3
-XFILL_r2_59 VDD GND FILL3
-XFILL_r2_60 VDD GND FILL3
-XFILL_r2_61 VDD GND FILL3
-XFILL_r2_62 VDD GND FILL2
-XFILL_r2_63 VDD GND FILL2
-XFILLPRI_r2_17 VDD GND FILL3
-XFILLPRI_r3_18 VDD GND FILL3
-XFILL_r3_8 VDD GND FILL3
-XFILL_r3_9 VDD GND FILL3
-XFILL_r3_10 VDD GND FILL3
-XFILL_r3_11 VDD GND FILL3
-XFILL_r3_12 VDD GND FILL3
-XFILL_r3_13 VDD GND FILL3
-XFILL_r3_14 VDD GND FILL3
-XFILLPRI_r3_19 VDD GND FILL3
-XFILLPRI_r3_20 VDD GND FILL3
-XFILL_r3_18 VDD GND FILL3
-XFILL_r3_19 VDD GND FILL3
-XFILL_r3_20 VDD GND FILL3
-XFILL_r3_21 VDD GND FILL3
-XFILL_r3_22 VDD GND FILL3
-XFILL_r3_23 VDD GND FILL3
-XFILL_r3_24 VDD GND FILL2
-XFILL_r3_25 VDD GND FILL2
-XFILLPRI_r3_21 VDD GND FILL3
-XFILLPRI_r3_22 VDD GND FILL3
-XFILL_r3_55 VDD GND FILL3
-XFILL_r3_56 VDD GND FILL3
-XFILL_r3_57 VDD GND FILL3
-XFILL_r3_58 VDD GND FILL3
-XFILL_r3_59 VDD GND FILL3
-XFILL_r3_60 VDD GND FILL2
-XFILLPRI_r3_23 VDD GND FILL3
+XFILLPRI_r0_0 vdd vss FILL3
+XFILL_r0_8 vdd vss FILL3
+XFILL_r0_9 vdd vss FILL3
+XFILL_r0_10 vdd vss FILL3
+XFILL_r0_11 vdd vss FILL3
+XFILL_r0_12 vdd vss FILL3
+XFILL_r0_13 vdd vss FILL3
+XFILL_r0_14 vdd vss FILL3
+XFILL_r0_15 vdd vss FILL3
+XFILLPRI_r0_1 vdd vss FILL3
+XFILLPRI_r0_2 vdd vss FILL3
+XFILL_r0_19 vdd vss FILL3
+XFILL_r0_20 vdd vss FILL3
+XFILL_r0_21 vdd vss FILL3
+XFILL_r0_22 vdd vss FILL3
+XFILL_r0_23 vdd vss FILL3
+XFILL_r0_24 vdd vss FILL3
+XFILL_r0_25 vdd vss FILL3
+XFILL_r0_26 vdd vss FILL2
+XFILL_r0_27 vdd vss FILL2
+XFILLPRI_r0_3 vdd vss FILL3
+XFILLPRI_r0_4 vdd vss FILL3
+XFILL_r0_54 vdd vss FILL3
+XFILL_r0_55 vdd vss FILL3
+XFILL_r0_56 vdd vss FILL3
+XFILL_r0_57 vdd vss FILL3
+XFILL_r0_58 vdd vss FILL3
+XFILL_r0_59 vdd vss FILL3
+XFILL_r0_60 vdd vss FILL2
+XFILL_r0_61 vdd vss FILL2
+XFILLPRI_r0_5 vdd vss FILL3
+XFILLPRI_r1_6 vdd vss FILL3
+XFILL_r1_11 vdd vss FILL3
+XFILL_r1_12 vdd vss FILL3
+XFILL_r1_13 vdd vss FILL3
+XFILL_r1_14 vdd vss FILL3
+XFILL_r1_15 vdd vss FILL3
+XFILL_r1_16 vdd vss FILL3
+XFILL_r1_17 vdd vss FILL3
+XFILL_r1_18 vdd vss FILL3
+XFILLPRI_r1_7 vdd vss FILL3
+XFILLPRI_r1_8 vdd vss FILL3
+XFILL_r1_22 vdd vss FILL3
+XFILL_r1_23 vdd vss FILL3
+XFILL_r1_24 vdd vss FILL3
+XFILL_r1_25 vdd vss FILL3
+XFILL_r1_26 vdd vss FILL3
+XFILL_r1_27 vdd vss FILL3
+XFILL_r1_28 vdd vss FILL2
+XFILLPRI_r1_9 vdd vss FILL3
+XFILLPRI_r1_10 vdd vss FILL3
+XFILL_r1_48 vdd vss FILL3
+XFILL_r1_49 vdd vss FILL3
+XFILL_r1_50 vdd vss FILL3
+XFILL_r1_51 vdd vss FILL3
+XFILL_r1_52 vdd vss FILL2
+XFILL_r1_53 vdd vss FILL2
+XFILLPRI_r1_11 vdd vss FILL3
+XFILLPRI_r2_12 vdd vss FILL3
+XFILL_r2_12 vdd vss FILL3
+XFILL_r2_13 vdd vss FILL3
+XFILL_r2_14 vdd vss FILL3
+XFILL_r2_15 vdd vss FILL3
+XFILL_r2_16 vdd vss FILL3
+XFILL_r2_17 vdd vss FILL3
+XFILL_r2_18 vdd vss FILL3
+XFILL_r2_19 vdd vss FILL2
+XFILLPRI_r2_13 vdd vss FILL3
+XFILLPRI_r2_14 vdd vss FILL3
+XFILL_r2_23 vdd vss FILL3
+XFILL_r2_24 vdd vss FILL3
+XFILL_r2_25 vdd vss FILL3
+XFILL_r2_26 vdd vss FILL3
+XFILL_r2_27 vdd vss FILL3
+XFILL_r2_28 vdd vss FILL3
+XFILL_r2_29 vdd vss FILL3
+XFILLPRI_r2_15 vdd vss FILL3
+XFILLPRI_r2_16 vdd vss FILL3
+XFILL_r2_57 vdd vss FILL3
+XFILL_r2_58 vdd vss FILL3
+XFILL_r2_59 vdd vss FILL3
+XFILL_r2_60 vdd vss FILL3
+XFILL_r2_61 vdd vss FILL3
+XFILL_r2_62 vdd vss FILL2
+XFILL_r2_63 vdd vss FILL2
+XFILLPRI_r2_17 vdd vss FILL3
+XFILLPRI_r3_18 vdd vss FILL3
+XFILL_r3_8 vdd vss FILL3
+XFILL_r3_9 vdd vss FILL3
+XFILL_r3_10 vdd vss FILL3
+XFILL_r3_11 vdd vss FILL3
+XFILL_r3_12 vdd vss FILL3
+XFILL_r3_13 vdd vss FILL3
+XFILL_r3_14 vdd vss FILL3
+XFILLPRI_r3_19 vdd vss FILL3
+XFILLPRI_r3_20 vdd vss FILL3
+XFILL_r3_18 vdd vss FILL3
+XFILL_r3_19 vdd vss FILL3
+XFILL_r3_20 vdd vss FILL3
+XFILL_r3_21 vdd vss FILL3
+XFILL_r3_22 vdd vss FILL3
+XFILL_r3_23 vdd vss FILL3
+XFILL_r3_24 vdd vss FILL2
+XFILL_r3_25 vdd vss FILL2
+XFILLPRI_r3_21 vdd vss FILL3
+XFILLPRI_r3_22 vdd vss FILL3
+XFILL_r3_55 vdd vss FILL3
+XFILL_r3_56 vdd vss FILL3
+XFILL_r3_57 vdd vss FILL3
+XFILL_r3_58 vdd vss FILL3
+XFILL_r3_59 vdd vss FILL3
+XFILL_r3_60 vdd vss FILL2
+XFILLPRI_r3_23 vdd vss FILL3
 .ends i2c_slave_async_nrow_fm
