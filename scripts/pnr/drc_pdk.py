@@ -35,7 +35,7 @@ def pdk_drc_dir():
     if env:
         cands += [os.path.join(env, "libs.tech", "klayout", "tech", "drc"),
                   os.path.join(env, "klayout", "tech", "drc")]
-    cands += [os.path.expanduser("~/Dropbox/91_OpenPDK/TR-1um/libs.tech/klayout/tech/drc"),
+    cands += [
               os.path.join(cfg.ROOT, "TR-1um", "libs.tech", "klayout", "tech", "drc"),
               os.path.expanduser("~/TR-1um/libs.tech/klayout/tech/drc")]
     for c in cands:

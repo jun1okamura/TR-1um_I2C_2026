@@ -4,7 +4,7 @@
 ; and irsim/README.md for the full derivation/methodology.
 ;
 ; Resistance table from ngspice characterization of the REAL TR-1um
-; PMOS/NMOS models (~/Dropbox/91_OpenPDK/TR-1um/libs.tech/spice/models/
+; PMOS/NMOS models (~/HogeHoge/OpenPDK/TR-1um/libs.tech/spice/models/
 ; ip62_models, vdd=5.0V, per IRSIM's own official calibration procedure).
 ; Capacitance parameters (capga/capda/cappda) computed directly from the
 ; same real model file's tox/cj parameters (no simulation needed).

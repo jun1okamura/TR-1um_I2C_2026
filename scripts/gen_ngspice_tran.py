@@ -27,7 +27,7 @@ CBL=0 が IRSIM と同じ条件。
    400 -  500ns  ADD=0                    ワード 0（=全1）を読む
 """
 from __future__ import annotations
-import re, sys
+import os, re, sys
 
 NW, NB = 16, 4          # NB は第5引数で上書き（4 or 8）
 TOP = "REG4x16"
@@ -62,7 +62,9 @@ def main():
     cbl_ff = float(sys.argv[1]) if len(sys.argv) > 1 else 0.0
     out = sys.argv[2] if len(sys.argv) > 2 else "spice/REG4x16_tran.spi"
     models = sys.argv[3] if len(sys.argv) > 3 else \
-        "~/Dropbox/91_OpenPDK/TR-1um/libs.tech/spice/models/ip62_models"
+        os.path.join(os.environ.get("TR1UM_PDK",
+                     os.path.expanduser("~/TR-1um")),
+                     "libs.tech/spice/models/ip62_models")
     netlist = sys.argv[4] if len(sys.argv) > 4 else "spice/REG4x16_ngspice.spi"
     global NB, TOP
     if len(sys.argv) > 5:

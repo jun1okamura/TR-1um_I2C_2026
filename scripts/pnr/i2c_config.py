@@ -544,7 +544,6 @@ def pdk_tech_python():
         cands.append(os.path.join(env, "klayout", "tech", "python"))
         cands.append(env)
     cands += [
-        os.path.expanduser("~/Dropbox/91_OpenPDK/TR-1um/libs.tech/klayout/tech/python"),
         os.path.join(os.path.dirname(ROOT), "TR-1um", "libs.tech", "klayout", "tech", "python"),
         os.path.expanduser("~/TR-1um/libs.tech/klayout/tech/python"),
     ]

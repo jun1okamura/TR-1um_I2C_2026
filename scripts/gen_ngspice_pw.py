@@ -14,7 +14,7 @@ WEB=0 の幅をワードごとに変えて 1111 を書き込み、最後に全�
 初期状態は .ic で全セル 0。書けていなければ 0000 のまま残る。
 """
 from __future__ import annotations
-import sys
+import os, sys
 
 NB = 4              # 第6引数で上書き（4 or 8）
 NW = 16
@@ -59,7 +59,9 @@ def main():
     cbl = float(sys.argv[1]) if len(sys.argv) > 1 else 0.0
     out = sys.argv[2] if len(sys.argv) > 2 else "spice/REG4x16_pw.spi"
     models = sys.argv[3] if len(sys.argv) > 3 else \
-        "~/Dropbox/91_OpenPDK/TR-1um/libs.tech/spice/models/ip62_models"
+        os.path.join(os.environ.get("TR1UM_PDK",
+                     os.path.expanduser("~/TR-1um")),
+                     "libs.tech/spice/models/ip62_models")
     netlist = sys.argv[4] if len(sys.argv) > 4 else "spice/REG4x16_ngspice.spi"
     global PWS, NB, TOP
     if len(sys.argv) > 5 and sys.argv[5]:

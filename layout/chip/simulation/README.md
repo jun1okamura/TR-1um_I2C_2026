@@ -32,7 +32,7 @@ Sch_file = "simulation/" + source.cell_name + ".spice"
 ## 作り方
 
 ```sh
-export TR1UM_PDK=$HOME/Dropbox/91_OpenPDK/TR-1um     # 環境に合わせて
+export TR1UM_PDK=$HOME/HogeHoge/OpenPDK/TR-1um     # 環境に合わせて
 
 # 1. コア
 python3 scripts/pnr/mklvsnet.py    -o layout/chip/simulation/i2c_slave_async_nrow_fm.spice
@@ -120,7 +120,7 @@ LVS に使う `<top>.extracted` は**別物**。あちらは比較のために�
 ## 作り方
 
 ```sh
-export TR1UM_PDK=$HOME/Dropbox/91_OpenPDK/TR-1um
+export TR1UM_PDK=$HOME/HogeHoge/OpenPDK/TR-1um
 
 python3 scripts/pnr/gen_chip_sim_ready.py                  # RING_OSC 入り
 python3 scripts/pnr/gen_chip_sim_ready.py --no-ringosc     # 回帰用

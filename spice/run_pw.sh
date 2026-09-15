@@ -5,7 +5,7 @@
 #   sh spice/run_pw.sh 100 6,7,8,9,10,12  … 幅を細かく刻む
 set -eu
 cd "$(dirname "$0")/.."
-MODELS="${MODELS:-$HOME/Dropbox/91_OpenPDK/TR-1um/libs.tech/spice/models/ip62_models}"
+MODELS="${MODELS:-${TR1UM_PDK:-$HOME/TR-1um}/libs.tech/spice/models/ip62_models}"
 NET=spice/REG4x16_ngspice.spi
 CBL="${1:-100}"
 PWS="${2:-2,4,6,10,16,24}"

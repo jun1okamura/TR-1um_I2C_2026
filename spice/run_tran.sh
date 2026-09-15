@@ -12,7 +12,7 @@ set -eu
 cd "$(dirname "$0")/.."
 BITS="${1:-4}"
 LIST="${2:-0 50 100 200}"
-MODELS="${MODELS:-$HOME/Dropbox/91_OpenPDK/TR-1um/libs.tech/spice/models/ip62_models}"
+MODELS="${MODELS:-${TR1UM_PDK:-$HOME/TR-1um}/libs.tech/spice/models/ip62_models}"
 TOP=REG${BITS}x16
 SRC=spice/${TOP}_src.spi
 NET=spice/${TOP}_ngspice.spi

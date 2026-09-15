@@ -8,7 +8,7 @@
 // use them for anything but functional (logic-correctness) simulation.
 //
 // Function/pin directions taken from the xschem symbol library
-// (~/Dropbox/91_OpenPDK/TR-1um/libs.tech/xschem/TR-1um_5_stdcell, .sym
+// (~/HogeHoge/OpenPDK/TR-1um/libs.tech/xschem/TR-1um_5_stdcell, .sym
 // dir=in/out/inout) -- see logic_cells_mapping.md.
 //
 // DFFR reset pin is named RSTB and modeled active-LOW, confirmed from the
