@@ -41,3 +41,15 @@ src/*.lyrdb
 src/*.lvsdb
 src/*.extracted
 mdp/
+
+# 配線 step6 の内部チェックポイント（5 本。route.py が毎回作り直す）
+layout/step6/
+
+# MDP のマスクデータ（drc_pdk.py --mdp が起こす。5 MB / 再生成できる）
+src/*_mdp.gds
+
+# mklvsnet.py が 2026-09-15 まで書いていた場所（TD4 のマクロ向き由来）。
+# 既定は layout/chip/simulation/ に直したので、残っていたら古い生成物。
+layout/landscape/
+layout/portrait/
+

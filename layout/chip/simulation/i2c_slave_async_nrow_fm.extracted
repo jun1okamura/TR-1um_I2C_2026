@@ -2,7 +2,7 @@
 
 * cell i2c_slave_async_nrow_fm
 .SUBCKT i2c_slave_async_nrow_fm
-* net 1 VDD
+* net 1 vdd
 * net 19 rx_data[7]
 * net 22 rx_data[5]
 * net 34 rw
@@ -27,7 +27,7 @@
 * net 160 sda_in
 * net 161 scl
 * net 162 rst_n
-* net 167 GND
+* net 167 vss
 * cell instance $1 r0 *1 761.4,112.2
 X$1 16 33 25 34 26 34 23 1 167 MUXDFFRB
 * cell instance $2 r0 *1 734.4,364.1

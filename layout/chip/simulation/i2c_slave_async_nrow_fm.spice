@@ -3,7 +3,7 @@
 *
 *   論理セル : out/i2c_slave_async_pnr.v
 *   物理セル : layout/placement.json (FILL2 x13, FILL3 x100, TAP2 x16)
-*   セル定義 : ../apr_root/stdcell/v59_4/simulation/*.spice
+*   セル定義 : $APRTOOLS/stdcell/v59_4/simulation/*.spice
 *
 * デバイスを持たない物理セルは出していない: TAP2
 * 電源はトップの vdd / vss を全インスタンスへ配っている。

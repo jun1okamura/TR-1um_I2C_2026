@@ -160,7 +160,7 @@ X22 P3 VDD HIZ3 OUT3 VSS OSS_ESD_5V_DIO
 *
 *   論理セル : out/i2c_slave_async_pnr.v
 *   物理セル : layout/placement.json (FILL2 x13, FILL3 x100, TAP2 x16)
-*   セル定義 : ../apr_root/stdcell/v59_4/simulation/*.spice
+*   セル定義 : $APRTOOLS/stdcell/v59_4/simulation/*.spice
 *
 * デバイスを持たない物理セルは出していない: TAP2
 * 電源はトップの vdd / vss を全インスタンスへ配っている。
@@ -689,8 +689,8 @@ XFILLPRI_r3_23 vdd vss FILL3
 * scripts/pnr/mkringoscnet.py が生成。手で編集しないこと。
 *
 *   回路図 : TR-1um_Async_I2C/ring_osc/RING_OSC.sch / INV3D.sch
-*   セル   : lef/simulation/*.spice（INV3D だけ回路図から直接）
-*   FILL2 の個数だけ lef/RING_OSC.gds から数えた
+*   セル   : $APRTOOLS/stdcell/v59_4/simulation/*.spice（INV3D だけ回路図から直接）
+*   FILL2 の個数だけ $APRTOOLS/macro/ringosc/RING_OSC.gds から数えた
 *
 * 1 リング 95 段 + AND 1 段 = 96 段の奇数閉ループが 2 本。
 * 速い方は INV_X1、遅い方は INV3D（同じ 2T だがレイアウトが違う）。
