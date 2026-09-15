@@ -2,8 +2,8 @@
 * scripts/pnr/mkringoscnet.py が生成。手で編集しないこと。
 *
 *   回路図 : TR-1um_Async_I2C/ring_osc/RING_OSC.sch / INV3D.sch
-*   セル   : lef/simulation/*.spice（INV3D だけ回路図から直接）
-*   FILL2 の個数だけ lef/RING_OSC.gds から数えた
+*   セル   : $APRTOOLS/stdcell/v59_4/simulation/*.spice（INV3D だけ回路図から直接）
+*   FILL2 の個数だけ $APRTOOLS/macro/ringosc/RING_OSC.gds から数えた
 *
 * 1 リング 95 段 + AND 1 段 = 96 段の奇数閉ループが 2 本。
 * 速い方は INV_X1、遅い方は INV3D（同じ 2T だがレイアウトが違う）。
