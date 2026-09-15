@@ -133,7 +133,7 @@ X_22 P3 VDD HIZ3 OUT3 VSS OSS_ESD_5V_DIO
 .ENDS OSS_FRAME
 
 * cell i2c_slave_async_nrow_fm
-* pin VDD
+* pin vdd
 * pin rx_data_7
 * pin rx_data_5
 * pin tx_data_2
@@ -154,477 +154,477 @@ X_22 P3 VDD HIZ3 OUT3 VSS OSS_ESD_5V_DIO
 * pin sda_in
 * pin scl
 * pin rst_n
-* pin GND
-.SUBCKT i2c_slave_async_nrow_fm VDD rx_data_7 rx_data_5 tx_data_2 tx_data_5
+* pin vss
+.SUBCKT i2c_slave_async_nrow_fm vdd rx_data_7 rx_data_5 tx_data_2 tx_data_5
 + tx_data_6 tx_data_7 rx_data_1 rx_data_6 tx_data_1 tx_data_0 tx_data_3
 + tx_data_4 sda_oe rx_data_2 rx_data_3 rx_data_4 rx_data_0 sda_in scl
-+ rst_n GND
++ rst_n vss
 * cell instance _1 r0 *1 761.4,112.2
-X_1 n23 n70 n33 rw n34 rw n30 VDD GND MUXDFFRB
+X_1 n23 n70 n33 rw n34 rw n30 vdd vss MUXDFFRB
 * cell instance _2 r0 *1 734.4,364.1
-X_2 n200 n144 n35 addr_match addr_match n170 n30 VDD GND MUXDFFRB
+X_2 n200 n144 n35 addr_match addr_match n170 n30 vdd vss MUXDFFRB
 * cell instance _3 r0 *1 766.8,621.4
-X_3 n355 n374 n283 VDD GND XNOR2
+X_3 n355 n374 n283 vdd vss XNOR2
 * cell instance _4 r0 *1 793.8,621.4
-X_4 n355 n353 n331 n591 VDD GND NAND3
+X_4 n355 n353 n331 n591 vdd vss NAND3
 * cell instance _5 r0 *1 777.6,863.7
-X_5 n568 n360 n35 n213 VDD n30 GND DFFRB
+X_5 n568 n360 n35 n213 vdd n30 vss DFFRB
 * cell instance _6 r0 *1 1193.4,621.4
-X_6 n574 VDD n266 GND INV_X1
+X_6 n574 vdd n266 vss INV_X1
 * cell instance _7 r0 *1 1204.2,621.4
-X_7 n264 n479 n270 n352 tx_data_4 n352 n266 VDD GND MUXDFFRB
+X_7 n264 n479 n270 n352 tx_data_4 n352 n266 vdd vss MUXDFFRB
 * cell instance _8 r0 *1 1177.2,863.7
-X_8 n781 n260 n574 n776 VDD GND AND3_X1
+X_8 n781 n260 n574 n776 vdd vss AND3_X1
 * cell instance _9 r0 *1 1204.2,863.7
-X_9 n776 n775 n629 VDD GND RSLATCH
+X_9 n776 n775 n629 vdd vss RSLATCH
 * cell instance _18 r0 *1 1420.2,863.7
-X_18 n618 VDD n573 GND INV_X1
+X_18 n618 vdd n573 vss INV_X1
 * cell instance _19 r0 *1 1431,863.7
-X_19 n40 n394 n340 n616 VDD GND NAND3
+X_19 n40 n394 n340 n616 vdd vss NAND3
 * cell instance _20 r0 *1 1452.6,863.7
-X_20 n36 VDD n394 GND INV_X1
+X_20 n36 vdd n394 vss INV_X1
 * cell instance _21 r0 *1 1463.4,863.7
-X_21 rst_n VDD n618 GND BUF_X1
+X_21 rst_n vdd n618 vss BUF_X1
 * cell instance _22 r0 *1 1479.6,863.7
-X_22 VDD GND FILL3
+X_22 vdd vss FILL3
 * cell instance _23 r0 *1 1495.8,863.7
-X_23 VDD GND FILL3
+X_23 vdd vss FILL3
 * cell instance _24 r0 *1 1512,863.7
-X_24 VDD GND FILL3
+X_24 vdd vss FILL3
 * cell instance _25 r0 *1 1528.2,863.7
-X_25 VDD GND FILL3
+X_25 vdd vss FILL3
 * cell instance _26 r0 *1 1544.4,863.7
-X_26 VDD GND FILL3
+X_26 vdd vss FILL3
 * cell instance _27 r0 *1 1560.6,863.7
-X_27 VDD GND FILL2
+X_27 vdd vss FILL2
 * cell instance _28 r0 *1 1571.4,863.7
-X_28 VDD GND FILL3
+X_28 vdd vss FILL3
 * cell instance _46 r0 *1 1231.2,863.7
-X_46 n574 n628 VDD GND BUF_X2
+X_46 n574 n628 vdd vss BUF_X2
 * cell instance _53 r0 *1 1247.4,863.7
-X_53 n781 n573 VDD n37 GND OR2
+X_53 n781 n573 vdd n37 vss OR2
 * cell instance _55 r0 *1 1269,863.7
-X_55 n627 busy VDD GND BUF_X2
+X_55 n627 busy vdd vss BUF_X2
 * cell instance _56 r0 *1 1285.2,863.7
-X_56 n627 n618 VDD n270 GND AND2_X1
+X_56 n627 n618 vdd n270 vss AND2_X1
 * cell instance _57 r0 *1 1306.8,863.7
-X_57 n616 n609 n610 n625 n620 VDD GND NAND4
+X_57 n616 n609 n610 n625 n620 vdd vss NAND4
 * cell instance _58 r0 *1 1333.8,863.7
-X_58 busy n575 n781 VDD GND RSLATCH
+X_58 busy n575 n781 vdd vss RSLATCH
 * cell instance _63 r0 *1 1360.8,863.7
-X_63 n778 n573 VDD n575 GND OR2
+X_63 n778 n573 vdd n575 vss OR2
 * cell instance _71 r0 *1 1382.4,863.7
-X_71 n40 n36 VDD n569 GND NOR2
+X_71 n40 n36 vdd n569 vss NOR2
 * cell instance _76 r0 *1 1398.6,863.7
-X_76 n40 n36 n615 n610 VDD GND NAND3
+X_76 n40 n36 n615 n610 vdd vss NAND3
 * cell instance _91 r0 *1 842.4,863.7
-X_91 n570 n571 n35 n641 VDD n30 GND DFFRB
+X_91 n570 n571 n35 n641 vdd n30 vss DFFRB
 * cell instance _92 r0 *1 907.2,863.7
-X_92 VDD sda_in n34 GND BUFTH
+X_92 vdd sda_in n34 vss BUFTH
 * cell instance _93 r0 *1 939.6,863.7
-X_93 n34 n266 n632 VDD GND NAND2
+X_93 n34 n266 n632 vdd vss NAND2
 * cell instance _94 r0 *1 955.8,863.7
-X_94 VDD scl n628 GND BUFTH
+X_94 vdd scl n628 vss BUFTH
 * cell instance _120 r0 *1 988.2,863.7
-X_120 sda_oe n633 n270 nI1109 VDD n266 GND DFFRB
+X_120 sda_oe n633 n270 nI1109 vdd n266 vss DFFRB
 * cell instance _121 r0 *1 1053,863.7
-X_121 VDD GND FILL3
+X_121 vdd vss FILL3
 * cell instance _123 r0 *1 1080,863.7
-X_123 VDD GND FILL3
+X_123 vdd vss FILL3
 * cell instance _124 r0 *1 1096.2,863.7
-X_124 n572 n569 n620 VDD GND NAND2
+X_124 n572 n569 n620 vdd vss NAND2
 * cell instance _125 r0 *1 1112.4,863.7
-X_125 n775 n260 n627 n266 VDD GND AND3_X1
+X_125 n775 n260 n627 n266 vdd vss AND3_X1
 * cell instance _126 r0 *1 1139.4,863.7
-X_126 n260 n266 n776 n778 VDD GND NOR3
+X_126 n260 n266 n776 n778 vdd vss NOR3
 * cell instance _128 r0 *1 1161,863.7
-X_128 n627 n632 n629 VDD GND NAND2
+X_128 n627 n632 n629 vdd vss NAND2
 * cell instance _138 r0 *1 1053,621.4
-X_138 VDD GND FILL3
+X_138 vdd vss FILL3
 * cell instance _146 r0 *1 837,621.4
-X_146 n264 n460 n270 n580 tx_data_1 n580 n266 VDD GND MUXDFFRB
+X_146 n264 n460 n270 n580 tx_data_1 n580 n266 vdd vss MUXDFFRB
 * cell instance _147 r0 *1 934.2,621.4
-X_147 n147 n374 VDD n571 GND AND2_X1
+X_147 n147 n374 vdd n571 vss AND2_X1
 * cell instance _149 r0 *1 1080,621.4
-X_149 VDD GND FILL3
+X_149 vdd vss FILL3
 * cell instance _157 r0 *1 815.4,621.4
-X_157 n355 n39 n569 n264 VDD GND NAND3
+X_157 n355 n39 n569 n264 vdd vss NAND3
 * cell instance _158 r0 *1 955.8,621.4
-X_158 n264 n336 n270 n615 tx_data_0 n615 n266 VDD GND MUXDFFRB
+X_158 n264 n336 n270 n615 tx_data_0 n615 n266 vdd vss MUXDFFRB
 * cell instance _161 r0 *1 1096.2,621.4
-X_161 n264 n337 n270 n572 tx_data_3 n572 n266 VDD GND MUXDFFRB
+X_161 n264 n337 n270 n572 tx_data_3 n572 n266 vdd vss MUXDFFRB
 * cell instance _189 r0 *1 1323,621.4
-X_189 n573 n574 VDD n403 GND NOR2
+X_189 n573 n574 vdd n403 vss NOR2
 * cell instance _190 r0 *1 1339.2,621.4
-X_190 n17 n577 n576 n353 n350 VDD GND NAND4
+X_190 n17 n577 n576 n353 n350 vdd vss NAND4
 * cell instance _201 r0 *1 1301.4,621.4
-X_201 n355 n40 n394 n354 VDD GND NOR3
+X_201 n355 n40 n394 n354 vdd vss NOR3
 * cell instance _204 r0 *1 1366.2,621.4
-X_204 n40 n36 n352 n350 VDD GND NAND3
+X_204 n40 n36 n352 n350 vdd vss NAND3
 * cell instance _205 r0 *1 1387.8,621.4
-X_205 n344 n36 n580 n609 VDD GND NAND3
+X_205 n344 n36 n580 n609 vdd vss NAND3
 * cell instance _206 r0 *1 1409.4,621.4
-X_206 n40 VDD n344 GND INV_X1
+X_206 n40 vdd n344 vss INV_X1
 * cell instance _211 r0 *1 1420.2,621.4
-X_211 n394 n330 n577 VDD GND NAND2
+X_211 n394 n330 n577 vdd vss NAND2
 * cell instance _238 r0 *1 1436.4,621.4
-X_238 n344 n329 n576 VDD GND NAND2
+X_238 n344 n329 n576 vdd vss NAND2
 * cell instance _239 r0 *1 1452.6,621.4
-X_239 n344 n394 n17 VDD GND NAND2
+X_239 n344 n394 n17 vdd vss NAND2
 * cell instance _240 r0 *1 1468.8,621.4
-X_240 VDD GND FILL3
+X_240 vdd vss FILL3
 * cell instance _241 r0 *1 1485,621.4
-X_241 VDD GND FILL3
+X_241 vdd vss FILL3
 * cell instance _243 r0 *1 1501.2,621.4
-X_243 VDD GND FILL3
+X_243 vdd vss FILL3
 * cell instance _244 r0 *1 1517.4,621.4
-X_244 VDD GND FILL3
+X_244 vdd vss FILL3
 * cell instance _245 r0 *1 1533.6,621.4
-X_245 VDD GND FILL3
+X_245 vdd vss FILL3
 * cell instance _247 r0 *1 1549.8,621.4
-X_247 VDD GND FILL2
+X_247 vdd vss FILL2
 * cell instance _248 r0 *1 1560.6,621.4
-X_248 VDD GND FILL2
+X_248 vdd vss FILL2
 * cell instance _250 r0 *1 1571.4,621.4
-X_250 VDD GND FILL3
+X_250 vdd vss FILL3
 * cell instance _264 r0 *1 372.6,621.4
-X_264 n165 n415 n376 n633 VDD GND NAND3
+X_264 n165 n415 n376 n633 vdd vss NAND3
 * cell instance _265 r0 *1 394.2,621.4
-X_265 VDD GND FILL3
+X_265 vdd vss FILL3
 * cell instance _267 r0 *1 329.4,863.7
-X_267 n567 n624 n631 rx_valid VDD n30 GND DFFRB
+X_267 n567 n624 n631 rx_valid vdd n30 vss DFFRB
 * cell instance _268 r0 *1 394.2,863.7
-X_268 n34 VDD n260 GND INV_X1
+X_268 n34 vdd n260 vss INV_X1
 * cell instance _275 r0 *1 545.4,863.7
-X_275 VDD GND FILL3
+X_275 vdd vss FILL3
 * cell instance _278 r0 *1 486,863.7
-X_278 VDD GND FILL3
+X_278 vdd vss FILL3
 * cell instance _279 r0 *1 561.6,863.7
-X_279 VDD GND FILL3
+X_279 vdd vss FILL3
 * cell instance _280 r0 *1 577.8,863.7
-X_280 VDD GND FILL3
+X_280 vdd vss FILL3
 * cell instance _281 r0 *1 594,863.7
-X_281 VDD GND FILL3
+X_281 vdd vss FILL3
 * cell instance _282 r0 *1 610.2,863.7
-X_282 VDD GND FILL3
+X_282 vdd vss FILL3
 * cell instance _284 r0 *1 626.4,863.7
-X_284 VDD GND FILL3
+X_284 vdd vss FILL3
 * cell instance _285 r0 *1 642.6,863.7
-X_285 VDD GND FILL3
+X_285 vdd vss FILL3
 * cell instance _287 r0 *1 658.8,863.7
-X_287 VDD GND FILL2
+X_287 vdd vss FILL2
 * cell instance _288 r0 *1 669.6,863.7
-X_288 VDD GND FILL2
+X_288 vdd vss FILL2
 * cell instance _289 r0 *1 680.4,863.7
-X_289 n13 n602 n31 rx_data_0 n34 rx_data_0 n30 VDD GND MUXDFFRB
+X_289 n13 n602 n31 rx_data_0 n34 rx_data_0 n30 vdd vss MUXDFFRB
 * cell instance _292 r0 *1 405,863.7
-X_292 VDD GND FILL3
+X_292 vdd vss FILL3
 * cell instance _295 r0 *1 421.2,863.7
-X_295 VDD GND FILL3
+X_295 vdd vss FILL3
 * cell instance _297 r0 *1 437.4,863.7
-X_297 VDD GND FILL3
+X_297 vdd vss FILL3
 * cell instance _302 r0 *1 453.6,863.7
-X_302 VDD GND FILL3
+X_302 vdd vss FILL3
 * cell instance _307 r0 *1 469.8,863.7
-X_307 VDD GND FILL3
+X_307 vdd vss FILL3
 * cell instance _308 r0 *1 502.2,863.7
-X_308 VDD GND FILL3
+X_308 vdd vss FILL3
 * cell instance _309 r0 *1 518.4,863.7
-X_309 VDD GND FILL3
+X_309 vdd vss FILL3
 * cell instance _312 r0 *1 232.2,863.7
-X_312 n13 n601 n33 rx_data_4 n348 rx_data_4 n30 VDD GND MUXDFFRB
+X_312 n13 n601 n33 rx_data_4 n348 rx_data_4 n30 vdd vss MUXDFFRB
 * cell instance _339 r0 *1 10.8,863.7
-X_339 VDD GND FILL3
+X_339 vdd vss FILL3
 * cell instance _340 r0 *1 27,863.7
-X_340 n13 VDD n624 GND INV_X1
+X_340 n13 vdd n624 vss INV_X1
 * cell instance _341 r0 *1 37.8,863.7
-X_341 n13 n599 n31 rx_data_2 n360 rx_data_2 n30 VDD GND MUXDFFRB
+X_341 n13 n599 n31 rx_data_2 n360 rx_data_2 n30 vdd vss MUXDFFRB
 * cell instance _344 r0 *1 135,863.7
-X_344 n13 n600 n31 rx_data_3 n213 rx_data_3 n30 VDD GND MUXDFFRB
+X_344 n13 n600 n31 rx_data_3 n213 rx_data_3 n30 vdd vss MUXDFFRB
 * cell instance _360 r0 *1 324,621.4
-X_360 n373 n409 VDD GND BUF_X2
+X_360 n373 n409 vdd vss BUF_X2
 * cell instance _361 r0 *1 340.2,621.4
-X_361 n373 n25 VDD n631 GND NOR2
+X_361 n373 n25 vdd n631 vss NOR2
 * cell instance _362 r0 *1 356.4,621.4
-X_362 n266 n371 VDD n30 GND NOR2
+X_362 n266 n371 vdd n30 vss NOR2
 * cell instance _370 r0 *1 10.8,621.4
-X_370 VDD GND FILL3
+X_370 vdd vss FILL3
 * cell instance _377 r0 *1 27,621.4
-X_377 n27 VDD n332 GND INV_X1
+X_377 n27 vdd n332 vss INV_X1
 * cell instance _383 r0 *1 37.8,621.4
-X_383 n373 n370 VDD n31 GND NOR2
+X_383 n373 n370 vdd n31 vss NOR2
 * cell instance _384 r0 *1 54,621.4
-X_384 n13 n333 n31 rx_data_1 n171 rx_data_1 n30 VDD GND MUXDFFRB
+X_384 n13 n333 n31 rx_data_1 n171 rx_data_1 n30 vdd vss MUXDFFRB
 * cell instance _389 r0 *1 151.2,621.4
-X_389 n13 n334 n33 rx_data_6 n27 rx_data_6 n30 VDD GND MUXDFFRB
+X_389 n13 n334 n33 rx_data_6 n27 rx_data_6 n30 vdd vss MUXDFFRB
 * cell instance _390 r0 *1 248.4,621.4
-X_390 n33 VDD n371 GND INV_X1
+X_390 n33 vdd n371 vss INV_X1
 * cell instance _391 r0 *1 259.2,621.4
-X_391 n335 n364 n371 n188 VDD n30 GND DFFS
+X_391 n335 n364 n371 n188 vdd n30 vss DFFS
 * cell instance _416 r0 *1 545.4,621.4
-X_416 VDD GND FILL3
+X_416 vdd vss FILL3
 * cell instance _417 r0 *1 561.6,621.4
-X_417 VDD GND FILL3
+X_417 vdd vss FILL3
 * cell instance _418 r0 *1 577.8,621.4
-X_418 VDD GND FILL3
+X_418 vdd vss FILL3
 * cell instance _419 r0 *1 594,621.4
-X_419 VDD GND FILL3
+X_419 vdd vss FILL3
 * cell instance _420 r0 *1 610.2,621.4
-X_420 VDD GND FILL3
+X_420 vdd vss FILL3
 * cell instance _421 r0 *1 626.4,621.4
-X_421 VDD GND FILL3
+X_421 vdd vss FILL3
 * cell instance _422 r0 *1 675,621.4
-X_422 rx_valid VDD n165 GND INV_X1
+X_422 rx_valid vdd n165 vss INV_X1
 * cell instance _423 r0 *1 685.8,621.4
-X_423 n641 VDD n355 GND INV_X1
+X_423 n641 vdd n355 vss INV_X1
 * cell instance _425 r0 *1 696.6,621.4
-X_425 addr_match n164 n415 VDD GND NAND2
+X_425 addr_match n164 n415 vdd vss NAND2
 * cell instance _426 r0 *1 712.8,621.4
-X_426 n370 n37 VDD GND BUF_X2
+X_426 n370 n37 vdd vss BUF_X2
 * cell instance _427 r0 *1 729,621.4
-X_427 n641 n625 n375 VDD GND NAND2
+X_427 n641 n625 n375 vdd vss NAND2
 * cell instance _428 r0 *1 745.2,621.4
-X_428 n39 n591 n375 n376 VDD GND NAND3
+X_428 n39 n591 n375 n376 vdd vss NAND3
 * cell instance _430 r0 *1 410.4,621.4
-X_430 VDD GND FILL3
+X_430 vdd vss FILL3
 * cell instance _431 r0 *1 426.6,621.4
-X_431 VDD GND FILL3
+X_431 vdd vss FILL3
 * cell instance _432 r0 *1 442.8,621.4
-X_432 VDD GND FILL3
+X_432 vdd vss FILL3
 * cell instance _433 r0 *1 459,621.4
-X_433 VDD GND FILL3
+X_433 vdd vss FILL3
 * cell instance _434 r0 *1 642.6,621.4
-X_434 VDD GND FILL3
+X_434 vdd vss FILL3
 * cell instance _436 r0 *1 475.2,621.4
-X_436 VDD GND FILL3
+X_436 vdd vss FILL3
 * cell instance _437 r0 *1 491.4,621.4
-X_437 VDD GND FILL3
+X_437 vdd vss FILL3
 * cell instance _438 r0 *1 507.6,621.4
-X_438 VDD GND FILL2
+X_438 vdd vss FILL2
 * cell instance _441 r0 *1 658.8,621.4
-X_441 VDD GND FILL3
+X_441 vdd vss FILL3
 * cell instance _442 r0 *1 518.4,621.4
-X_442 VDD GND FILL3
+X_442 vdd vss FILL3
 * cell instance _449 r0 *1 388.8,364.1
-X_449 VDD GND FILL3
+X_449 vdd vss FILL3
 * cell instance _450 r0 *1 388.8,112.2
-X_450 VDD GND FILL3
+X_450 vdd vss FILL3
 * cell instance _454 r0 *1 594,364.1
-X_454 VDD GND FILL3
+X_454 vdd vss FILL3
 * cell instance _457 r0 *1 421.2,364.1
-X_457 VDD GND FILL3
+X_457 vdd vss FILL3
 * cell instance _458 r0 *1 437.4,364.1
-X_458 VDD GND FILL3
+X_458 vdd vss FILL3
 * cell instance _459 r0 *1 453.6,364.1
-X_459 VDD GND FILL3
+X_459 vdd vss FILL3
 * cell instance _460 r0 *1 610.2,364.1
-X_460 VDD GND FILL3
+X_460 vdd vss FILL3
 * cell instance _461 r0 *1 626.4,364.1
-X_461 VDD GND FILL3
+X_461 vdd vss FILL3
 * cell instance _475 r0 *1 405,364.1
-X_475 VDD GND FILL3
+X_475 vdd vss FILL3
 * cell instance _476 r0 *1 642.6,364.1
-X_476 VDD GND FILL3
+X_476 vdd vss FILL3
 * cell instance _481 r0 *1 545.4,364.1
-X_481 VDD GND FILL3
+X_481 vdd vss FILL3
 * cell instance _482 r0 *1 658.8,364.1
-X_482 VDD GND FILL2
+X_482 vdd vss FILL2
 * cell instance _483 r0 *1 669.6,364.1
-X_483 n143 n213 n35 n348 VDD n30 GND DFFRB
+X_483 n143 n213 n35 n348 vdd n30 vss DFFRB
 * cell instance _484 r0 *1 561.6,364.1
-X_484 VDD GND FILL3
+X_484 vdd vss FILL3
 * cell instance _485 r0 *1 577.8,364.1
-X_485 VDD GND FILL3
+X_485 vdd vss FILL3
 * cell instance _486 r0 *1 469.8,364.1
-X_486 VDD GND FILL3
+X_486 vdd vss FILL3
 * cell instance _488 r0 *1 486,364.1
-X_488 VDD GND FILL3
+X_488 vdd vss FILL3
 * cell instance _489 r0 *1 502.2,364.1
-X_489 VDD GND FILL3
+X_489 vdd vss FILL3
 * cell instance _491 r0 *1 518.4,364.1
-X_491 VDD GND FILL3
+X_491 vdd vss FILL3
 * cell instance _507 r0 *1 194.4,364.1
-X_507 n360 n213 n348 n204 n170 VDD GND NOR4
+X_507 n360 n213 n348 n204 n170 vdd vss NOR4
 * cell instance _509 r0 *1 351,364.1
-X_509 n409 n37 VDD n33 GND NOR2
+X_509 n409 n37 vdd n33 vss NOR2
 * cell instance _510 r0 *1 367.2,364.1
-X_510 n415 rw VDD n178 GND OR2
+X_510 n415 rw vdd n178 vss OR2
 * cell instance _515 r0 *1 221.4,364.1
-X_515 n141 n171 n33 n360 VDD n30 GND DFFRB
+X_515 n141 n171 n33 n360 vdd n30 vss DFFRB
 * cell instance _516 r0 *1 286.2,364.1
-X_516 n142 n354 n31 n38 VDD n30 GND DFFRB
+X_516 n142 n354 n31 n38 vdd n30 vss DFFRB
 * cell instance _544 r0 *1 10.8,364.1
-X_544 VDD GND FILL3
+X_544 vdd vss FILL3
 * cell instance _545 r0 *1 27,364.1
-X_545 n203 n138 n155 n204 n332 VDD GND NAND4
+X_545 n203 n138 n155 n204 n332 vdd vss NAND4
 * cell instance _547 r0 *1 54,364.1
-X_547 n171 VDD n155 GND INV_X1
+X_547 n171 vdd n155 vss INV_X1
 * cell instance _554 r0 *1 64.8,364.1
-X_554 n139 n203 n31 n27 VDD n30 GND DFFRB
+X_554 n139 n203 n31 n27 vdd n30 vss DFFRB
 * cell instance _555 r0 *1 129.6,364.1
-X_555 n140 n348 n31 n203 VDD n30 GND DFFRB
+X_555 n140 n348 n31 n203 vdd n30 vss DFFRB
 * cell instance _568 r0 *1 205.2,112.2
-X_568 n13 n15 n33 rx_data_5 n203 rx_data_5 n30 VDD GND MUXDFFRB
+X_568 n13 n15 n33 rx_data_5 n203 rx_data_5 n30 vdd vss MUXDFFRB
 * cell instance _584 r0 *1 10.8,112.2
-X_584 VDD GND FILL3
+X_584 vdd vss FILL3
 * cell instance _585 r0 *1 27,112.2
-X_585 n13 n12 VDD GND BUF_X2
+X_585 n13 n12 vdd vss BUF_X2
 * cell instance _586 r0 *1 43.2,112.2
-X_586 n13 n14 n31 rx_data_7 n138 rx_data_7 n30 VDD GND MUXDFFRB
+X_586 n13 n14 n31 rx_data_7 n138 rx_data_7 n30 vdd vss MUXDFFRB
 * cell instance _588 r0 *1 302.4,112.2
-X_588 n16 n28 n33 n24 VDD n30 GND DFFRB
+X_588 n16 n28 n33 n24 vdd n30 vss DFFRB
 * cell instance _591 r0 *1 367.2,112.2
-X_591 n165 n178 n22 n28 VDD GND NAND3
+X_591 n165 n178 n22 n28 vdd vss NAND3
 * cell instance _613 r0 *1 140.4,112.2
-X_613 n9 n27 n31 n138 VDD n30 GND DFFRB
+X_613 n9 n27 n31 n138 vdd n30 vss DFFRB
 * cell instance _623 r0 *1 405,112.2
-X_623 VDD GND FILL3
+X_623 vdd vss FILL3
 * cell instance _624 r0 *1 658.8,112.2
-X_624 VDD GND FILL3
+X_624 vdd vss FILL3
 * cell instance _625 r0 *1 421.2,112.2
-X_625 VDD GND FILL3
+X_625 vdd vss FILL3
 * cell instance _626 r0 *1 469.8,112.2
-X_626 VDD GND FILL3
+X_626 vdd vss FILL3
 * cell instance _627 r0 *1 675,112.2
-X_627 VDD GND FILL2
+X_627 vdd vss FILL2
 * cell instance _630 r0 *1 437.4,112.2
-X_630 VDD GND FILL3
+X_630 vdd vss FILL3
 * cell instance _631 r0 *1 453.6,112.2
-X_631 VDD GND FILL3
+X_631 vdd vss FILL3
 * cell instance _632 r0 *1 685.8,112.2
-X_632 VDD GND FILL2
+X_632 vdd vss FILL2
 * cell instance _633 r0 *1 502.2,112.2
-X_633 VDD GND FILL3
+X_633 vdd vss FILL3
 * cell instance _634 r0 *1 518.4,112.2
-X_634 VDD GND FILL3
+X_634 vdd vss FILL3
 * cell instance _637 r0 *1 696.6,112.2
-X_637 n10 n34 n35 n171 VDD n30 GND DFFRB
+X_637 n10 n34 n35 n171 vdd n30 vss DFFRB
 * cell instance _638 r0 *1 545.4,112.2
-X_638 VDD GND FILL3
+X_638 vdd vss FILL3
 * cell instance _639 r0 *1 561.6,112.2
-X_639 VDD GND FILL3
+X_639 vdd vss FILL3
 * cell instance _642 r0 *1 577.8,112.2
-X_642 VDD GND FILL3
+X_642 vdd vss FILL3
 * cell instance _645 r0 *1 594,112.2
-X_645 VDD GND FILL3
+X_645 vdd vss FILL3
 * cell instance _646 r0 *1 610.2,112.2
-X_646 VDD GND FILL3
+X_646 vdd vss FILL3
 * cell instance _654 r0 *1 626.4,112.2
-X_654 VDD GND FILL3
+X_654 vdd vss FILL3
 * cell instance _656 r0 *1 486,112.2
-X_656 VDD GND FILL3
+X_656 vdd vss FILL3
 * cell instance _658 r0 *1 642.6,112.2
-X_658 VDD GND FILL3
+X_658 vdd vss FILL3
 * cell instance _659 r0 *1 1188,112.2
-X_659 n38 n39 VDD n159 GND AND2_X1
+X_659 n38 n39 vdd n159 vss AND2_X1
 * cell instance _660 r0 *1 1171.8,364.1
-X_660 n264 n146 n270 n340 tx_data_2 n340 n266 VDD GND MUXDFFRB
+X_660 n264 n146 n270 n340 tx_data_2 n340 n266 vdd vss MUXDFFRB
 * cell instance _665 r0 *1 1366.2,364.1
-X_665 n264 n151 n270 n330 tx_data_6 n330 n266 VDD GND MUXDFFRB
+X_665 n264 n151 n270 n330 tx_data_6 n330 n266 vdd vss MUXDFFRB
 * cell instance _668 r0 *1 1463.4,364.1
-X_668 n17 tx_data_7 VDD n331 GND OR2
+X_668 n17 tx_data_7 vdd n331 vss OR2
 * cell instance _673 r0 *1 1485,364.1
-X_673 VDD GND FILL3
+X_673 vdd vss FILL3
 * cell instance _674 r0 *1 1501.2,364.1
-X_674 VDD GND FILL3
+X_674 vdd vss FILL3
 * cell instance _675 r0 *1 1517.4,364.1
-X_675 VDD GND FILL3
+X_675 vdd vss FILL3
 * cell instance _682 r0 *1 1533.6,364.1
-X_682 VDD GND FILL3
+X_682 vdd vss FILL3
 * cell instance _683 r0 *1 1549.8,364.1
-X_683 VDD GND FILL2
+X_683 vdd vss FILL2
 * cell instance _685 r0 *1 1560.6,364.1
-X_685 VDD GND FILL2
+X_685 vdd vss FILL2
 * cell instance _686 r0 *1 1571.4,364.1
-X_686 VDD GND FILL3
+X_686 vdd vss FILL3
 * cell instance _711 r0 *1 1269,364.1
-X_711 n264 n150 n270 n329 tx_data_5 n329 n266 VDD GND MUXDFFRB
+X_711 n264 n150 n270 n329 tx_data_5 n329 n266 vdd vss MUXDFFRB
 * cell instance _721 r0 *1 1009.8,364.1
-X_721 n191 n409 VDD GND BUF_X2
+X_721 n191 n409 vdd vss BUF_X2
 * cell instance _723 r0 *1 1026,364.1
-X_723 n164 rx_valid n199 n187 VDD GND OR3
+X_723 n164 rx_valid n199 n187 vdd vss OR3
 * cell instance _724 r0 *1 1117.8,364.1
-X_724 n206 n193 n361 n162 VDD GND NAND3
+X_724 n206 n193 n361 n162 vdd vss NAND3
 * cell instance _757 r0 *1 1053,364.1
-X_757 VDD GND FILL3
+X_757 vdd vss FILL3
 * cell instance _758 r0 *1 1096.2,364.1
-X_758 n189 n188 VDD n364 GND AND2_X1
+X_758 n189 n188 vdd n364 vss AND2_X1
 * cell instance _763 r0 *1 1139.4,364.1
-X_763 n260 n199 n361 VDD GND NAND2
+X_763 n260 n199 n361 vdd vss NAND2
 * cell instance _764 r0 *1 1155.6,364.1
-X_764 n189 n39 n193 VDD GND NAND2
+X_764 n189 n39 n193 vdd vss NAND2
 * cell instance _767 r0 *1 831.6,364.1
-X_767 n145 n162 n35 n39 VDD n30 GND DFFRB
+X_767 n145 n162 n35 n39 vdd n30 vss DFFRB
 * cell instance _769 r0 *1 1080,364.1
-X_769 VDD GND FILL3
+X_769 vdd vss FILL3
 * cell instance _770 r0 *1 896.4,364.1
-X_770 n409 n403 n370 VDD GND RSLATCH
+X_770 n409 n403 n370 vdd vss RSLATCH
 * cell instance _772 r0 *1 923.4,364.1
-X_772 n181 n185 n35 n40 VDD n30 GND DFFRB
+X_772 n181 n185 n35 n40 vdd n30 vss DFFRB
 * cell instance _773 r0 *1 988.2,364.1
-X_773 rw addr_match n164 n206 VDD GND NAND3
+X_773 rw addr_match n164 n206 vdd vss NAND3
 * cell instance _781 r0 *1 1155.6,112.2
-X_781 n191 n37 VDD n158 GND NOR2
+X_781 n191 n37 vdd n158 vss NOR2
 * cell instance _785 r0 *1 988.2,112.2
-X_785 n81 n152 n35 n36 VDD n30 GND DFFRB
+X_785 n81 n152 n35 n36 vdd n30 vss DFFRB
 * cell instance _793 r0 *1 1053,112.2
-X_793 VDD GND FILL3
+X_793 vdd vss FILL3
 * cell instance _796 r0 *1 1171.8,112.2
-X_796 n38 n188 n23 VDD GND NAND2
+X_796 n38 n188 n23 vdd vss NAND2
 * cell instance _798 r0 *1 1080,112.2
-X_798 VDD GND FILL3
+X_798 vdd vss FILL3
 * cell instance _799 r0 *1 1096.2,112.2
-X_799 n23 VDD n200 GND INV_X1
+X_799 n23 vdd n200 vss INV_X1
 * cell instance _800 r0 *1 1107,112.2
-X_800 n191 n25 VDD n35 GND NOR2
+X_800 n191 n25 vdd n35 vss NOR2
 * cell instance _803 r0 *1 1123.2,112.2
-X_803 n25 n37 VDD GND BUF_X2
+X_803 n25 n37 vdd vss BUF_X2
 * cell instance _807 r0 *1 1139.4,112.2
-X_807 n38 n24 n12 VDD GND NAND2
+X_807 n38 n24 n12 vdd vss NAND2
 * cell instance _810 r0 *1 858.6,112.2
-X_810 n74 n159 n158 n199 VDD n30 GND DFFRB
+X_810 n74 n159 n158 n199 vdd n30 vss DFFRB
 * cell instance _821 r0 *1 923.4,112.2
-X_821 n76 n200 n35 n164 VDD n30 GND DFFRB
+X_821 n76 n200 n35 n164 vdd n30 vss DFFRB
 * cell instance _842 r0 *1 1560.6,112.2
-X_842 VDD GND FILL2
+X_842 vdd vss FILL2
 * cell instance _872 r0 *1 1209.6,112.2
-X_872 n189 n24 n22 VDD GND NAND2
+X_872 n189 n24 n22 vdd vss NAND2
 * cell instance _875 r0 *1 1225.8,112.2
-X_875 n39 n188 n24 n187 n11 VDD GND NOR4
+X_875 n39 n188 n24 n187 n11 vdd vss NOR4
 * cell instance _877 r0 *1 1252.8,112.2
-X_877 n38 VDD n189 GND INV_X1
+X_877 n38 vdd n189 vss INV_X1
 * cell instance _879 r0 *1 1263.6,112.2
-X_879 n38 n187 VDD n21 GND NOR2
+X_879 n38 n187 vdd n21 vss NOR2
 * cell instance _882 r0 *1 1279.8,112.2
-X_882 n39 n11 n21 n147 VDD GND OR3
+X_882 n39 n11 n21 n147 vdd vss OR3
 * cell instance _883 r0 *1 1306.8,112.2
-X_883 n147 n20 VDD n185 GND AND2_X1
+X_883 n147 n20 vdd n185 vss AND2_X1
 * cell instance _885 r0 *1 1571.4,112.2
-X_885 VDD GND FILL3
+X_885 vdd vss FILL3
 * cell instance _886 r0 *1 1328.4,112.2
-X_886 n11 n18 VDD n283 GND NOR2
+X_886 n11 n18 vdd n283 vss NOR2
 * cell instance _887 r0 *1 1344.6,112.2
-X_887 n152 n147 n19 n17 VDD GND AND3_X1
+X_887 n152 n147 n19 n17 vdd vss AND3_X1
 * cell instance _888 r0 *1 1371.6,112.2
-X_888 n11 n40 n181 n20 VDD GND MUX2
+X_888 n11 n40 n181 n20 vdd vss MUX2
 * cell instance _896 r0 *1 1404,112.2
-X_896 n11 n36 n18 n19 VDD GND MUX2
+X_896 n11 n36 n18 n19 vdd vss MUX2
 * cell instance _897 r0 *1 1436.4,112.2
-X_897 n40 n36 n18 VDD GND NAND2
+X_897 n40 n36 n18 vdd vss NAND2
 * cell instance _898 r0 *1 1452.6,112.2
-X_898 VDD GND FILL3
+X_898 vdd vss FILL3
 * cell instance _900 r0 *1 1468.8,112.2
-X_900 VDD GND FILL3
+X_900 vdd vss FILL3
 * cell instance _902 r0 *1 1485,112.2
-X_902 VDD GND FILL3
+X_902 vdd vss FILL3
 * cell instance _903 r0 *1 1501.2,112.2
-X_903 VDD GND FILL3
+X_903 vdd vss FILL3
 * cell instance _904 r0 *1 1517.4,112.2
-X_904 VDD GND FILL3
+X_904 vdd vss FILL3
 * cell instance _905 r0 *1 1533.6,112.2
-X_905 VDD GND FILL3
+X_905 vdd vss FILL3
 * cell instance _906 r0 *1 1549.8,112.2
-X_906 VDD GND FILL2
+X_906 vdd vss FILL2
 .ENDS i2c_slave_async_nrow_fm
 
 * cell INVALLD
