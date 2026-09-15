@@ -27,6 +27,27 @@ TOP_CELL_NAME = "i2c_slave_async_nrow_fm"     # 提出済み。改名しない
 CHIP_TOP_CELL = "tr_1um_jun1okamura_i2c"
 NET_PATH = os.path.join(ROOT, "out", "i2c_slave_async_pnr.v")
 
+# ---- 合成 / STA（`$APRTOOLS/syn/syn.sh` が読む）--------------------------
+# 以前はこれらが `syn.sh` に直書きだった。TD4 と SCLK_SPI では回らない。
+SYN_TOP = "i2c_slave_async"                   # コアの RTL のトップ（*_nrow_fm は剥がす）
+SYN_RTL = [os.path.join(ROOT, "hdl", "rtl", "i2c_slave_async.v")]
+# RTL が**セルを直接インスタンス化している**（NOR2 のクロス結合 SR ラッチ、
+# MUX2 / NAND2 / INV_X1 / AND2_X1）。`.VDD`/`.GND` まで繋いで書いてあるので
+# `--power`、クロス結合を iverilog で収束させるのに `--delay 1` が要る。
+SYN_CELLS_V = os.path.join(ROOT, "hdl", "rtl", "tr1um_cells.v")
+SYN_CELLS_GEN = True
+SYN_CELLS_ARGS = ["--power", "--delay", "1"]
+SYN_CELLS_IN_SYNTH = True                     # セルを論理まで展開して ABC に貼り直させる
+SYN_BLACKBOX = ["RSLATCH"]                    # セルのまま残す（展開すると生ループに化ける）
+SYN_TB_RTL = [os.path.join(ROOT, "hdl", "tb", "tb_i2c_slave_async.v")]
+SYN_TB_NET = [os.path.join(ROOT, "hdl", "tb", "tb_i2c_slave_async_net.v")]
+BUFTH_NETS = ["scl", "sda_in"]                # 外部プルアップで縁が鈍い 2 本
+SYN_REF_NETLIST = os.path.join(ROOT, "reference", "v10",
+                               "i2c_slave_async_net_v10_final.v")
+STA_CLK_PORT = "scl"
+STA_PERIOD_NS = 2500.0                        # Fast-mode 400 kHz
+STA_FALSE_PATH_FROM = ["rst_n"]
+
 # ---- フロアプラン --------------------------------------------------------
 N_ROWS = 4
 CORE_WIDTH_TRACKS = 296                       # x 5.4 = 1598.4（実績値）
