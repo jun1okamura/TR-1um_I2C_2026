@@ -1,12 +1,12 @@
 """config.py -- TR-1um_I2C_2026 を APRtools で再現するための検証用設定。
 
 **移行の手順 1「素通しで md5 一致を確認する」専用**（`docs/04_naming.md` §4）。
-`~/Dropbox/98_LSI_Design/TR-1um_I2C_2026/config.py` に置いて使う。
+`~/HogeHoge/LSI_Design/TR-1um_I2C_2026/config.py` に置いて使う。
 
-    cd ~/Dropbox/98_LSI_Design/TR-1um_I2C_2026
-    export TR1UM_PDK=~/Dropbox/91_OpenPDK/TR-1um
+    cd ~/HogeHoge/LSI_Design/TR-1um_I2C_2026
+    export TR1UM_PDK=~/HogeHoge/OpenPDK/TR-1um
     export PYTHONHASHSEED=0                      # ★ ルータは非決定的
-    APR=~/Dropbox/91_OpenPDK/TR-1um_APRtools
+    APR=~/HogeHoge/OpenPDK/TR-1um_APRtools
     python3 $APR/apr/place.py
     python3 $APR/apr/route.py
     md5 layout/step10/route_step_6_squeezed.gds  # 移行前と一致するはず
