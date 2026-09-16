@@ -18,6 +18,8 @@ scripts/char/logs/
 
 # チップ ngspice の波形生データ
 layout/chip/simulation/*.raw.csv
+# 回した機械の PDK を指す 1 行だけの橋渡し（gen_chip_tb_*.py が作る。U24）
+layout/chip/simulation/models.spice
 
 # mklib.py が .lib を作り直すときに取る退避
 lef/*.lib.bak

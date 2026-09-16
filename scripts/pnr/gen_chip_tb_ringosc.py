@@ -51,19 +51,24 @@ N_SKIP, N_SPAN = 5, 10         # 5 周目から 10 周ぶんで平均する
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--until", default="10u")
-    ap.add_argument("--tmax", default="200p")
+    # ★ 既定は **コミットしてある tb_ringosc.spice を作ったときの値**（U26）。
+    #   以前の既定（10u / 200p / 2u-4u）はどこにも使われておらず、
+    #   引数無しで回すと**コミット済みの TB と別物**が出ていた。
+    ap.add_argument("--until", default="12u")
+    ap.add_argument("--tmax", default="500p")
     ap.add_argument("--cload", default="10p", help="出力パッドに付ける容量")
-    ap.add_argument("--vwin", nargs=2, default=("2u", "4u"),
+    ap.add_argument("--vwin", nargs=2, default=("4u", "10u"),
                     help="振幅を見る窓（起動の過渡を避ける）")
     ap.add_argument("--netlist", default=None)
-    ap.add_argument("--models", default=None)
+    ap.add_argument("--models", default=None,
+                    help="PDK のモデル（既定: TB の隣の models.spice 経由）")
     ap.add_argument("-o", "--out", default=os.path.join(SIM, "tb_ringosc.spice"))
     a = ap.parse_args()
 
-    if a.models is None:
-        pdk = os.environ.get("TR1UM_PDK") or os.path.join(cfg.ROOT, "TR-1um")
-        a.models = os.path.join(pdk, "libs.tech", "spice", "models", "ip62_models")
+    # ★ **TB に機械依存の絶対パスを書かない**（U24）。PDK の場所は TB の隣に
+    #   置く `models.spice` 1 行に閉じ込め、TB からは相対名で読む。
+    #   `--models` で明示されたときだけ、そのパスをそのまま書く。
+    models_inc = a.models or cfg.write_models_shim(SIM)
     net = a.netlist or os.path.join(SIM, cfg.CHIP_TOP_CELL + "_sim.spice")
     if not os.path.exists(net):
         raise SystemExit(f"{net} が無い。先に\n"
@@ -83,7 +88,7 @@ def main():
         "* RING_OSC の発振を見る。ENB = P15 = rst_n、OUT -> P10、OUTD -> P9。",
         "* ネットリストは**レイアウト抽出**なので、AS/AD/PS/PD は実測。",
         "",
-        f".include '{a.models}'",
+        f".include '{models_inc}'",
         f".include '{os.path.basename(net)}'",
         "",
         ".param vdd=5.0",

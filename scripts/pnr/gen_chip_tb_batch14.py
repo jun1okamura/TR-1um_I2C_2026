@@ -136,12 +136,13 @@ def main():
     ap.add_argument("--netlist", default=None)
     ap.add_argument("-o", "--out", default=os.path.join(SIM, "tb_batch14.spice"))
     ap.add_argument("--models", default=None,
-                    help="PDK のモデル（既定: $TR1UM_PDK から絶対パスで）")
+                    help="PDK のモデル（既定: TB の隣の models.spice 経由）")
     a = ap.parse_args()
 
-    if a.models is None:
-        pdk = os.environ.get("TR1UM_PDK") or os.path.join(cfg.ROOT, "TR-1um")
-        a.models = os.path.join(pdk, "libs.tech", "spice", "models", "ip62_models")
+    # ★ **TB に機械依存の絶対パスを書かない**（U24）。PDK の場所は TB の隣に
+    #   置く `models.spice` 1 行に閉じ込め、TB からは相対名で読む。
+    #   `--models` で明示されたときだけ、そのパスをそのまま書く。
+    models_inc = a.models or cfg.write_models_shim(SIM)
     net = a.netlist or os.path.join(SIM, cfg.CHIP_TOP_CELL + "_noosc_sim.spice")
     if not os.path.exists(net):
         raise SystemExit(f"{net} が無い。先に\n"
@@ -201,7 +202,7 @@ def main():
         "",
         # `.include` は **TB と同じディレクトリからの相対**で書く。
         # `cd layout/chip/simulation && ngspice -b tb_batch14.spice` で流す。
-        f".include '{a.models}'",
+        f".include '{models_inc}'",
         f".include '{os.path.basename(net)}'",
         "",
     ] + stimulus(V10_TB) + [

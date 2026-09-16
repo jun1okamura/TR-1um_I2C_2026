@@ -121,7 +121,7 @@ export STA="$PWD/build/sta"           # か、sta.sh / syn.sh に環境変数で
 動作確認（この手順で **OpenSTA 3.1.0** が建つことを確認済み。2026-09-14）:
 
 ```sh
-cd ~/HogeHoge/LSI_Design/TR-1um_I2C_2026
+cd <設計を置いた場所>/TR-1um_I2C_2026
 sh scripts/sta/sta.sh out/i2c_slave_async_pnr.v i2c_slave_async 2500
 ```
 

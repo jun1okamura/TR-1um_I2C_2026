@@ -555,6 +555,46 @@ def pdk_tech_python():
                      f"  試した場所: {cands}")
 
 
+def pdk_spice_models():
+    """PDK の ngspice モデル（`ip62_models`）があるディレクトリ。"""
+    env = os.environ.get("TR1UM_PDK")
+    cands = []
+    if env:
+        cands.append(os.path.join(env, "libs.tech", "spice", "models"))
+    cands += [
+        os.path.join(os.path.dirname(ROOT), "TR-1um", "libs.tech", "spice", "models"),
+        os.path.expanduser("~/TR-1um/libs.tech/spice/models"),
+        os.path.join(ROOT, "scripts", "char", "models"),
+    ]
+    for c in cands:
+        if os.path.exists(os.path.join(c, "ip62_models")):
+            return c
+    raise SystemExit("PDK の ngspice モデル ip62_models が見つからない。\n"
+                     "  TR1UM_PDK を PDK チェックアウトに向けること。\n"
+                     f"  試した場所: {cands}")
+
+
+def write_models_shim(out_dir, name="models.spice"):
+    """TB の隣に `models.spice`（PDK のモデルへの `.include` 1 行）を書く。
+
+    ★ **回した機械の絶対パスをこの 1 ファイルに閉じ込める**ので、TB 自身は
+    `.include 'models.spice'` だけで済む（U24）。ngspice の `.include` は
+    環境変数を展開しないため、素直に書くと TB にパスが焼き付き、
+    **他の機械では読めないものがコミットされる**。生成物なので
+    `.gitignore` に入れてある。戻り値は TB に書く相対名。
+
+    APRtools の `apr/chip_tb_lib.write_models_shim()` と同じ形。TD4 / SCLK_SPI
+    はそちらを使う（この repo の scripts/pnr/ は移植した旧世代のフローで、
+    APRtools を import しないので、同じものをここに置いてある）。
+    """
+    path = os.path.join(out_dir, name)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("* 自動生成。回した機械の PDK を指す **1 行だけ**の橋渡し。\n"
+                "* TR1UM_PDK を変えて生成し直せば更新される。\n"
+                f".include '{os.path.join(pdk_spice_models(), 'ip62_models')}'\n")
+    return name
+
+
 def artifact(basename):
     """移植元が絶対パスで持っていた中間ファイルは全部 layout/ に落とす。"""
     return os.path.join(LAYOUT, basename)
