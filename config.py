@@ -108,6 +108,6 @@ UNBONDED = {"addr_match", "busy", "rw", "rx_valid"}
 # 「良い」方へ動くので、**出力を見ても間違いだと気づけない**。
 # 掃引したいときは環境変数（`APR_PAD_WEIGHT` / `APR_PLACE_SEED`）で上書きする。
 PAD_WEIGHT = 16.0                     # パッド近接の重み（docs/21_flow_place.md §6）
-PLACE_SEED = 4                        # 提出時の種
+PLACE_SEED = 4                        # 提出時の種。再現のため固定（U61 §7）
 
 finalize(globals())
