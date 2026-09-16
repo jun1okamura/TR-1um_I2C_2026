@@ -564,7 +564,6 @@ def pdk_spice_models():
     cands += [
         os.path.join(os.path.dirname(ROOT), "TR-1um", "libs.tech", "spice", "models"),
         os.path.expanduser("~/TR-1um/libs.tech/spice/models"),
-        os.path.join(ROOT, "scripts", "char", "models"),
     ]
     for c in cands:
         if os.path.exists(os.path.join(c, "ip62_models")):

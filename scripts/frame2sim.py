@@ -3,7 +3,7 @@
 
   usage: python3 scripts/frame2sim.py lef/extracted/OSS_FRAME_GIO.extracted -o cells_pad/
 
-`scripts/char/loadext.py`（標準セル用）との違いは 2 つ:
+`<APRtools>/char/loadext.py`（標準セル用）との違いは 2 つ:
 
 1. **ESD 素子はモデルが違う。** PDK には `PMOS`/`NMOS` とは別に `MPE`/`MNE` が
    あり、BSIM3 のパラメータが 60〜70 個違う（別物）。ESD 認識層 (63,2) の中に

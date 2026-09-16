@@ -317,7 +317,7 @@ module i2c_slave_async #(
     // 論理としては等価だが、(1) ラッチの帰還ネットをルータが引くことになり、
     // (2) OpenSTA がループを勝手に 1 箇所切る。
     //
-    // RSLATCH は scripts/char/run_rslatch.sh で ngspice 特性化して .lib に
+    // RSLATCH は <APRtools>/char/run_rslatch.sh で ngspice 特性化して .lib に
     // 入れた（preset/clear アーク + 最小 High パルス幅 1.85ns）ので、
     // **最初から RSLATCH としてインスタンスする**。yosys へは syn.sh が
     // `blackbox RSLATCH` で渡すので、セルのまま残る。
@@ -344,7 +344,7 @@ module i2c_slave_async #(
     // 論理としては等価だが、(1) ラッチの帰還ネットをルータが引くことになり、
     // (2) OpenSTA がループを勝手に 1 箇所切る。
     //
-    // RSLATCH は scripts/char/run_rslatch.sh で ngspice 特性化して .lib に
+    // RSLATCH は <APRtools>/char/run_rslatch.sh で ngspice 特性化して .lib に
     // 入れた（preset/clear アーク + 最小 High パルス幅 1.85ns）ので、
     // **最初から RSLATCH としてインスタンスする**。yosys へは syn.sh が
     // `blackbox RSLATCH` で渡すので、セルのまま残る。
@@ -404,7 +404,7 @@ module i2c_slave_async #(
     // 論理としては等価だが、(1) ラッチの帰還ネットをルータが引くことになり、
     // (2) OpenSTA がループを勝手に 1 箇所切る。
     //
-    // RSLATCH は scripts/char/run_rslatch.sh で ngspice 特性化して .lib に
+    // RSLATCH は <APRtools>/char/run_rslatch.sh で ngspice 特性化して .lib に
     // 入れた（preset/clear アーク + 最小 High パルス幅 1.85ns）ので、
     // **最初から RSLATCH としてインスタンスする**。yosys へは syn.sh が
     // `blackbox RSLATCH` で渡すので、セルのまま残る。

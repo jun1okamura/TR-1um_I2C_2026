@@ -17,7 +17,7 @@
     P7   5 V                        DIS。データパッドを全部 Hi-Z に
     P1   5 V / P2  10k プルアップ   I2C はアイドルのまま
     P9 / P10  10 pF                 ボンドワイヤ + プローブを想定
-                                    （`scripts/char/char_pad.py` と同じ条件）
+                                    （`<APRtools>/char/char_pad.py` と同じ条件）
 
 ## 何を測るか
 

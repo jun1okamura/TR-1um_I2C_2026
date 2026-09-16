@@ -1,0 +1,61 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * inv_x1 -> rslatch.r x4 等価容量の較正
+
+Doing analysis at TEMP = 25.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+vdd                                          5
+vss                                          0
+src                                          0
+a                                            0
+net                                          5
+nc0_q                              3.61428e-08
+nc0_qb                             3.61428e-08
+xl0.n7                                 1.27177
+svh                                          5
+xl0.n8                                 1.27177
+nc1_q                              3.61428e-08
+nc1_qb                             3.61428e-08
+xl1.n7                                 1.27177
+xl1.n8                                 1.27177
+nc2_q                              3.61428e-08
+nc2_qb                             3.61428e-08
+xl2.n7                                 1.27177
+xl2.n8                                 1.27177
+nc3_q                              3.61428e-08
+nc3_qb                             3.61428e-08
+xl3.n7                                 1.27177
+xl3.n8                                 1.27177
+svl                                          0
+vsvl#branch                                  0
+vsvh#branch                                  0
+vin#branch                                   0
+vvss#branch                        1.31626e-10
+vvdd#branch                       -1.31626e-10
+
+ Reference value :  3.00650e-07
+No. of Data Rows : 15064
+
+  Measurements for Transient Analysis
+
+d                   =  1.59450e-09 targ=  1.02094e-07 trig=  1.00500e-07
+
+
+Total analysis time (seconds) = 0.236689
+
+Total elapsed time (seconds) = 0.250 
+
+Total DRAM available = 65536.000 MB.
+DRAM currently available = 2637.375 MB.
+Maximum ngspice program size =   11.375 MB.
+Current ngspice program size =   11.375 MB.
+

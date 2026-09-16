@@ -77,7 +77,7 @@ rx（コアからの読み出し）が同一物理パッドを共有し、`DIS`�
 - **RSLATCH を特性化してセルとして使う**。V10 は NOR2 のたすき掛けで
   ラッチを作っていたが、`synth -flatten` の後で ABC が NOR3/NAND3 の
   生ループに吸収してしまい組合せループが 4 個できていた。ngspice で
-  `RSLATCH` を特性化して `.lib` に入れ（NLDM 7x7、`scripts/char/`）、
+  `RSLATCH` を特性化して `.lib` に入れ（NLDM 7x7、`<APRtools>/char/`）、
   RTL から直接インスタンス化して `blackbox` で守る形に変えた。
 - **合成・配置・配線をゼロからやり直し**。4 行構成、コア 1611.0 x 963.2 µm、
   コア単体で DRC 0 / 短絡 0。

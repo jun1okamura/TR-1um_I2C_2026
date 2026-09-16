@@ -14,7 +14,7 @@
   2. 通らなければ **有界 SAT** — `sat -seq N`。リセットから N サイクルの範囲で
      反例が無いことを示す。帰納法が弱いだけなのか、本当に違うのかが分かれる。
 
-セルの振る舞いは `hdl/rtl/tr1um_cells.v`（`scripts/char/mkcellverilog.py` が
+セルの振る舞いは `hdl/rtl/tr1um_cells.v`（`<APRtools>/char/mkcellverilog.py` が
 `cellspec.py` から生成）を使う。cellspec.py は ngspice で実レイアウトの抽出と
 突き合わせてあるので、ここが通れば **RTL ≡ マップ後 ≡ レイアウト**が繋がる。
 

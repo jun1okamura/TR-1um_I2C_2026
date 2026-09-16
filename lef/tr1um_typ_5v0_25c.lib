@@ -1,6 +1,6 @@
 /* TR-1um (IP62) 標準セルライブラリ — Liberty
  *
- * scripts/char/mklib.py が char/*.json から自動生成。手で編集しないこと。
+ * <APRtools>/char/mklib.py が char/*.json から自動生成。手で編集しないこと。
  * 元データは KLayout が DRC/LVS クリーンなレイアウトから抽出した
  * ネットリスト (lef/extracted/*.extracted) を ngspice (BSIM3 level49) で
  * 特性化したもの。拡散の実面積・周長 (AS/AD/PS/PD) を含む。

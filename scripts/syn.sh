@@ -36,9 +36,9 @@ if [ -z "${SYN_TEE:-}" ]; then
   exit 0
 fi
 
-[ -f "$LIB" ] || { echo "$LIB が無い。scripts/char/RUN.md の手順で作ってください" >&2; exit 1; }
+[ -f "$LIB" ] || { echo "$LIB が無い。APRtools の char/RUN.md の手順で作ってください" >&2; exit 1; }
 grep -q "cell (RSLATCH)" "$LIB" || {
-  echo "** $LIB に RSLATCH が無い。scripts/char/run_rslatch.sh を先に流してください" >&2
+  echo "** $LIB に RSLATCH が無い。APRtools の char/run_rslatch.sh を先に流してください" >&2
   exit 1; }
 
 # --- Yosys を探す（TD4 の syn.sh と同じ） -----------------------------------
@@ -75,7 +75,12 @@ echo "##################### 0. セルの Verilog モデルを生成"
 # cellspec.py（ngspice で実レイアウトと突き合わせ済み）から起こす。
 #   --power  RTL が .VDD/.GND まで繋いでいるので電源ピンを持たせる
 #   --delay  クロス結合 NOR2 を iverilog で収束させる単位遅延
-python3 scripts/char/mkcellverilog.py --power --delay 1 -o $CELLS
+# ★ 実行する行なので山括弧の見本ではなく変数で。APRTOOLS が未設定なら
+#   リポジトリの隣を見る（`<PDK と道具を置いた場所>` に並べてある前提）。
+: "${APRTOOLS:=$(cd "$(dirname "$0")/../.." && pwd)/TR-1um_APRtools}"
+[ -f "$APRTOOLS/char/mkcellverilog.py" ] || {
+  echo "** APRTOOLS が違う: $APRTOOLS（export APRTOOLS=... してください）" >&2; exit 1; }
+python3 "$APRTOOLS/char/mkcellverilog.py" --power --delay 1 -o $CELLS
 
 echo
 echo "##################### 1. RTL の機能検証"

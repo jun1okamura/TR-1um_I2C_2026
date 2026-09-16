@@ -27,7 +27,7 @@ foreach p [all_inputs] {
 foreach p [all_outputs] { set_load 36.2 $p }
 
 # rst_n は非同期リセット。DFFRB の RSTB に組合せ回路経由で入る。
-# **recovery / removal は特性化していない**（scripts/char/ が測っていない）ので、
+# **recovery / removal は特性化していない**（<APRtools>/char/ が測っていない）ので、
 # ここで見ても意味のある数字にならない。パスとしては外し、リセットの解除タイミングは
 # ngspice のチップレベル TB（reference/v10/tb_chip_i2c_batch14_v10.spice 相当）で見る。
 set_false_path -from [get_ports rst_n]

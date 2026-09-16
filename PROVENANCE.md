@@ -20,7 +20,7 @@ RING_OSC 統合までの全履歴と `design_notes.md`）。**同じ RTL・同�
 だが、2026 版は物理設計を全部やり直している。
 
 - **合成から作り直し**。`RSLATCH` を ngspice で特性化して `.lib` に入れ
-  （NLDM 7x7、`scripts/char/`）、RTL から直接インスタンス化して
+  （NLDM 7x7、`<APRtools>/char/`）、RTL から直接インスタンス化して
   `blackbox` で守る形にした。V10 は NOR2 のたすき掛けで書いていたが、
   `synth -flatten` の後で ABC が NOR3/NAND3 の生ループに吸収してしまい、
   組合せループが 4 個できていた。
