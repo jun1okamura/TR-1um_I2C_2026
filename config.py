@@ -27,6 +27,13 @@ TOP_CELL_NAME = "i2c_slave_async_nrow_fm"     # 提出済み。改名しない
 CHIP_TOP_CELL = "tr_1um_jun1okamura_i2c"
 NET_PATH = os.path.join(ROOT, "out", "i2c_slave_async_pnr.v")
 
+# ★ **`lef/` の写しは提出時のフロー（`scripts/pnr/`）の入力。正本とは揃えない。**
+#   `scripts/pnr/i2c_config.py` は `lef/TR-1um_STDCELL.gds` と
+#   `lef/TR-1um_PNR.{gds,lef}` を読む。提出した GDS（正規化 md5 `bc73b16d`）を
+#   再現するための凍結コピーなので、APRtools の正本を更新しても**追随させない**
+#   （決定 17）。新しい作業は正本（`stdcell/v59_4/`）を読む直下の `config.py` で回す。
+LEF_COPY_FROZEN = True
+
 # ---- 合成 / STA（`$APRTOOLS/syn/syn.sh` が読む）--------------------------
 # 以前はこれらが `syn.sh` に直書きだった。TD4 と SCLK_SPI では回らない。
 SYN_TOP = "i2c_slave_async"                   # コアの RTL のトップ（*_nrow_fm は剥がす）
