@@ -20,7 +20,9 @@
 
 APRtools で回すときは直下の `config.py` を使う（そちらの docstring に手順がある）。
 **両者は同じ GDS を作る**ことを確認済み — APRtools で作り直したチップ段が
-**提出 GDS の正規化 md5 `bc73b16d` と一致**する
+**当時の提出 GDS の正規化 md5 `bc73b16d` と一致**する
+（このフローは `lef/` の凍結コピーを読むので、**古い `MUXDFFRB` のまま**。
+2026-09-17 に `MUXDFFRB` を直したので、**いまの正本で作ると `b86d4c89`** になる）
 （`<APRtools>/docs/90_improvement_notes.md` の U62。突き合わせは `apr/cmp_gds.py`
 で行う。**生バイトはタイムスタンプで毎回変わる**ので `cmp` では判定できない）。
 

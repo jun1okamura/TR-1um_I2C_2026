@@ -29,7 +29,7 @@ NET_PATH = os.path.join(ROOT, "out", "i2c_slave_async_pnr.v")
 
 # ★ **`lef/` の写しは提出時のフロー（`scripts/pnr/`）の入力。正本とは揃えない。**
 #   `scripts/pnr/i2c_config.py` は `lef/TR-1um_STDCELL.gds` と
-#   `lef/TR-1um_PNR.{gds,lef}` を読む。提出した GDS（正規化 md5 `bc73b16d`）を
+#   `lef/TR-1um_PNR.{gds,lef}` を読む。**当時**提出した GDS（正規化 md5 `bc73b16d`）を
 #   再現するための凍結コピーなので、APRtools の正本を更新しても**追随させない**
 #   （決定 17）。新しい作業は正本（`stdcell/v59_4/`）を読む直下の `config.py` で回す。
 LEF_COPY_FROZEN = True
