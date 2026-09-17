@@ -29,22 +29,22 @@ mdp/
 # char/mklib.py が .lib を作り直すときに取る退避
 lef/*.lib.bak
 
+# apr/route.py（step6）の内部チェックポイント。毎回作り直す
+layout/step6/
+# チップの LVS 抽出（apr/klayout_extract.py が作る）
+layout/chip/*.extracted
 # チップ ngspice の生成物
 # ★ models.spice は回した機械の PDK 絶対パスを 1 行持つ。機械依存（U24）
 layout/chip/simulation/*.raw.csv
+layout/chip/simulation/*.log
 layout/chip/simulation/models.spice
+layout/chip/simulation/*_sim.spice
 layout/chip/simulation/*_extracted.spice
 
 # ───────────────────────────────────────────────────────────────
 # B. この設計だけ
 # ───────────────────────────────────────────────────────────────
-# 配線 step6 の内部チェックポイント（route.py が毎回作り直す）
-# ★ TD4 は同じ 6 本を追跡しているので、あちらには置いていない（U83）
-layout/step6/
 # mklvsnet.py が 2026-09-15 まで書いていた場所（TD4 のマクロ向き由来）。
 # 既定は layout/chip/simulation/ に直したので、残っていたら古い生成物
 layout/landscape/
 layout/portrait/
-# ★ TD4 / SCLK_SPI は chip_tb.log / spice_chip.log を追跡しているので、
-#   あちらには置いていない（U83）
-layout/chip/simulation/*.log
