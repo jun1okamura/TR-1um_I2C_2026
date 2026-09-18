@@ -85,7 +85,7 @@ def pin_shapes(cell, lib_cells, extra=(), labels=None, netof=None):
 
     信号ピンは (49,1) のピン図形（コア側へのスタブ）を優先して使う。
     **電源ピンは (49,1) を使わない。** フレームの内側リングでは 1 枚の (49,1) が
-    VDD と VSS の両方のラベルに掛かっていて、どちらの網か判別できない。
+    VDD と VSS の両方のラベルに掛かっていて、どちらのネットか判別できない。
 
     フレームは **VDD をコア側の内縁に M1 で引き出している**（(150-190, 920-990)
     など 3 本）。ここを拾わないと、LEF 上で VDD に繋げる場所が
@@ -120,7 +120,7 @@ def pin_shapes(cell, lib_cells, extra=(), labels=None, netof=None):
                 if n and n != lab.text:
                     print(f"    ** 迷子ラベル: {lab.text!r} @"
                           f"({lab.origin[0]:.1f},{lab.origin[1]:.1f}) {lay} は "
-                          f"実際には {n!r} の網。LEF からは外す")
+                          f"実際には {n!r} のネット。LEF からは外す")
                     got = []
         for lay2, s in got:
             out.setdefault(lab.text, [])
@@ -255,16 +255,16 @@ def core_opening(cell, verbose=False):
 
 
 def make_netof(gds, top):
-    """点 -> その点の M2 が属する網の名前。KLayout の抽出に問い合わせる。
+    """点 -> その点の M2 が属するネットの名前。KLayout の抽出に問い合わせる。
 
-    電源ラベルが本当にその網に乗っているかの確認に使う。KLayout が入って
+    電源ラベルが本当にそのネットに乗っているかの確認に使う。KLayout が入って
     いなければ None を返す（確認を飛ばすだけで LEF は生成できる）。
     """
     try:
         import klayout.db as kdb
         import klayout_extract
     except ImportError:
-        print("    （klayout が無いので電源ラベルの網チェックは飛ばす）")
+        print("    （klayout が無いので電源ラベルのネットチェックは飛ばす）")
         return None
     l2n = klayout_extract.build(gds, top)
     nl = l2n.netlist()

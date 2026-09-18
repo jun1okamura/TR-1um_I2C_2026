@@ -20,7 +20,7 @@ SCL=100kHz、A0/A1/22 の 3 トランザクション:
 
 刺激が同じなので `.measure` の時刻も V10 のまま使える。
 
-**差し替えるのは網の名前だけ**。V10 は未ボンドのコア出力を `NC_CORE_busy`
+**差し替えるのはネットの名前だけ**。V10 は未ボンドのコア出力を `NC_CORE_busy`
 のような名前で、rx_data をフレームの `NC_OUT3` … で覗いていた。こちらは
 **レイアウト抽出**から作った階層付きのネットリストなので、コアの
 インスタンス（`X_1`）の中の本当の名前で覗ける:
@@ -32,7 +32,7 @@ SCL=100kHz、A0/A1/22 の 3 トランザクション:
     P2                       -> そのまま（SDA のボンドパッド）
 
 V10 が持っていた 1000 本超の診断用 `.measure`（`shreg_*` や `_087_` など）は
-**落とす**。あれは V10 の合成結果に固有の内部網で、こちらは合成をやり直して
+**落とす**。あれは V10 の合成結果に固有の内部ネットで、こちらは合成をやり直して
 いるので同じ名前は存在しない。14 項目の判定に要るのは 28 本だけ。
 
 ## RING_OSC は外す
@@ -66,11 +66,11 @@ RX_PAD = (3, 4, 5, 6, 11, 12, 13, 14)
 
 
 def core_pin_nets(netlist):
-    """コアの `.subckt` のポート名 -> **チップでの網の名前**。
+    """コアの `.subckt` のポート名 -> **チップでのネットの名前**。
 
-    `busy` / `addr_match` / `rw` はコアの外に出ていない内部網なので
+    `busy` / `addr_match` / `rw` はコアの外に出ていない内部ネットなので
     `xdut.x_1.busy` で覗ける。一方 `rx_data_*` は**ポート**なので、
-    ngspice は subckt の中に節点を作らない（親の網の別名になる）。
+    ngspice は subckt の中に節点を作らない（親のネットの別名になる）。
     `v(xdut.x_1.rx_data_0)` は "no such vector" になるので、トップの
     インスタンス行と `.subckt` のポート順を突き合わせて親側の名前
     （`n117` のような抽出名）に直す。2026-09-14 に実際に踏んだ。"""
@@ -111,7 +111,7 @@ def remap(net, m):
         return m[net]
     if re.fullmatch(r"P\d+|VDD|VSS", net):
         return net
-    raise SystemExit(f"どこへ写せばいいか分からない網: {net!r}")
+    raise SystemExit(f"どこへ写せばいいか分からないネット: {net!r}")
 
 
 def stimulus(path):
@@ -230,7 +230,7 @@ def main():
     print(f"  .tran 50n {a.until} 0 {a.tmax}")
     print(f"  流し方: cd {os.path.relpath(SIM, cfg.ROOT)} && "
           f"ngspice -b {os.path.basename(a.out)} > batch14.log 2>&1")
-    print("  網の読み替え: " + ", ".join(f"{k}->{v}" for k, v in sorted(nmap.items())))
+    print("  ネットの読み替え: " + ", ".join(f"{k}->{v}" for k, v in sorted(nmap.items())))
     return 0
 
 

@@ -13,7 +13,7 @@
      まとめが要る形（マルチフィンガ）が無いので、**両側とも掛けなければ**
      比較の意味は変わらない。
   2. 不一致のとき**どこが合わないか**を出す。`GenericNetlistCompareLogger` を
-     継承して、照合できなかった網・デバイス・ピンを拾う。
+     継承して、照合できなかったネット・デバイス・ピンを拾う。
   3. 抽出結果を `-o` で保存できる（既定は保存しない）。
 
 ソース側は `scripts/pnr/mklvsnet.py` が作ったもの。
@@ -109,7 +109,7 @@ def main():
     ap.add_argument("gds")
     ap.add_argument("top", nargs="?", default=cfg.TOP_CELL_NAME)
     ap.add_argument("src")
-    ap.add_argument("-o", "--out", default=None, help="抽出網をここへ書く")
+    ap.add_argument("-o", "--out", default=None, help="抽出ネットをここへ書く")
     ap.add_argument("--combine", action="store_true",
                     help="combine_devices() を掛ける（この設計では落ちる）")
     ap.add_argument("--hier", action="store_true", help="平坦化せずに比べる")
@@ -133,10 +133,10 @@ def main():
     sch.read(a.src, db.NetlistSpiceReader())
     normalize(sch, combine=a.combine, flat=not a.hier)
 
-    # --- 電源の島（トップピンを持たない大きな網）を探す --------------------
+    # --- 電源の島（トップピンを持たない大きなネット）を探す --------------------
     # P&R したコアで真っ先に出るのはこれ。マクロを横に置くと、マクロの
     # 電源ポートは行のレールと**金属では繋がっていない**ので、抽出すると
-    # マクロ内部の vdd が「ピンを持たない巨大な網」として独立する。
+    # マクロ内部の vdd が「ピンを持たない巨大なネット」として独立する。
     # 実測（縦置き）: VDD 1757 端子 + `$3.vdd` 1476 端子に割れていた。
     islands = []
     c = lay.circuit_by_name(a.top)

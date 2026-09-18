@@ -18,19 +18,19 @@
 マッチに入らない（移植元は 2 本落として、他の全ピンが将棋倒しに不一致に
 なるのを見ている。下のサブサーキット 27 個は全部合っていたのに）。
 
-## どの網がどこから来るか
+## どのネットがどこから来るか
 
 両方のインスタンスのポート順は、**それぞれの `.subckt` 行から読む**。
-決め打ちしない。網は接続表から引く:
+決め打ちしない。ネットは接続表から引く:
 
-    P<n>      ボンドパッドの網。そのままトップのポート
+    P<n>      ボンドパッドのネット。そのままトップのポート
     HIZ<n>    レール直結（TD4 は 14 本とも固定方向。入力は VDD / 出力は GND）
-    OUT<n>    出力パッドならコアが駆動する網。入力パッドは浮くので GND
+    OUT<n>    出力パッドならコアが駆動するネット。入力パッドは浮くので GND
               （`route_chip.py` が実際に落としているのと同じ）
-    コアのポート  そのパッドの網
+    コアのポート  そのパッドのネット
 
 どちらの側にも表に出てこないポートがあったら、**それぞれ固有の `NC_*`**
-にする。まとめて 1 本にすると、浮いている端子どうしが短絡した網として
+にする。まとめて 1 本にすると、浮いている端子どうしが短絡したネットとして
 LVS に見えてしまう。
 
   usage: python3 scripts/pnr/mkchipnet.py [-o OUT]
@@ -90,11 +90,11 @@ def subckt_ports(path, name):
 
 
 def resolve_name(name, claim, floating, rail=RAIL):
-    """接続表に書いてある「網の名前」-> チップでの網。
+    """接続表に書いてある「ネットの名前」-> チップでのネット。
 
     `None` は結線しない端子。`"VDD"` / `"GND"` はレール直結。それ以外は
-    設計上の網の名前で、`claim` がチップでの名前に読み替える
-    （入力パッドが駆動する網は、そのパッドの網 `P<n>` になる）。"""
+    設計上のネットの名前で、`claim` がチップでの名前に読み替える
+    （入力パッドが駆動するネットは、そのパッドのネット `P<n>` になる）。"""
     if name is None:
         return None
     if name in rail:
@@ -105,16 +105,16 @@ def resolve_name(name, claim, floating, rail=RAIL):
 def build():
     """--- I2C 移植 (26): 接続表の形が TD4 と違う + RING_OSC が居る --------
 
-    TD4 の `gio_connections.json` は 1 パッド 1 網（`net` + `dir`）で、
+    TD4 の `gio_connections.json` は 1 パッド 1 ネット（`net` + `dir`）で、
     HIZ と浮いた OUT は別のリストだった。I2C は 1 パッドに 3 本
 
-        P    パッドが駆動する（入力）/ パッドに出す（出力）網
-        OUT  パッドのドライバ入力。出力パッドならコアが駆動する網
+        P    パッドが駆動する（入力）/ パッドに出す（出力）ネット
+        OUT  パッドのドライバ入力。出力パッドならコアが駆動するネット
         HIZ  パッドの Hi-Z 制御。双方向パッドは `DIS`、SDA は `sda_oe`
 
     が並び、`VDD` / `GND` / `null` が混ざる。さらに
 
-      * `DIS` は**パッドだけの網**（P7 のパッド網がそのまま 8 個の HIZ へ）
+      * `DIS` は**パッドだけのネット**（P7 のパッドネットがそのまま 8 個の HIZ へ）
       * P15 は `rst_n` と `RING_OSC.ENB` の 2 本を同時に駆動する
       * RING_OSC が 3 つ目のインスタンスとして居る
 
@@ -135,9 +135,9 @@ def build():
 
     problems = []
 
-    # ---- 設計上の網の名前 -> チップでの網 ---------------------------------
-    # 入力パッドが駆動する網はそのパッドの網になる。出力とHi-Z制御は
-    # コア（か RING_OSC）が駆動するので、網の名前をそのまま使う。
+    # ---- 設計上のネットの名前 -> チップでのネット ---------------------------------
+    # 入力パッドが駆動するネットはそのパッドのネットになる。出力とHi-Z制御は
+    # コア（か RING_OSC）が駆動するので、ネットの名前をそのまま使う。
     claim = {}
     for n, s in sig.items():
         p = s.get("P")
@@ -176,7 +176,7 @@ def build():
         elif p in claim:
             core_net[p] = claim[p]
         elif any(p == s.get("OUT") or p == s.get("HIZ") for s in sig.values()):
-            core_net[p] = p                     # コアが駆動する網
+            core_net[p] = p                     # コアが駆動するネット
         else:
             core_net[p] = floating(f"CORE_{p}")
             unconnected.append(p)
@@ -207,7 +207,7 @@ def build():
     if len(TOP_PIN_ORDER) != len(sig) + 2:
         problems.append(f"トップピン {len(TOP_PIN_ORDER)} 本 vs "
                         f"パッド {len(sig)} + レール 2")
-    # フレームの端子とコア / RING_OSC の端子が同じ網を名乗っているか
+    # フレームの端子とコア / RING_OSC の端子が同じネットを名乗っているか
     for n, s in sorted(sig.items()):
         for kind in ("P", "OUT", "HIZ"):
             v = s.get(kind)
@@ -220,7 +220,7 @@ def build():
                 elif name in core_net:
                     got = core_net[name]
                 else:
-                    continue                    # DIS のようなパッドだけの網
+                    continue                    # DIS のようなパッドだけのネット
                 if got != want:
                     problems.append(f"パッド {n} の {kind}={name}: "
                                     f"ブロック側 {got!r} / パッド側 {want!r}")
@@ -304,15 +304,15 @@ def main():
     print(f"{cfg.RING_OSC_CELL}: {len(ro_ports)} ポート -> "
           + ", ".join(f"{p}={ro_net[p]}" for p in ro_ports))
     print(f"トップ: {len(TOP_PIN_ORDER)} 本のボンドパッド")
-    print("\nコアのポート -> チップの網")
+    print("\nコアのポート -> チップのネット")
     for p in core_ports:
         print(f"  {p:<14} {core_net[p]}")
-    print("\nフレームのピン -> チップの網（パッド以外）")
+    print("\nフレームのピン -> チップのネット（パッド以外）")
     for p in gio_ports:
         if not re.match(r"^P\d+$", p) and p not in RAIL:
             print(f"  {p:<8} {gio_net[p]}")
     if nc:
-        print(f"\n浮いた網 {len(nc)} 本: {nc}")
+        print(f"\n浮いたネット {len(nc)} 本: {nc}")
     if problems:
         print()
         for p in problems:

@@ -117,7 +117,7 @@ def build(n_fill):
     p["INV3D"] = ports(INV3D)
 
     def call(inst, cell, net):
-        """ポート名 -> 網 の辞書から、その subckt の順番で並べる。"""
+        """ポート名 -> ネット の辞書から、その subckt の順番で並べる。"""
         return f"{inst} " + " ".join(net[q] for q in p[cell]) + f" {cell}"
 
     body = []
