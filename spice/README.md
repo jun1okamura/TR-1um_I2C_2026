@@ -41,7 +41,7 @@ sh spice/run_pw.sh 100 6,7,8,9,10,12    # 最小 WEB パルス幅
 
 | ファイル | 内容 |
 |---|---|
-| `REG4x16_ngspice.spi` | `scripts/spi2ngspice.py` が `REG4x16_src.spi` から生成。**回路は同一**、`XM` 呼び出し化とノード名の角括弧除去のみ |
+| `REG4x16_ngspice.spi` | `$APRTOOLS/apr/spi2ngspice.py` が `REG4x16_src.spi` から生成。**回路は同一**、`XM` 呼び出し化とノード名の角括弧除去のみ |
 | `run_tran.sh` / `run_pw.sh` | デッキ生成 → ngspice → 集計まで一発 |
 
 - モデル: TR-1um IP62（BSIM3 level 49、`PMOS`/`NMOS` サブサーキット経由なので AS/AD/PS/PD が `sdwidth=2.8u` から自動で付く）

@@ -15,7 +15,7 @@ sh irsim/run_timing.sh      # 読出アクセス時間 / 書込レイテンシ /
 |---|---|
 | `TR-1um.prm` | TR-1um 実モデルから校正したパラメータ（TR-1um_Async_I2C と共通） |
 | `reg4x16.sim` / `reg8x16.sim` | `scripts/spi2sim.py` が LVS ソースから生成（1,076 Tr / 426 ノード、1,876 Tr / 705 ノード） |
-| `reg4x16.cmd` / `reg8x16.cmd` | `scripts/gen_irsim_cmd.py --bits N` が生成。**`hdl/tb/tb_regx16.v` と同じベクタ・同じ期待値** |
+| `reg4x16.cmd` / `reg8x16.cmd` | `$APRTOOLS/apr/gen_irsim_cmd.py --bits N` が生成。**`hdl/tb/tb_regx16.v` と同じベクタ・同じ期待値** |
 | `reg4x16_timing.cmd` | `scripts/gen_irsim_timing.py` が生成。タイミング測定用 |
 | `run_regx16.sh` / `run_timing.sh` | 実行 → 判定まで一発 |
 
@@ -39,7 +39,7 @@ d AV QV                                        ← 実際の番地と値
 ```
 
 の 3 行を出すので、**ログだけで完結して集計できる**（期待値ファイルは不要）。
-`scripts/check_irsim_log.py` がタグ別に集計する。
+`$APRTOOLS/apr/check_irsim_log.py` がタグ別に集計する。
 
 ### 結果
 

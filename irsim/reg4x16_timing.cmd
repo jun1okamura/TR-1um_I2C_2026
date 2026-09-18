@@ -1,6 +1,6 @@
 | reg4x16_timing.cmd -- REG4x16 タイミング測定（IRSIM, 1ns 分解能）
-| scripts/gen_irsim_timing.py が生成。手で編集しないこと。
-| 判定: python3 scripts/check_irsim_timing.py irsim/reg4x16_timing_run.log
+| $APRTOOLS/apr/gen_irsim_timing.py が生成。手で編集しないこと。
+| 判定: python3 $APRTOOLS/apr/check_irsim_timing.py irsim/reg4x16_timing_run.log
 stepsize 1
 settle 10
 h Vdd

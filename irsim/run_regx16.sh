@@ -9,6 +9,11 @@
 # Verilog 版は論理と接続、こちらは実 R/C モデルでの遅延を見る。
 set -eu
 cd "$(dirname "$0")/.."
+
+# ★ 道具の正本は APRtools（U94）。**設計側に写しを置かない。**
+#   写しを残すと、いつか古い方を呼ぶ（U89 / U14 で 2 度踏んだ）。
+: "${APRTOOLS:=$(cd .. && pwd)/TR-1um_APRtools}"
+[ -d "$APRTOOLS/apr" ] || { echo "** APRTOOLS が見つからない: $APRTOOLS（export APRTOOLS=... してください）" >&2; exit 1; }
 BITS="${1:-4}"
 VERBOSE="${2:-}"
 PRM=irsim/TR-1um.prm
@@ -23,7 +28,7 @@ if [ ! -f "$SIM" ] || [ "$SRC" -nt "$SIM" ]; then
   echo "generating $SIM from $SRC" >&2
   python3 scripts/spi2sim.py "$SRC" "$TOP" > "$SIM"
 fi
-[ -f "$CMD" ] || python3 scripts/gen_irsim_cmd.py "$CMD" --bits "$BITS"
+[ -f "$CMD" ] || python3 "$APRTOOLS/apr/gen_irsim_cmd.py" "$CMD" --bits "$BITS"
 
 echo "irsim $PRM $SIM  ($CMD -> $LOG)" >&2
 # NOTE: "-@ cmdfile" の CLI フラグは環境によって効かないので、
@@ -32,4 +37,4 @@ irsim "$PRM" "$SIM" > "$LOG" 2>&1 << EOT
 @ $CMD
 EOT
 
-python3 scripts/check_irsim_log.py "$LOG" $VERBOSE
+python3 "$APRTOOLS/apr/check_irsim_log.py" "$LOG" $VERBOSE

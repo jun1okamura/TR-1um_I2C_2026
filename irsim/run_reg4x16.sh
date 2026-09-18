@@ -9,6 +9,11 @@
 # Verilog 版は論理と接続、こちらは実 R/C モデルでの遅延を見る。
 set -eu
 cd "$(dirname "$0")/.."
+
+# ★ 道具の正本は APRtools（U94）。**設計側に写しを置かない。**
+#   写しを残すと、いつか古い方を呼ぶ（U89 / U14 で 2 度踏んだ）。
+: "${APRTOOLS:=$(cd .. && pwd)/TR-1um_APRtools}"
+[ -d "$APRTOOLS/apr" ] || { echo "** APRTOOLS が見つからない: $APRTOOLS（export APRTOOLS=... してください）" >&2; exit 1; }
 PRM="${1:-irsim/TR-1um.prm}"
 [ -n "$PRM" ] || PRM=irsim/TR-1um.prm
 SIM=irsim/reg4x16.sim
@@ -28,4 +33,4 @@ irsim "$PRM" "$SIM" > "$LOG" 2>&1 << 'EOT'
 @ irsim/reg4x16.cmd
 EOT
 
-python3 scripts/check_irsim_log.py "$LOG" $VERBOSE
+python3 "$APRTOOLS/apr/check_irsim_log.py" "$LOG" $VERBOSE

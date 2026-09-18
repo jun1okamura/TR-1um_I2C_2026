@@ -229,11 +229,11 @@ XM$12 $16  $17  $15 $14   ← WR 側が $17 = RDB
 
 ### 修正して、LVS を回す前に同型判定で検証した
 
-`scripts/netcmp.py` を追加した。SPICE を読んでグラフ同型判定（networkx VF2）を行う、
+`$APRTOOLS/apr/netcmp.py` を追加した。SPICE を読んでグラフ同型判定（networkx VF2）を行う、
 LVS の予行演習用ツール。
 
 ```sh
-python3 scripts/netcmp.py spice/REG4x16_src.spi DEC2 lef/REG4x16.extracted DEC2 --map '...'
+python3 $APRTOOLS/apr/netcmp.py spice/REG4x16_src.spi DEC2 lef/REG4x16.extracted DEC2 --map '...'
 ```
 
 **結果 — 全回路が同型で一致:**

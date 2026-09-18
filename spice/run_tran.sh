@@ -10,6 +10,11 @@
 # 8bit は 1,876 Tr あるので 1 点あたり数分〜十数分かかる。
 set -eu
 cd "$(dirname "$0")/.."
+
+# ★ 道具の正本は APRtools（U94）。**設計側に写しを置かない。**
+#   写しを残すと、いつか古い方を呼ぶ（U89 / U14 で 2 度踏んだ）。
+: "${APRTOOLS:=$(cd .. && pwd)/TR-1um_APRtools}"
+[ -d "$APRTOOLS/apr" ] || { echo "** APRTOOLS が見つからない: $APRTOOLS（export APRTOOLS=... してください）" >&2; exit 1; }
 BITS="${1:-4}"
 LIST="${2:-0 50 100 200}"
 MODELS="${MODELS:-${TR1UM_PDK:-$HOME/TR-1um}/libs.tech/spice/models/ip62_models}"
@@ -20,7 +25,7 @@ NET=spice/${TOP}_ngspice.spi
 # LVS ソースが新しければ ngspice 用ネットリストを作り直す
 if [ ! -f "$NET" ] || [ "$SRC" -nt "$NET" ]; then
   echo "generating $NET" >&2
-  python3 scripts/spi2ngspice.py "$SRC" > "$NET"
+  python3 "$APRTOOLS/apr/spi2ngspice.py" "$SRC" > "$NET"
 fi
 
 LOGS=""
@@ -32,4 +37,4 @@ for c in $LIST; do
   ngspice -b "$DECK" > "$LOG" 2>&1
   LOGS="$LOGS $LOG"
 done
-python3 scripts/check_ngspice.py tran $LOGS
+python3 "$APRTOOLS/apr/check_ngspice.py" tran $LOGS

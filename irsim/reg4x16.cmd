@@ -1,8 +1,8 @@
 | reg4x16.cmd -- REG4x16 全レジスタアクセス検証（IRSIM 版）
-| scripts/gen_irsim_cmd.py が生成。手で編集しないこと。
-| hdl/tb/tb_reg4x16.v と同じベクタ・同じ順序・同じ期待値。
+| $APRTOOLS/apr/gen_irsim_cmd.py が生成。手で編集しないこと。
+| hdl/tb/tb_regx16.v と同じベクタ・同じ順序・同じ期待値。
 |
-| 合否判定:  python3 scripts/check_irsim_log.py irsim/reg4x16_run.log
+| 合否判定:  python3 $APRTOOLS/apr/check_irsim_log.py irsim/reg4x16_run.log
 | 読出のたびに print で期待値を刻み、assert でその場で判定し、
 | d で実際の値を残す。IRSIM の .cmd 言語には条件分岐も算術も無いので、
 | pass/fail の集計だけをログのオフライン突合せで行う。
@@ -1922,7 +1922,7 @@ assert QV 0111
 d AV QV
 
 | ================================================================
-| T3  デコーダ一意性（全語 0101 -> 1 語だけ 1010、他 15 語が不変か）
+| T3  デコーダ一意性（全語 0101… -> 1 語だけ 1010…、他 15 語が不変か）
 | ================================================================
 l ADD0
 l ADD1

@@ -5,13 +5,18 @@
 #   sh spice/run_pw.sh 100 6,7,8,9,10,12  … 幅を細かく刻む
 set -eu
 cd "$(dirname "$0")/.."
+
+# ★ 道具の正本は APRtools（U94）。**設計側に写しを置かない。**
+#   写しを残すと、いつか古い方を呼ぶ（U89 / U14 で 2 度踏んだ）。
+: "${APRTOOLS:=$(cd .. && pwd)/TR-1um_APRtools}"
+[ -d "$APRTOOLS/apr" ] || { echo "** APRTOOLS が見つからない: $APRTOOLS（export APRTOOLS=... してください）" >&2; exit 1; }
 MODELS="${MODELS:-${TR1UM_PDK:-$HOME/TR-1um}/libs.tech/spice/models/ip62_models}"
 NET=spice/REG4x16_ngspice.spi
 CBL="${1:-100}"
 PWS="${2:-2,4,6,10,16,24}"
 
 if [ ! -f "$NET" ] || [ spice/REG4x16_src.spi -nt "$NET" ]; then
-  python3 scripts/spi2ngspice.py spice/REG4x16_src.spi > "$NET"
+  python3 "$APRTOOLS/apr/spi2ngspice.py" spice/REG4x16_src.spi > "$NET"
 fi
 
 DECK=spice/REG4x16_pw_$CBL.spi
@@ -19,4 +24,4 @@ LOG=spice/REG4x16_pw_$CBL.log
 python3 scripts/gen_ngspice_pw.py "$CBL" "$DECK" "$MODELS" "$NET" "$PWS"
 echo "ngspice -b $DECK  -> $LOG" >&2
 ngspice -b "$DECK" > "$LOG" 2>&1
-python3 scripts/check_ngspice.py pw "$LOG"
+python3 "$APRTOOLS/apr/check_ngspice.py" pw "$LOG"
