@@ -65,3 +65,6 @@ layout/chip/simulation/*_extracted.spice
 # 既定は layout/chip/simulation/ に直したので、残っていたら古い生成物
 layout/landscape/
 layout/portrait/
+
+# syn.sh が .lib から起こす ABC 制約（U99）。写さないので追跡しない
+out/abc.constr
