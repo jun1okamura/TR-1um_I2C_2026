@@ -26,7 +26,7 @@ SRC=spice/${TOP}_src.spi
 # .sim / .cmd が無い、または LVS ソースの方が新しければ作り直す
 if [ ! -f "$SIM" ] || [ "$SRC" -nt "$SIM" ]; then
   echo "generating $SIM from $SRC" >&2
-  python3 scripts/spi2sim.py "$SRC" "$TOP" > "$SIM"
+  python3 "$APRTOOLS/apr/spi2sim.py" "$SRC" "$TOP" > "$SIM"
 fi
 [ -f "$CMD" ] || python3 "$APRTOOLS/apr/gen_irsim_cmd.py" "$CMD" --bits "$BITS"
 

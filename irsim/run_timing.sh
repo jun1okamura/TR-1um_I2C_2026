@@ -12,7 +12,7 @@ SIM=irsim/reg4x16.sim
 LOG=irsim/reg4x16_timing_run.log
 
 if [ ! -f "$SIM" ] || [ spice/REG4x16_src.spi -nt "$SIM" ]; then
-  python3 scripts/spi2sim.py spice/REG4x16_src.spi REG4x16 > "$SIM"
+  python3 "$APRTOOLS/apr/spi2sim.py" spice/REG4x16_src.spi REG4x16 > "$SIM"
 fi
 
 echo "irsim $PRM $SIM  (irsim/reg4x16_timing.cmd -> $LOG)" >&2

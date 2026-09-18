@@ -23,7 +23,7 @@ VERBOSE="${2:-}"
 # .sim が無い／ネットリストの方が新しければ作り直す
 if [ ! -f "$SIM" ] || [ spice/REG4x16_src.spi -nt "$SIM" ]; then
   echo "generating $SIM from spice/REG4x16_src.spi" >&2
-  python3 scripts/spi2sim.py spice/REG4x16_src.spi REG4x16 > "$SIM"
+  python3 "$APRTOOLS/apr/spi2sim.py" spice/REG4x16_src.spi REG4x16 > "$SIM"
 fi
 
 echo "irsim $PRM $SIM  (irsim/reg4x16.cmd -> $LOG)" >&2

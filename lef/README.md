@@ -5,18 +5,18 @@ TR-1um PDK には LEF も Liberty (.lib) も含まれていないので、ここ
 | ファイル | 内容 |
 |---|---|
 | `TR-1um_STDCELL.gds` | セルライブラリ本体（レイアウト）。**これが唯一の正**  |
-| `TR-1um_tech.lef` | LAYER / VIA / SITE 定義 — `scripts/mklef.py` で生成 |
+| `TR-1um_tech.lef` | LAYER / VIA / SITE 定義 — `$APRTOOLS/apr/mklef.py` で生成 |
 | `TR-1um_cells.lef` | 全 48 MACRO（標準セル + アレイセル + `REG4x16` / `REG8x16`）— 同上 |
-| `../scripts/tr1um.genlib` | Yosys/ABC 用の簡易 genlib — `scripts/cellinfo.py` で生成 |
+| `../scripts/tr1um.genlib` | Yosys/ABC 用の簡易 genlib — `$APRTOOLS/apr/cellinfo.py` で生成 |
 | `../scripts/cell_area.json` | 全セルの実測寸法・面積・Tr 数 — 同上。面積見積りスクリプトが読む |
 
 ## GDS を直したら流すもの（この 3 つで全部追従する）
 
 ```sh
-python3 scripts/pin_grid_check.py lef/TR-1um_STDCELL.gds          # 配置グリッド確認
-python3 scripts/cellinfo.py       lef/TR-1um_STDCELL.gds \
+python3 $APRTOOLS/apr/pin_grid_check.py lef/TR-1um_STDCELL.gds          # 配置グリッド確認
+python3 $APRTOOLS/apr/cellinfo.py       lef/TR-1um_STDCELL.gds \
         --genlib scripts/tr1um.genlib --areas scripts/cell_area.json --check
-python3 scripts/mklef.py          lef/TR-1um_STDCELL.gds -o lef   # LEF 生成
+python3 $APRTOOLS/apr/mklef.py          lef/TR-1um_STDCELL.gds -o lef   # LEF 生成
 ```
 
 面積の数値を**スクリプトに直接書かない**。`scripts/cell_area.json` を経由させる。
@@ -49,7 +49,7 @@ M2 ピン図形は全数が幅 3.4 µm で揃っており、3.4 + 2.0（スペ�
   行ピッチ 54.6（= 59.4 − 4.8 オーバーラップ）で積むので 5.4 の倍数にならない。
   縦方向の話なので、M2（縦配線）のトラックには影響しない
 
-`scripts/pin_grid_check.py` は**高さが行高と一致するセルだけ**を合否に数え、
+`$APRTOOLS/apr/pin_grid_check.py` は**高さが行高と一致するセルだけ**を合否に数え、
 それ以外はマクロ／アレイとして情報表示に回す。
 
 ---
@@ -57,7 +57,7 @@ M2 ピン図形は全数が幅 3.4 µm で揃っており、3.4 + 2.0（スペ�
 ## LEF
 
 ```sh
-python3 scripts/mklef.py lef/TR-1um_STDCELL.gds -o lef
+python3 $APRTOOLS/apr/mklef.py lef/TR-1um_STDCELL.gds -o lef
 ```
 
 セル高さ変更に合わせて更新した内容:
