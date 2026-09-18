@@ -928,6 +928,7 @@ Mapping DFF cells in module `\i2c_slave_async':
 6. Executing ABC pass (technology mapping using ABC).
 
 6.1. Extracting gate netlist of module `\i2c_slave_async' to `<abc-temp-dir>/input.blif'..
+ABC: using cached merged SCL: /var/folders/gf/nw84jb093fzd316tjgncxvrh0000gn/T/yosys-liberty-scl-cache/yosys_merged_55ecf4cd.scl (1 files)
 
 6.1.1. Executed ABC.
 Extracted 138 gates and 188 wires to a netlist network with 50 inputs and 78 outputs.
@@ -1038,6 +1039,6 @@ Dumping module `\i2c_slave_async'.
    Chip area for module '\i2c_slave_async': 294778.000000
      of which used for sequential elements: 134718.500000 (45.70%)
 
-End of script. Logfile hash: 3f010b2ec3, time: 0.27s, user: 0.03s, system: 0.01s, MEM: 20.88 MB peak
+End of script. Logfile hash: 32fcba4ad8, time: 0.15s, user: 0.03s, system: 0.01s, MEM: 20.95 MB peak
 Yosys 0.68+post (git sha1 c12172fbae8af5e20f6fb52e3d4e92d56ed587b6, Release, AppleClang clang++ 21.0.0.21000101)
-Time spent: 75% 2x abc (0 sec), 5% 4x read_verilog (0 sec), ...
+Time spent: 72% 2x abc (0 sec), 6% 4x read_verilog (0 sec), ...
