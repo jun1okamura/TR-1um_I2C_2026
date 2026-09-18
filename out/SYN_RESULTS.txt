@@ -1,7 +1,7 @@
 設計 : i2c_slave_async   (.)
 Yosys: yosys  (Yosys 0.68+post (git sha1 c12172fbae8af5e20f6fb52e3d4e92d56ed587b6, Release, AppleClang clang++ 21.0.0.21000101))
 Liberty: $APRTOOLS/stdcell/v59_4/tr1um_typ_5v0_25c.lib
-ABC 制約: set_driving_cell BUF_X2 set_load 36.2 
+ABC 制約: set_driving_cell BUF_X2 set_load 45.923    （out/abc.constr / set_load は $APRTOOLS/stdcell/v59_4/tr1um_typ_5v0_25c.lib の OSS_ESD_5V_DIO / OUT から引いた値。U99）
 
 ##################### 0. セルの Verilog モデルを生成
 wrote hdl/rtl/tr1um_cells.v  (26 cells)
@@ -125,10 +125,10 @@ FF 38 / 組合せ 82 / NAND2 換算 275 ゲート
 ######## i2c_slave_async   out/i2c_slave_async_pnr.v   period = 2500.0 ns
   reg->reg    slack  1225.733 ns   _291_/Q -> _316_/D
   in->reg     slack   738.348 ns   sda_in -> u_muxdffrb_2/A
-  reg->out    slack   742.049 ns   u_muxdffrb_10/Q -> addr_match
+  reg->out    slack   741.906 ns   u_muxdffrb_10/Q -> addr_match
   hold r->r   slack     6.146 ns   _321_/Q -> _322_/D
   => reg->reg が要求する最小周期 48.533 ns  (20.60 MHz)
-     周期係数 a = 0.50 -> 半周期パス（立上り <-> 立下り）。経路の実遅延は 24.266 ns
+     周期係数 a = 0.50 -> 半周期パス（立上り <-> 立下り）。経路の実遅延は 24.267 ns
   (電源ピン VDD/GND の Warning 201 を 40 行たたみました。.lib に
    電源ピンが無いだけで、タイミングには影響しません)
 
