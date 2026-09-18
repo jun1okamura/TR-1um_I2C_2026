@@ -1,10 +1,15 @@
 # scripts/sta/ — OpenSTA
 
+> ★ **ここに挙がっている道具のうち、APRtools へ移したものは設計側から消した**（2026-09-18、U94）。正本は `$APRTOOLS/apr/` にある 1 本だけ。
+> 下の例の `$APRTOOLS/apr/…` がそれで、`scripts/…` のままの行は設計固有の道具。
+> **写しを残すと、いつか古い方を呼ぶ**（U89 / U14 で 2 度踏んだ）。
+
+
 `.lib` は実測（ngspice）なので、STA が当てられる。ここはその足回り。
 
 ```sh
-sh scripts/sta/sta.sh out/td4_soc_arr.v td4_soc_arr 100                    # まとめ
-sh scripts/sta/sta.sh out/td4_soc_arr.v td4_soc_arr 100 scripts/sta/path.tcl   # クリティカルパス詳細
+sh $APRTOOLS/apr/sta.sh out/td4_soc_arr.v td4_soc_arr 100                    # まとめ
+sh $APRTOOLS/apr/sta.sh out/td4_soc_arr.v td4_soc_arr 100 scripts/sta/path.tcl   # クリティカルパス詳細
 ```
 
 | ファイル | 中身 |
@@ -122,7 +127,7 @@ export STA="$PWD/build/sta"           # か、sta.sh / syn.sh に環境変数で
 
 ```sh
 cd <設計を置いた場所>/TR-1um_I2C_2026
-sh scripts/sta/sta.sh out/i2c_slave_async_pnr.v i2c_slave_async 2500
+sh $APRTOOLS/apr/sta.sh out/i2c_slave_async_pnr.v i2c_slave_async 2500
 ```
 
 ### Ubuntu 24.04
