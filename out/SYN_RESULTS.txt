@@ -1,15 +1,13 @@
+設計 : i2c_slave_async   (.)
 Yosys: yosys  (Yosys 0.68+post (git sha1 c12172fbae8af5e20f6fb52e3d4e92d56ed587b6, Release, AppleClang clang++ 21.0.0.21000101))
+Liberty: $APRTOOLS/stdcell/v59_4/tr1um_typ_5v0_25c.lib
 ABC 制約: set_driving_cell BUF_X2 set_load 36.2 
 
 ##################### 0. セルの Verilog モデルを生成
 wrote hdl/rtl/tr1um_cells.v  (26 cells)
 
 ##################### 1. RTL の機能検証
-[t=3362000] OK:                                    busy cleared after final STOP
-[t=4142000] OK:                         unmatched address -> NACK (no slave ack)
-[t=4142000] OK:                      addr_match not asserted for foreign address
-[t=4202000] OK:                           busy cleared after STOP following NACK
-All checks PASSED
+  [ ok ] tb_i2c_slave_async  [t=4202000] OK:                           busy cleared after STOP following NACK All checks PASSED 
 
 ##################### 2. 合成 → 実セルへマッピング
   i2c_slave_async  170 セル (FF 38 / 組合せ 132)     294,778 um2 = 0.295 mm2
@@ -47,11 +45,7 @@ post-merge instance count: 118
   XNOR2        1
 
 ##################### 5. ゲートレベル TB（畳み込み後）
-[t=3362000] OK:                                    busy cleared after final STOP
-[t=4142000] OK:                         unmatched address -> NACK (no slave ack)
-[t=4142000] OK:                      addr_match not asserted for foreign address
-[t=4202000] OK:                           busy cleared after STOP following NACK
-All checks PASSED
+  [ ok ] tb_i2c_slave_async_net  [t=4202000] OK:                           busy cleared after STOP following NACK All checks PASSED 
 
 ##################### 6. BUFTH で外部入力を受ける
 入力ポート 6 本、対象 2 本
@@ -92,7 +86,11 @@ FF 38 / 組合せ 82 / NAND2 換算 275 ゲート
   util 70%:  0.378 mm2  OK
   util 80%:  0.331 mm2  OK
 
-##################### 8. V10（テープアウト実績）との突き合わせ
+★ セル面積は **実測**（GDS の (235,0) abutment box）。
+  行数・util・所要面積は **見積り**（配置も配線も済んでいない）。
+  成果物の寸法は配置配線のあと GDS を測ること。
+
+##################### 8. 既提出ネットリストとの突き合わせ
   基準 reference/v10/i2c_slave_async_net_v10_final.v
   比較 out/i2c_slave_async_pnr.v
   セル            基準    比較     差      面積差 [um2]
@@ -123,51 +121,15 @@ FF 38 / 組合せ 82 / NAND2 換算 275 ゲート
   セル面積 273,609 -> 264,947 um2 (-3.2%)
 
 ##################### 9. STA
-Warning 201: out/i2c_slave_async_pnr.v line 203, instance u_muxdffrb_1 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 203, instance u_muxdffrb_1 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 214, instance u_muxdffrb_2 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 214, instance u_muxdffrb_2 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 225, instance u_muxdffrb_3 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 225, instance u_muxdffrb_3 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 236, instance u_muxdffrb_4 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 236, instance u_muxdffrb_4 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 247, instance u_muxdffrb_5 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 247, instance u_muxdffrb_5 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 258, instance u_muxdffrb_6 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 258, instance u_muxdffrb_6 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 539, instance u_muxdffrb_7 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 539, instance u_muxdffrb_7 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 550, instance u_muxdffrb_8 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 550, instance u_muxdffrb_8 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 570, instance u_muxdffrb_9 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 570, instance u_muxdffrb_9 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 651, instance u_muxdffrb_10 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 651, instance u_muxdffrb_10 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 717, instance u_muxdffrb_11 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 717, instance u_muxdffrb_11 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 728, instance u_muxdffrb_12 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 728, instance u_muxdffrb_12 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 739, instance u_muxdffrb_13 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 739, instance u_muxdffrb_13 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 750, instance u_muxdffrb_14 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 750, instance u_muxdffrb_14 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 761, instance u_muxdffrb_15 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 761, instance u_muxdffrb_15 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 772, instance u_muxdffrb_16 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 772, instance u_muxdffrb_16 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 783, instance u_muxdffrb_17 port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 783, instance u_muxdffrb_17 port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 937, instance u_busy_lat port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 937, instance u_busy_lat port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 945, instance u_rst_stretch port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 945, instance u_rst_stretch port VDD not found.
-Warning 201: out/i2c_slave_async_pnr.v line 953, instance u_sda_lat port GND not found.
-Warning 201: out/i2c_slave_async_pnr.v line 953, instance u_sda_lat port VDD not found.
-######## i2c_slave_async   out/i2c_slave_async_pnr.v   period = 2500 ns
-  reg->reg    slack  1225.448 ns   _291_/Q -> _316_/D
-  in->reg     slack   738.151 ns   sda_in -> u_muxdffrb_2/A
-  reg->out    slack   742.128 ns   u_muxdffrb_10/Q -> addr_match
-  hold r->r   slack     6.193 ns   _321_/Q -> _322_/D
-  => reg->reg の所要周期 1274.552 ns  (Fmax 0.78 MHz)
+  セル 20 種 / モジュール 1 個
+######## i2c_slave_async   out/i2c_slave_async_pnr.v   period = 2500.0 ns
+  reg->reg    slack  1225.733 ns   _291_/Q -> _316_/D
+  in->reg     slack   738.348 ns   sda_in -> u_muxdffrb_2/A
+  reg->out    slack   742.049 ns   u_muxdffrb_10/Q -> addr_match
+  hold r->r   slack     6.146 ns   _321_/Q -> _322_/D
+  => reg->reg が要求する最小周期 48.533 ns  (20.60 MHz)
+     周期係数 a = 0.50 -> 半周期パス（立上り <-> 立下り）。経路の実遅延は 24.266 ns
+  (電源ピン VDD/GND の Warning 201 を 40 行たたみました。.lib に
+   電源ピンが無いだけで、タイミングには影響しません)
 
 完了

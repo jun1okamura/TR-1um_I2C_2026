@@ -6,7 +6,7 @@
  \----------------------------------------------------------------------------/
  Yosys 0.68+post (git sha1 c12172fbae8af5e20f6fb52e3d4e92d56ed587b6, Release, AppleClang clang++ 21.0.0.21000101)
 
--- Running command `read_verilog hdl/rtl/tr1um_cells.v hdl/rtl/i2c_slave_async.v; blackbox RSLATCH; hierarchy -check -top i2c_slave_async;         synth -top i2c_slave_async -flatten;         dfflibmap -liberty lef/tr1um_typ_5v0_25c.lib; abc -liberty lef/tr1um_typ_5v0_25c.lib -constr scripts/abc.constr; opt_clean;         write_verilog -noattr out/i2c_slave_async.v; tee -o out/i2c_slave_async.stat stat -liberty lef/tr1um_typ_5v0_25c.lib' --
+-- Running command `read_verilog hdl/rtl/tr1um_cells.v hdl/rtl/i2c_slave_async.v; blackbox RSLATCH; hierarchy -check -top i2c_slave_async;         synth -top i2c_slave_async -flatten;         dfflibmap -liberty $APRTOOLS/stdcell/v59_4/tr1um_typ_5v0_25c.lib; abc -liberty $APRTOOLS/stdcell/v59_4/tr1um_typ_5v0_25c.lib -constr $APRTOOLS/syn/abc.constr; opt_clean;         write_verilog -noattr out/i2c_slave_async.v; tee -o out/i2c_slave_async.stat stat -liberty $APRTOOLS/stdcell/v59_4/tr1um_typ_5v0_25c.lib' --
 
 1. Executing Verilog-2005 frontend: hdl/rtl/tr1um_cells.v
 Parsing Verilog input from `hdl/rtl/tr1um_cells.v' to AST representation.
@@ -934,8 +934,8 @@ Extracted 138 gates and 188 wires to a netlist network with 50 inputs and 78 out
 Running ABC script: <abc-temp-dir>/abc.script
 ABC: ======== ABC command line "source <abc-temp-dir>/abc.script"
 ABC: + read_blif <abc-temp-dir>/input.blif 
-ABC: + read_scl /var/folders/gf/nw84jb093fzd316tjgncxvrh0000gn/T/yosys-liberty-scl-cache/yosys_merged_74614239.scl 
-ABC: + read_constr -v ~/HogeHoge/LSI_Design/TR-1um_I2C_2026/scripts/abc.constr 
+ABC: + read_scl /var/folders/gf/nw84jb093fzd316tjgncxvrh0000gn/T/yosys-liberty-scl-cache/yosys_merged_55ecf4cd.scl 
+ABC: + read_constr -v $APRTOOLS/syn/abc.constr 
 ABC: Setting driving cell to be "BUF_X2".
 ABC: Setting output load to be 36.200001.
 ABC: + strash 
@@ -955,13 +955,13 @@ ABC: + buffer
 ABC: + upsize 
 ABC: + dnsize 
 ABC: + stime -p 
-ABC: WireLoad = "none"  Gates =    132 ( 21.2 %)   Cap =103.9 ff (  0.4 %)   Area =   155248.09 ( 99.2 %)   Delay = 14906.18 ps  ( 11.4 %)               
-ABC: Path  0 --      39 : 0    2 pi      A =   0.00  Df = 274.4  -22.9 ps  S = 636.3 ps  Cin =  0.0 ff  Cout = 120.6 ff  Cmax =   0.0 ff  G =    0  
-ABC: Path  1 --     137 : 3    2 OR3     A =1603.80  Df =3715.5-1397.1 ps  S =1145.7 ps  Cin = 56.6 ff  Cout = 108.8 ff  Cmax = 800.0 ff  G =  192  
-ABC: Path  2 --     138 : 4    4 NOR4    A =1603.80  Df =7457.3-3361.5 ps  S =5606.0 ps  Cin = 55.7 ff  Cout = 258.5 ff  Cmax = 800.0 ff  G =  463  
-ABC: Path  3 --     143 : 2    1 NOR2    A = 962.30  Df =10197.2-4188.2 ps  S =2304.6 ps  Cin = 57.8 ff  Cout = 131.6 ff  Cmax = 800.0 ff  G =  227  
-ABC: Path  4 --     144 : 2    1 XNOR2   A =1603.80  Df =12730.2 -300.5 ps  S =1854.8 ps  Cin =129.9 ff  Cout =  58.8 ff  Cmax = 800.0 ff  G =   45  
-ABC: Path  5 --     145 : 2    1 AND2_X1 A =1283.00  Df =14906.2 -765.3 ps  S = 689.3 ps  Cin = 58.7 ff  Cout =  36.2 ff  Cmax = 800.0 ff  G =   61  
+ABC: WireLoad = "none"  Gates =    132 ( 21.2 %)   Cap =104.1 ff (  0.4 %)   Area =   155248.09 ( 99.2 %)   Delay = 15673.29 ps  ( 10.6 %)               
+ABC: Path  0 --      39 : 0    2 pi      A =   0.00  Df = 338.5  -57.3 ps  S = 655.7 ps  Cin =  0.0 ff  Cout = 121.4 ff  Cmax =   0.0 ff  G =    0  
+ABC: Path  1 --     137 : 3    2 OR3     A =1603.80  Df =3987.3-1515.5 ps  S =1249.4 ps  Cin = 56.5 ff  Cout = 107.5 ff  Cmax = 800.0 ff  G =  190  
+ABC: Path  2 --     138 : 4    4 NOR4    A =1603.80  Df =7941.9-3601.1 ps  S =5687.6 ps  Cin = 55.6 ff  Cout = 259.5 ff  Cmax = 800.0 ff  G =  466  
+ABC: Path  3 --     143 : 2    1 NOR2    A = 962.30  Df =10606.6-4470.3 ps  S =2244.5 ps  Cin = 58.0 ff  Cout = 131.1 ff  Cmax = 800.0 ff  G =  225  
+ABC: Path  4 --     144 : 2    1 XNOR2   A =1603.80  Df =13559.0 -259.3 ps  S =2035.0 ps  Cin =129.2 ff  Cout =  58.8 ff  Cmax = 800.0 ff  G =   45  
+ABC: Path  5 --     145 : 2    1 AND2_X1 A =1283.00  Df =15673.3 -656.6 ps  S = 678.6 ps  Cin = 58.8 ff  Cout =  36.2 ff  Cmax = 800.0 ff  G =   61  
 ABC: Start-point = pi38 (\phase [5]).  End-point = po5 ($auto$rtlil.cc:3513:MuxGate$892).
 ABC: + write_blif <abc-temp-dir>/output.blif 
 
@@ -1038,6 +1038,6 @@ Dumping module `\i2c_slave_async'.
    Chip area for module '\i2c_slave_async': 294778.000000
      of which used for sequential elements: 134718.500000 (45.70%)
 
-End of script. Logfile hash: ba43f8d485, time: 0.28s, user: 0.04s, system: 0.01s, MEM: 20.78 MB peak
+End of script. Logfile hash: 3f010b2ec3, time: 0.27s, user: 0.03s, system: 0.01s, MEM: 20.88 MB peak
 Yosys 0.68+post (git sha1 c12172fbae8af5e20f6fb52e3d4e92d56ed587b6, Release, AppleClang clang++ 21.0.0.21000101)
 Time spent: 75% 2x abc (0 sec), 5% 4x read_verilog (0 sec), ...
